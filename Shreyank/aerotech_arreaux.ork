@@ -1,0 +1,490 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openrocket version="1.4" creator="OpenRocket 12.09.1">
+  <rocket>
+    <name>Arreaux by Aerotech</name>
+    <motorconfiguration configid="6914bcc5-c41f-445a-9cd2-cf3f528f3d20"/>
+    <motorconfiguration configid="4f59a1f7-a9f1-42d7-ab12-ba5180ec17e6"/>
+    <motorconfiguration configid="ebffa945-e8ad-47ed-854c-f4e183ec07bd"/>
+    <motorconfiguration configid="dbc2f0ab-b219-4634-a551-b9efdbbed2a9"/>
+    <motorconfiguration configid="a27a9424-a90f-4150-a962-3ba1dd76e40a"/>
+    <motorconfiguration configid="a6b16780-9772-47ec-9897-decdd7e9f294"/>
+    <motorconfiguration configid="262a2bae-91fe-41be-826c-1346d2b0cda0" default="true"/>
+    <referencetype>maximum</referencetype>
+
+    <subcomponents>
+      <stage>
+        <name>Stage</name>
+        <overridemass>0.340194</overridemass>
+        <overridecg>0.6985</overridecg>
+        <overridesubcomponents>true</overridesubcomponents>
+
+        <subcomponents>
+          <nosecone>
+            <name>Nose cone</name>
+            <overridemass>0.0481942</overridemass>
+            <overridecg>0.1524</overridecg>
+            <overridesubcomponents>false</overridesubcomponents>
+            <finish>smooth</finish>
+            <material type="bulk" density="1049.21">Polystyrene PS</material>
+            <length>0.24130000000000001</length>
+            <thickness>0.003175</thickness>
+            <shape>ogive</shape>
+            <shapeparameter>1.0</shapeparameter>
+            <aftradius>0.02413</aftradius>
+            <aftshoulderradius>0.0225425</aftshoulderradius>
+            <aftshoulderlength>0.0635</aftshoulderlength>
+            <aftshoulderthickness>0.003175</aftshoulderthickness>
+            <aftshouldercapped>false</aftshouldercapped>
+          </nosecone>
+
+          <bodytube>
+            <name>Body tube</name>
+            <finish>smooth</finish>
+            <material type="bulk" density="1121.29">Paper</material>
+            <length>0.3556</length>
+            <thickness>0.0012700000000000003</thickness>
+            <radius>0.02413</radius>
+
+            <subcomponents>
+              <innertube>
+                <name>Body tube</name>
+                <position type="top">0.3048</position>
+                <material type="bulk" density="1121.29">Paper</material>
+                <length>0.1016</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.02286</outerradius>
+                <thickness>0.0022224999999999988</thickness>
+                <clusterconfiguration>single</clusterconfiguration>
+                <clusterscale>1.0</clusterscale>
+                <clusterrotation>0.0</clusterrotation>
+              </innertube>
+
+              <bulkhead>
+                <name>Bulkhead</name>
+                <position type="top">0.301625</position>
+                <material type="bulk" density="529.09">Rocketwood</material>
+                <length>0.003175</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.02286</outerradius>
+              </bulkhead>
+
+              <masscomponent>
+                <name>Mass object</name>
+                <position type="top">0.3048</position>
+                <overridemass>7.08738E-4</overridemass>
+                <overridecg>0.0</overridecg>
+                <overridesubcomponents>false</overridesubcomponents>
+                <packedlength>0.0</packedlength>
+                <packedradius>0.0125</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <mass>7.08738E-4</mass>
+              </masscomponent>
+            </subcomponents>
+          </bodytube>
+
+          <bodytube>
+            <name>Body tube</name>
+            <finish>smooth</finish>
+            <material type="bulk" density="1121.29">Paper</material>
+            <length>0.57912</length>
+            <thickness>0.0012700000000000003</thickness>
+            <radius>0.02413</radius>
+
+            <subcomponents>
+              <trapezoidfinset>
+                <name>Fin set</name>
+                <position type="top">0.41275</position>
+                <finish>smooth</finish>
+                <material type="bulk" density="128.148">Balsa</material>
+                <fincount>3</fincount>
+                <rotation>0.0</rotation>
+                <thickness>0.003175</thickness>
+                <crosssection>rounded</crosssection>
+                <cant>0.0</cant>
+                <tabheight>0.00762</tabheight>
+                <tablength>0.07873999999999999</tablength>
+                <tabposition relativeto="front">0.0635</tabposition>
+                <rootchord>0.1651</rootchord>
+                <tipchord>0.0381</tipchord>
+                <sweeplength>0.1143</sweeplength>
+                <height>0.0635</height>
+              </trapezoidfinset>
+
+              <innertube>
+                <name>Motor Mount</name>
+                <position type="bottom">-0.01143</position>
+                <material type="bulk" density="1121.29">Paper</material>
+                <length>0.3048</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.01651</outerradius>
+                <thickness>0.0012700000000000003</thickness>
+                <clusterconfiguration>single</clusterconfiguration>
+                <clusterscale>1.0</clusterscale>
+                <clusterrotation>0.0</clusterrotation>
+                <motormount>
+                  <motor configid="6914bcc5-c41f-445a-9cd2-cf3f528f3d20">
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>01c9ed8633c7f742d4b9c37f8f8a8044</digest>
+                    <designation>G79W</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.14986000000000002</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="4f59a1f7-a9f1-42d7-ab12-ba5180ec17e6">
+                    <type>reload</type>
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>ced4da8018511a409ff241cbab3bb433</digest>
+                    <designation>G77R</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.14986000000000002</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="ebffa945-e8ad-47ed-854c-f4e183ec07bd">
+                    <type>reload</type>
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>8cc88c1180b7ded51fd377cec51cde52</digest>
+                    <designation>G75J</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.195</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="dbc2f0ab-b219-4634-a551-b9efdbbed2a9">
+                    <type>reload</type>
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>8214caa142afddd3d461620369be1a76</digest>
+                    <designation>H128W</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.195</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="a27a9424-a90f-4150-a962-3ba1dd76e40a">
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>fba523a58526e54bcb49224fbb5aab9e</digest>
+                    <designation>H165R</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.194</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="a6b16780-9772-47ec-9897-decdd7e9f294">
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>edacfaeb92e4956c234043e2a46dbdd6</digest>
+                    <designation>F37</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.099</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <motor configid="262a2bae-91fe-41be-826c-1346d2b0cda0">
+                    <manufacturer>AeroTech</manufacturer>
+                    <digest>1de8c183ece38bc6dd63fd76890089f4</digest>
+                    <designation>F62T</designation>
+                    <diameter>0.029</diameter>
+                    <length>0.099</length>
+                    <delay>10.0</delay>
+                  </motor>
+                  <ignitionevent>automatic</ignitionevent>
+                  <ignitiondelay>0.0</ignitiondelay>
+                  <overhang>0.0127</overhang>
+                </motormount>
+
+                <subcomponents>
+                  <masscomponent>
+                    <name>Engine hook</name>
+                    <position type="top">0.231775</position>
+                    <overridemass>0.0141748</overridemass>
+                    <overridecg>0.0</overridecg>
+                    <overridesubcomponents>false</overridesubcomponents>
+                    <packedlength>0.0</packedlength>
+                    <packedradius>0.0125</packedradius>
+                    <radialposition>0.0</radialposition>
+                    <radialdirection>0.0</radialdirection>
+                    <mass>0.0141748</mass>
+                  </masscomponent>
+
+                  <centeringring>
+                    <name>Sleeve</name>
+                    <position type="top">0.1905</position>
+                    <material type="bulk" density="1300.7">PVC</material>
+                    <length>0.00635</length>
+                    <radialposition>0.0</radialposition>
+                    <radialdirection>0.0</radialdirection>
+                    <outerradius>0.01905</outerradius>
+                    <innerradius>0.01651</innerradius>
+                  </centeringring>
+
+                  <centeringring>
+                    <name>Sleeve</name>
+                    <position type="top">0.26352499999999995</position>
+                    <material type="bulk" density="1300.7">PVC</material>
+                    <length>0.00635</length>
+                    <radialposition>0.0</radialposition>
+                    <radialdirection>0.0</radialdirection>
+                    <outerradius>0.01905</outerradius>
+                    <innerradius>0.01651</innerradius>
+                  </centeringring>
+                </subcomponents>
+              </innertube>
+
+              <centeringring>
+                <name>Ring</name>
+                <position type="top">0.555625</position>
+                <material type="bulk" density="1121.29">Paper</material>
+                <length>0.003175</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.02286</outerradius>
+                <innerradius>auto</innerradius>
+              </centeringring>
+
+              <centeringring>
+                <name>Ring</name>
+                <position type="top">0.47307499999999997</position>
+                <material type="bulk" density="1121.29">Paper</material>
+                <length>0.003175</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.02286</outerradius>
+                <innerradius>auto</innerradius>
+              </centeringring>
+
+              <centeringring>
+                <name>Ring</name>
+                <position type="top">0.257175</position>
+                <material type="bulk" density="1300.7">PVC</material>
+                <length>0.003175</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.02286</outerradius>
+                <innerradius>auto</innerradius>
+              </centeringring>
+
+              <masscomponent>
+                <name>Mass object</name>
+                <position type="top">0.26035</position>
+                <overridemass>7.08738E-4</overridemass>
+                <overridecg>0.0</overridecg>
+                <overridesubcomponents>false</overridesubcomponents>
+                <packedlength>0.0</packedlength>
+                <packedradius>0.0125</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <mass>7.08738E-4</mass>
+              </masscomponent>
+
+              <parachute>
+                <name>Parachute</name>
+                <position type="top">0.079375</position>
+                <packedlength>0.025</packedlength>
+                <packedradius>0.021717</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cd>0.75</cd>
+                <deployevent>ejection</deployevent>
+                <deployaltitude>200.0</deployaltitude>
+                <deploydelay>0.0</deploydelay>
+                <material type="surface" density="0.0">1.9 oz. Ripstop Nylon (SkyAngle)</material>
+                <diameter>0.5588</diameter>
+                <linecount>6</linecount>
+                <linelength>0.6096</linelength>
+                <linematerial type="line" density="0.0">1/16 In. braided nylon</linematerial>
+              </parachute>
+
+              <shockcord>
+                <name>Mass object</name>
+                <position type="top">0.149225</position>
+                <packedlength>0.00204216</packedlength>
+                <packedradius>0.02286</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cordlength>0.204216</cordlength>
+                <material type="line" density="0.0038">3/8 inch Flat Elastic</material>
+              </shockcord>
+
+              <launchlug>
+                <name>Launch lug</name>
+                <position type="top">0.27432</position>
+                <finish>smooth</finish>
+                <material type="bulk" density="1049.21">Polystyrene PS</material>
+                <radius>0.00481</radius>
+                <length>0.0254</length>
+                <thickness>0.001</thickness>
+                <radialdirection>0.0</radialdirection>
+              </launchlug>
+
+              <launchlug>
+                <name>Launch lug</name>
+                <position type="top">0.49783999999999995</position>
+                <finish>smooth</finish>
+                <material type="bulk" density="1049.21">Polystyrene PS</material>
+                <radius>0.00481</radius>
+                <length>0.0254</length>
+                <thickness>0.001</thickness>
+                <radialdirection>0.0</radialdirection>
+              </launchlug>
+            </subcomponents>
+          </bodytube>
+        </subcomponents>
+      </stage>
+    </subcomponents>
+  </rocket>
+
+  <simulations>
+    <simulation status="outdated">
+      <name>Simulation 2</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>6914bcc5-c41f-445a-9cd2-cf3f528f3d20</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>914.4000000000001</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="768.99" maxvelocity="188.18" maxacceleration="191.83" maxmach="0.55983" timetoapogee="11.05" flighttime="129.48" groundhitvelocity="6.4226" launchrodvelocity="18.362" deploymentvelocity="3.8524">
+      </flightdata>
+    </simulation>
+
+    <simulation status="outdated">
+      <name>Simulation 3</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>4f59a1f7-a9f1-42d7-ab12-ba5180ec17e6</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>914.4000000000001</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="749.22" maxvelocity="185.97" maxacceleration="179.71" maxmach="0.55324" timetoapogee="11.07" flighttime="125.65" groundhitvelocity="6.4702" launchrodvelocity="16.022" deploymentvelocity="3.3331">
+      </flightdata>
+    </simulation>
+
+    <simulation status="outdated">
+      <name>Simulation 5</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>ebffa945-e8ad-47ed-854c-f4e183ec07bd</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>914.4000000000001</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="1042.1" maxvelocity="231.9" maxacceleration="145.94" maxmach="0.6908" timetoapogee="12.586" flighttime="166.58" groundhitvelocity="6.6326" launchrodvelocity="16.533" deploymentvelocity="4.3251">
+      </flightdata>
+    </simulation>
+
+    <simulation status="outdated">
+      <name>Simulation 7</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>dbc2f0ab-b219-4634-a551-b9efdbbed2a9</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>0.0</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="947.93" maxvelocity="240.75" maxacceleration="273.65" maxmach="0.70881" timetoapogee="11.723" flighttime="158.31" groundhitvelocity="6.3557" launchrodvelocity="22.55" deploymentvelocity="1.9528">
+      </flightdata>
+    </simulation>
+
+    <simulation status="outdated">
+      <name>Simulation 8</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>a27a9424-a90f-4150-a962-3ba1dd76e40a</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>0.0</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="951.98" maxvelocity="267.39" maxacceleration="345.37" maxmach="0.78692" timetoapogee="11.426" flighttime="160.52" groundhitvelocity="6.2745" launchrodvelocity="23.994" deploymentvelocity="3.9955">
+      </flightdata>
+    </simulation>
+
+    <simulation status="outdated">
+      <name>Simulation 9</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>a6b16780-9772-47ec-9897-decdd7e9f294</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>0.0</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="348.5" maxvelocity="92.278" maxacceleration="93.304" maxmach="0.2717" timetoapogee="8.4421" flighttime="61.59" groundhitvelocity="6.0507" launchrodvelocity="11.071" deploymentvelocity="23.752">
+        <warning>Recovery device deployment at high speed (53.4 mph).</warning>
+      </flightdata>
+    </simulation>
+
+    <simulation status="uptodate">
+      <name>Simulation 10</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>262a2bae-91fe-41be-826c-1346d2b0cda0</configid>
+        <launchrodlength>1.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>0.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>0.0</launchaltitude>
+        <launchlatitude>45.0</launchlatitude>
+        <launchlongitude>0.0</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="414.14" maxvelocity="113.73" maxacceleration="141.35" maxmach="0.3347" timetoapogee="8.679" flighttime="74.53" groundhitvelocity="6.0901" launchrodvelocity="15.998" deploymentvelocity="19.923">
+      </flightdata>
+    </simulation>
+  </simulations>
+</openrocket>
