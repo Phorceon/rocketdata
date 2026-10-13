@@ -1,0 +1,55 @@
+file,simulation,max_altitude_m,max_altitude_ft,max_velocity_ms,max_accel_ms2,time_to_apogee_s,flight_time_s,launchrod_vel_ms
+3D printable nose cone and fins.ork,Simulation 1,38.733,127.1,24.764,124.056,3.085,12.194,13.962
+3D printable nose cone and fins.ork,Simulation 2,112.011,367.5,48.501,152.721,4.912,31.135,16.127
+3D printable nose cone and fins.ork,Simulation 3 - too short delay,243.099,797.6,83.142,167.793,5.431,61.931,16.301
+3D printable nose cone and fins.ork,Simulation 4,271.985,892.3,83.16,167.807,7.184,70.339,16.302
+3D printable nose cone and fins.ork,Simulation 5,272.559,894.2,83.143,167.808,7.443,69.76,16.302
+A simple model rocket.ork,Simulation 1,50.59,166.0,29.249,143.649,3.481,15.888,15.365
+A simple model rocket.ork,Simulation 2,135.071,443.1,53.178,182.862,5.265,37.935,17.788
+A simple model rocket.ork,Simulation 3 - too short delay,278.656,914.2,95.284,191.326,5.419,72.605,17.794
+A simple model rocket.ork,Simulation 4,316.583,1038.7,95.282,191.302,7.273,83.514,17.793
+A simple model rocket.ork,Simulation 5,319.75,1049.0,95.278,191.316,7.806,84.386,17.794
+ARC payload rocket.ork,Simulation 1,451.359,1480.8,150.261,196.76,8.172,109.981,19.691
+Airstart timing.ork,Simulation 1,1316.026,4317.7,186.296,119.185,15.606,94.532,15.187
+Airstart timing.ork,Simulation 2,1289.023,4229.1,190.063,125.637,16.004,92.573,9.16
+Airstart timing.ork,Simulation 3,1290.97,4235.5,177.545,94.145,16.542,93.909,9.16
+Airstart timing.ork,Simulation 4,1297.763,4257.8,155.681,61.523,17.71,94.091,9.16
+Airstart timing.ork,Simulation 5,1265.477,4151.8,136.5,63.822,18.86,93.936,9.16
+Chute release.ork,Simulation 2,307.726,1009.6,72.071,62.139,8.424,51.822,18.492
+Chute release.ork,Simulation 3,487.936,1600.8,106.285,88.677,9.962,64.897,22.705
+Clustered motors.ork,Simulation 1,57.857,189.8,32.36,158.48,3.622,13.745,16.358
+Clustered motors.ork,Simulation 2,142.209,466.6,57.628,200.808,5.316,29.569,19.178
+Clustered motors.ork,Simulation 3 - too short delay,279.136,915.8,98.494,208.827,5.637,52.959,18.601
+Clustered motors.ork,Simulation 4,306.964,1007.1,98.493,208.813,7.277,59.255,18.6
+Clustered motors.ork,Simulation 5,307.265,1008.1,98.465,208.81,7.41,58.813,18.6
+Deployable payload.ork,Simulation 1,31.783,104.3,21.802,110.942,2.867,10.759,13.003
+Deployable payload.ork,Simulation 2,95.512,313.4,40.945,143.134,4.729,29.163,15.19
+Deployable payload.ork,Simulation 3 - too short delay,231.182,758.5,77.292,151.733,5.382,63.874,15.444
+Deployable payload.ork,Simulation 4,262.499,861.2,77.285,151.737,7.182,73.53,15.444
+Deployable payload.ork,Simulation 5,263.275,863.8,77.271,151.731,7.516,72.812,15.443
+Dual parachute deployment.ork,Simulation 1,592.721,1944.6,135.387,721.905,10.324,65.294,53.045
+Dual parachute deployment.ork,Simulation 2,697.16,2287.3,140.914,144.068,11.446,70.791,29.935
+Dual parachute deployment.ork,Simulation 3,2223.846,7296.1,388.569,504.582,17.352,129.906,54.125
+Dual parachute deployment.ork,Simulation 4,897.473,2944.5,190.816,1003.51,12.194,78.265,65.073
+Dual parachute deployment.ork,Simulation 5,1158.663,3801.4,242.744,867.184,13.443,90.22,71.334
+Dual parachute deployment.ork,Simulation 6,226.185,742.1,58.427,61.849,7.34,47.127,19.204
+Parallel booster staging.ork,Simulation 1,1120.361,3675.7,210.802,132.783,13.049,224.366,14.765
+Parallel booster staging.ork,Simulation 2,848.398,2783.5,188.761,116.692,11.149,163.367,12.972
+Pods--airframes and winglets.ork,Simulation 1,31.928,104.8,24.753,123.728,2.807,10.323,15.255
+Pods--airframes and winglets.ork,Simulation 2,89.669,294.2,45.58,149.634,4.346,24.876,17.209
+Pods--airframes and winglets.ork,Simulation 3,197.536,648.1,71.885,164.48,6.213,51.05,17.553
+Pods--airframes and winglets.ork,Simulation 4,206.121,676.3,102.6,174.705,5.756,51.776,17.196
+Pods--airframes and winglets.ork,Simulation 5,244.023,800.6,126.858,216.152,5.976,60.771,19.638
+Pods--powered with recovery deployment.ork,Simulation 1,90.703729,297.6,43.272946,264.36964,4.192304,10.415242,20.433528
+Simulation extensions.ork,No controlling,2462.535,8079.2,240.707,52.815,22.461,169.453,15.43
+Simulation extensions.ork,Active roll control,2461.954,8077.3,240.707,52.812,22.436,170.07,15.429
+Simulation extensions.ork,Roll control + air-start,2916.968,9570.1,258.911,46.964,22.936,191.505,49.856
+Simulation scripting.ork,No controlling,2465.451,8088.8,240.709,52.804,22.448,169.59,15.429
+Simulation scripting.ork,Active roll control,2460.83,8073.6,240.692,52.811,22.43,169.524,15.429
+Simulation scripting.ork,Roll control + air-start,2460.598,8072.8,240.708,52.808,22.443,169.432,9.837
+Three stage low power rocket.ork,Simulation 1,268.347,880.4,78.37,127.66,7.64,72.071,11.198
+Three stage low power rocket.ork,Simulation 2,479.475,1573.1,119.935,173.798,8.989,123.969,10.785
+Three stage low power rocket.ork,Simulation 3,644.89,2115.8,129.625,143.679,11.937,165.909,10.34
+Tube fin rocket.ork,Simulation 1,282.234,926.0,119.326,388.603,5.933,75.614,18.871
+Two stage high power rocket.ork,Simulation 1,675.97,2217.7,158.916,110.229,11.049,64.412,19.884
+Two stage high power rocket.ork,Simulation 2,1378.355,4522.2,175.735,116.584,16.275,103.389,15.523
