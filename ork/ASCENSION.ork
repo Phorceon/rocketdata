@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openrocket version="1.8" creator="OpenRocket 20-11-alpha-16">
+  <rocket>
+    <name>Rocket</name>
+    <axialoffset method="absolute">0.0</axialoffset>
+    <motorconfiguration configid="2ce85470-a1bb-4c8c-bf8c-57bc7cba8621" default="true"/>
+    <referencetype>maximum</referencetype>
+
+    <subcomponents>
+      <stage>
+        <name>Sustainer</name>
+
+        <subcomponents>
+          <nosecone>
+            <name>Nose cone</name>
+            <finish>smooth</finish>
+            <material type="bulk" density="1390.0">PVC</material>
+            <length>0.18</length>
+            <thickness>0.003</thickness>
+            <shape>ogive</shape>
+            <shapeparameter>1.0</shapeparameter>
+            <aftradius>0.0525</aftradius>
+            <aftshoulderradius>0.05</aftshoulderradius>
+            <aftshoulderlength>0.02</aftshoulderlength>
+            <aftshoulderthickness>0.003</aftshoulderthickness>
+            <aftshouldercapped>false</aftshouldercapped>
+
+            <subcomponents>
+              <masscomponent>
+                <name>Avionics</name>
+                <axialoffset method="bottom">-8.881784197001253E-18</axialoffset>
+                <packedlength>0.12</packedlength>
+                <packedradius>0.03</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <mass>0.2</mass>
+                <masscomponenttype>altimeter</masscomponenttype>
+              </masscomponent>
+            </subcomponents>
+          </nosecone>
+
+          <bodytube>
+            <name>Body tube 1</name>
+            <finish>smooth</finish>
+            <material type="bulk" density="1780.0">Carbon fiber</material>
+            <length>0.32</length>
+            <thickness>0.0029999999999999957</thickness>
+            <radius>0.0525</radius>
+
+            <subcomponents>
+              <shockcord>
+                <name>Shock cord</name>
+                <axialoffset method="top">0.02</axialoffset>
+                <packedlength>0.025</packedlength>
+                <packedradius>0.0275</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cordlength>0.5</cordlength>
+                <material type="line" density="0.0018">Elastic cord (round 2 mm, 1/16 in)</material>
+              </shockcord>
+
+              <streamer>
+                <name>Streamer</name>
+                <axialoffset method="top">0.045</axialoffset>
+                <packedlength>0.06</packedlength>
+                <packedradius>0.035</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cd>auto</cd>
+                <material type="surface" density="0.067">Ripstop nylon</material>
+                <deployevent>altitude</deployevent>
+                <deployaltitude>800.0</deployaltitude>
+                <deploydelay>0.0</deploydelay>
+                <striplength>0.5</striplength>
+                <stripwidth>0.06</stripwidth>
+              </streamer>
+
+              <parachute>
+                <name>Parachute</name>
+                <axialoffset method="top">0.105</axialoffset>
+                <packedlength>0.22</packedlength>
+                <packedradius>0.027999999999999997</packedradius>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <cd>0.75</cd>
+                <material type="surface" density="0.067">Ripstop nylon</material>
+                <deployevent>altitude</deployevent>
+                <deployaltitude>600.0</deployaltitude>
+                <deploydelay>0.0</deploydelay>
+                <diameter>1.47</diameter>
+                <linecount>8</linecount>
+                <linelength>1.3</linelength>
+                <linematerial type="line" density="0.0018">Elastic cord (round 2 mm, 1/16 in)</linematerial>
+              </parachute>
+            </subcomponents>
+          </bodytube>
+
+          <bodytube>
+            <name>Body tube 2</name>
+            <finish>smooth</finish>
+            <material type="bulk" density="1780.0">Carbon fiber</material>
+            <length>0.655</length>
+            <thickness>0.0029999999999999957</thickness>
+            <radius>0.0525</radius>
+            <motormount>
+              <ignitionevent>automatic</ignitionevent>
+              <ignitiondelay>0.0</ignitiondelay>
+              <overhang>-0.02</overhang>
+              <motor configid="2ce85470-a1bb-4c8c-bf8c-57bc7cba8621">
+                <type>reload</type>
+                <manufacturer>Cesaroni Technology</manufacturer>
+                <digest>c7d7ec5229587aafa881eff1c25ad0e4</digest>
+                <designation>L1115</designation>
+                <diameter>0.075</diameter>
+                <length>0.621</length>
+                <delay>0.0</delay>
+              </motor>
+              <ignitionconfiguration configid="2ce85470-a1bb-4c8c-bf8c-57bc7cba8621">
+                <ignitionevent>automatic</ignitionevent>
+                <ignitiondelay>0.0</ignitiondelay>
+              </ignitionconfiguration>
+            </motormount>
+
+            <subcomponents>
+              <engineblock>
+                <name>Engine block</name>
+                <axialoffset method="top">0.0</axialoffset>
+                <material type="bulk" density="630.0">Plywood (birch)</material>
+                <length>0.005</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>auto</outerradius>
+                <thickness>0.0</thickness>
+              </engineblock>
+
+              <tubecoupler>
+                <name>Coupler</name>
+                <axialoffset method="top">-0.04</axialoffset>
+                <material type="bulk" density="680.0">Cardboard</material>
+                <length>0.08</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>auto</outerradius>
+                <thickness>0.001</thickness>
+              </tubecoupler>
+
+              <centeringring>
+                <name>Centering ring</name>
+                <instancecount>1</instancecount>
+                <instanceseparation>0.0</instanceseparation>
+                <axialoffset method="middle">0.0</axialoffset>
+                <material type="bulk" density="630.0">Plywood (birch)</material>
+                <length>0.002</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>auto</outerradius>
+                <innerradius>0.04</innerradius>
+              </centeringring>
+
+              <innertube>
+                <name>Inner Tube</name>
+                <axialoffset method="bottom">-0.02</axialoffset>
+                <material type="bulk" density="680.0">Cardboard</material>
+                <length>0.618</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>0.04</outerradius>
+                <thickness>2.500000000000002E-4</thickness>
+                <clusterconfiguration>single</clusterconfiguration>
+                <clusterscale>1.0</clusterscale>
+                <clusterrotation>0.0</clusterrotation>
+              </innertube>
+
+              <engineblock>
+                <name>Motor Retainer</name>
+                <axialoffset method="bottom">0.0</axialoffset>
+                <material type="bulk" density="630.0">Plywood (birch)</material>
+                <length>0.02</length>
+                <radialposition>0.0</radialposition>
+                <radialdirection>0.0</radialdirection>
+                <outerradius>auto</outerradius>
+                <thickness>0.0</thickness>
+              </engineblock>
+
+              <trapezoidfinset>
+                <name>Fins</name>
+                <instancecount>3</instancecount>
+                <radiusoffset method="surface">0.0</radiusoffset>
+                <angleoffset method="relative">0.0</angleoffset>
+                <axialoffset method="bottom">0.02</axialoffset>
+                <finish>polished</finish>
+                <material type="bulk" density="2700.0">Aluminum</material>
+                <thickness>0.003</thickness>
+                <crosssection>rounded</crosssection>
+                <cant>0.0</cant>
+                <tabheight>0.01</tabheight>
+                <tablength>0.05</tablength>
+                <tabposition relativeto="middle">0.0</tabposition>
+                <filletradius>0.0</filletradius>
+                <filletmaterial type="bulk" density="2700.0">Aluminum</filletmaterial>
+                <rootchord>0.17</rootchord>
+                <tipchord>0.05</tipchord>
+                <sweeplength>0.2</sweeplength>
+                <height>0.08800000000000001</height>
+              </trapezoidfinset>
+            </subcomponents>
+          </bodytube>
+        </subcomponents>
+      </stage>
+    </subcomponents>
+  </rocket>
+
+  <simulations>
+    <simulation status="uptodate">
+      <name>Simulation 1 (Florida baseline)</name>
+      <simulator>RK4Simulator</simulator>
+      <calculator>BarrowmanCalculator</calculator>
+      <conditions>
+        <configid>2ce85470-a1bb-4c8c-bf8c-57bc7cba8621</configid>
+        <launchrodlength>3.0</launchrodlength>
+        <launchrodangle>0.0</launchrodangle>
+        <launchroddirection>90.0</launchroddirection>
+        <windaverage>2.0</windaverage>
+        <windturbulence>0.1</windturbulence>
+        <launchaltitude>0.0</launchaltitude>
+        <launchlatitude>28.61</launchlatitude>
+        <launchlongitude>-80.6</launchlongitude>
+        <geodeticmethod>spherical</geodeticmethod>
+        <atmosphere model="isa"/>
+        <timestep>0.05</timestep>
+      </conditions>
+      <flightdata maxaltitude="5747.8" maxvelocity="612.43" maxacceleration="239.58" maxmach="1.8296" timetoapogee="28.39" flighttime="28.49" launchrodvelocity="36.26">
+        <warning>Body calculations may not be entirely accurate at supersonic speeds.</warning>
+      </flightdata>
+    </simulation>
+  </simulations>
+</openrocket>
