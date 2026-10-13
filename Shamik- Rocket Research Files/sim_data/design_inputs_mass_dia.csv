@@ -1,0 +1,52 @@
+file,body_dia_mm,body_len_mm,nose_len_mm,nose_type,fin_shape,fin_count,fin_root_mm,fin_span_mm,motor_mount_mm,cores,stages,facets,size_kb,note,est_dry_mass_kg,query_class
+01_ARC_BT80_egglofter_E16_COMPLETE.stl,66,460,130,ogive,trapezoid,3,140,110,24,1,1,1696,82.9,ARC 800ft class 2-egg,0.113,F
+02_ARC_BT80_dual_F15_COMPLETE.stl,66,520,140,parabolic,swept,3,150,120,29,1,1,1696,82.9,ARC heavy F15,0.13,F
+03_ARC_BT70_E20_COMPLETE.stl,55.0,440,120,ogive,clipped,3,130,105,24,1,1,1696,82.9,ARC BT70,0.097,F
+04_ARC_BT70_4fin_E12_COMPLETE.stl,55.0,420,110,cone,trapezoid,4,120,95,24,1,1,1712,83.7,4-fin trainer,0.097,F
+05_ARC_BT60_E16_COMPLETE.stl,41.0,400,100,ellipsoid,delta,3,110,90,24,1,1,1684,82.3,BT60 egg,0.077,E
+06_ARC_BT60_6fin_F15_COMPLETE.stl,41.0,430,110,vonkarman,trapezoid,6,90,70,24,1,1,1744,85.2,6-fin draggy for 800ft,0.081,E
+07_ARC_BT55_D12_COMPLETE.stl,33.0,360,95,ogive,swept,3,100,85,18,1,1,1696,82.9,small ARC prac,0.067,D
+08_ARC_cluster_2xD12_COMPLETE.stl,66,440,130,ogive,trapezoid,4,140,110,18,1,1,1712,83.7,cluster ref single mount shown,0.116,D
+09_ARC_2stage_E12_D12_COMPLETE.stl,55.0,300,120,ogive,trapezoid,3,130,100,24,1,2,1572,76.8,2-stage demo,0.132,F
+10_ARC_tubefin_BT80_COMPLETE.stl,66,450,120,cone,trapezoid,3,120,100,24,1,1,1696,82.9,tube-fin ref (fins shown),0.109,F
+11_CLS_BT20_A3_COMPLETE.stl,18,250,70,cone,trapezoid,3,60,50,18,1,1,1696,82.9,classroom A,0.05,C
+12_CLS_BT20_B6_COMPLETE.stl,18,280,75,ogive,swept,3,65,55,18,1,1,1696,82.9,classroom B,0.051,C
+13_CLS_BT50_C6_COMPLETE.stl,24,300,80,parabolic,delta,3,75,60,18,1,1,1684,82.3,C6 sport,0.055,C
+14_CLS_BT50_4fin_COMPLETE.stl,24,310,80,cone,trapezoid,4,70,55,18,1,1,1712,83.7,4-fin,0.056,C
+15_CLS_BT55_C11_COMPLETE.stl,33.0,340,90,ellipsoid,clipped,3,90,75,24,1,1,1696,82.9,C11,0.065,E
+16_CLS_BT55_D12_COMPLETE.stl,33.0,360,95,ogive,trapezoid,3,95,80,24,1,1,1696,82.9,D12,0.066,E
+17_CLS_AlphaStyle_D_COMPLETE.stl,24,320,85,ogive,swept,3,80,65,24,1,1,1696,82.9,Alpha-style,0.057,E
+18_CLS_BerthaStyle_C_COMPLETE.stl,41.0,380,100,ellipsoid,trapezoid,3,100,80,18,1,1,1696,82.9,Bertha-style,0.074,D
+19_CLS_V2Style_D_COMPLETE.stl,33.0,350,110,cone,swept,4,90,70,24,1,1,1712,83.7,V2-style,0.067,E
+20_CLS_ellipfin_C6_COMPLETE.stl,24,300,85,vonkarman,elliptical,3,75,60,18,1,1,1792,87.6,elliptical fins,0.055,C
+21_SPT_BT50_D16_COMPLETE.stl,24,330,85,ogive,trapezoid,3,80,65,18,1,1,1696,82.9,QJet D16 sport,0.057,C
+22_SPT_BT55_E26_COMPLETE.stl,33.0,370,95,parabolic,swept,3,95,80,24,1,1,1696,82.9,E26,0.067,E
+23_SPT_BT60_E30_COMPLETE.stl,41.0,400,100,cone,delta,3,105,85,24,1,1,1684,82.3,E30,0.076,E
+24_SPT_BT60_F39_COMPLETE.stl,41.0,420,110,ogive,clipped,4,100,80,24,1,1,1712,83.7,F39 4-fin,0.079,E
+25_SPT_BT70_E35_COMPLETE.stl,55.0,440,120,ellipsoid,trapezoid,3,125,100,29,1,1,1696,82.9,E35,0.106,F
+26_SPT_BT70_F41_COMPLETE.stl,55.0,460,120,vonkarman,swept,3,130,105,24,1,1,1696,82.9,F41,0.098,F
+27_SPT_BT80_F50_COMPLETE.stl,66,500,130,ogive,trapezoid,4,140,110,29,1,1,1712,83.7,F50,0.131,F
+28_SPT_BT80_3core_COMPLETE.stl,66,480,130,ogive,trapezoid,3,130,100,24,3,1,2960,144.6,Falcon-heavy style 3-core,0.292,F
+29_SPT_2stage_D_E_COMPLETE.stl,33.0,260,90,cone,delta,3,90,75,18,1,2,1560,76.3,2-stage sport,0.093,D
+30_SPT_tubefin_BT60_COMPLETE.stl,41.0,390,100,cone,trapezoid,3,100,80,24,1,1,1696,82.9,tube-fin ref,0.075,E
+31_HPR_BT70_F67_COMPLETE.stl,55.0,520,130,ogive,swept,3,135,110,29,1,1,1696,82.9,HPR F67,0.113,F
+32_HPR_BT80_G80_COMPLETE.stl,66,600,150,parabolic,trapezoid,3,150,120,29,1,1,1696,82.9,G80,0.136,F
+33_HPR_BT80_4fin_H_COMPLETE.stl,66,620,140,cone,clipped,4,140,110,29,1,1,1712,83.7,H-class 4-fin,0.139,F
+34_HPR_BT101_G_COMPLETE.stl,98,700,180,ogive,trapezoid,4,170,140,29,1,1,1712,83.7,4in G,0.211,F
+35_HPR_BT101_H6fin_COMPLETE.stl,98,720,170,ellipsoid,trapezoid,6,150,120,38,1,1,1744,85.2,6-fin draggy,0.217,G
+36_HPR_min_dia_F_COMPLETE.stl,30,500,140,vonkarman,delta,3,90,70,29,1,1,1684,82.3,min-dia F,0.078,F
+37_HPR_2stage_G_COMPLETE.stl,66,420,130,ogive,swept,3,140,110,29,1,2,1572,76.8,2-stage HPR demo,0.18,F
+38_HPR_3core_G_COMPLETE.stl,66,560,140,ogive,trapezoid,3,140,110,29,3,1,2960,144.6,3-core HPR,0.339,F
+39_SCL_V2_scale_COMPLETE.stl,33.0,360,120,cone,swept,4,85,65,24,1,1,1712,83.7,V2 scale,0.066,E
+40_SCL_Alpha_scale_COMPLETE.stl,24,330,90,ogive,swept,3,80,65,18,1,1,1696,82.9,Alpha scale,0.057,C
+41_SCL_Bertha_scale_COMPLETE.stl,41.0,400,110,ellipsoid,trapezoid,3,105,85,24,1,1,1696,82.9,Bertha scale,0.076,E
+42_SCL_FalconHeavy_mini_COMPLETE.stl,40,380,100,ogive,trapezoid,3,100,80,18,3,1,2960,144.6,FH mini 3-core,0.191,D
+43_SCL_Saturn_mini_COMPLETE.stl,50,520,130,cone,swept,4,110,85,24,1,1,1712,83.7,Saturn mini,0.095,F
+44_SCL_SLS_mini_COMPLETE.stl,50,500,120,ogive,trapezoid,3,110,90,24,3,1,2960,144.6,SLS mini SRBs,0.237,F
+45_SCL_Pershing_2stage_COMPLETE.stl,44,300,110,cone,swept,4,95,75,24,1,2,1600,78.2,Pershing-style 2-stage,0.112,E
+46_SCL_tubefin_display_COMPLETE.stl,41.0,380,95,cone,delta,3,95,75,24,1,1,1684,82.3,tube-fin display,0.074,E
+47_ARC_BT80_4fin_F15_COMPLETE.stl,66,470,135,vonkarman,swept,4,135,105,29,1,1,1712,83.7,ARC 4-fin F15,0.127,F
+48_ARC_BT70_egg_E16_COMPLETE.stl,55.0,450,125,parabolic,elliptical,3,120,95,24,1,1,1792,87.6,ARC egg E16,0.095,F
+49_SPT_BT60_E20_long_COMPLETE.stl,41.0,460,115,ogive,trapezoid,3,115,95,24,1,1,1696,82.9,E20 long,0.081,E
+50_HPR_BT80_3fin_G71_COMPLETE.stl,66,640,150,ellipsoid,delta,3,150,120,29,1,1,1684,82.3,G71,0.138,F
+51_SCL_StarshipStyle_mini_COMPLETE.stl,50,540,130,ogive,clipped,3,120,95,24,1,1,1696,82.9,Starship-style mini,0.095,F
