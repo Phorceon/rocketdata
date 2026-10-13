@@ -1,0 +1,34 @@
+design,simulation,apogee_m,max_velocity_mps,max_accel_mps2,time_to_apogee_s,flight_time_s,ground_hit_velocity_mps
+A simple model rocket,Simulation 1,50.59,29.249,143.649,3.481,15.888,4.681
+A simple model rocket,Simulation 2,135.071,53.178,182.862,5.265,37.935,4.709
+A simple model rocket,Simulation 3 - too short delay,278.656,95.284,191.326,5.419,72.605,4.661
+A simple model rocket,Simulation 4,316.583,95.282,191.302,7.273,83.514,4.73
+A simple model rocket,Simulation 5,319.75,95.278,191.316,7.806,84.386,4.574
+ARC payload rocket,Simulation 1,451.359,150.261,196.76,8.172,109.981,4.642
+3D printable nose cone and fins,Simulation 1,38.733,24.764,124.056,3.085,12.194,4.691
+3D printable nose cone and fins,Simulation 2,112.011,48.501,152.721,4.912,31.135,4.696
+3D printable nose cone and fins,Simulation 3 - too short delay,243.099,83.142,167.793,5.431,61.931,4.814
+3D printable nose cone and fins,Simulation 4,271.985,83.16,167.807,7.184,70.339,4.76
+3D printable nose cone and fins,Simulation 5,272.559,83.143,167.808,7.443,69.76,4.665
+Clustered motors,Simulation 1,57.857,32.36,158.48,3.622,13.745,6.27
+Clustered motors,Simulation 2,142.209,57.628,200.808,5.316,29.569,6.197
+Clustered motors,Simulation 3 - too short delay,279.136,98.494,208.827,5.637,52.959,6.207
+Clustered motors,Simulation 4,306.964,98.493,208.813,7.277,59.255,6.188
+Clustered motors,Simulation 5,307.265,98.465,208.81,7.41,58.813,6.257
+Deployable payload,Simulation 1,31.783,21.802,110.942,2.867,10.759,4.398
+Deployable payload,Simulation 2,95.512,40.945,143.134,4.729,29.163,4.382
+Deployable payload,Simulation 3 - too short delay,231.182,77.292,151.733,5.382,63.874,4.559
+Deployable payload,Simulation 4,262.499,77.285,151.737,7.182,73.53,4.358
+Deployable payload,Simulation 5,263.275,77.271,151.731,7.516,72.812,4.399
+Chute release,Simulation 2,307.726,72.071,62.139,8.424,51.822,5.309
+Chute release,Simulation 3,487.936,106.285,88.677,9.962,64.897,5.097
+Tube fin rocket,Simulation 1,282.234,119.326,388.603,5.933,75.614,4.406
+Three stage low power rocket,Simulation 1,268.347,78.37,127.66,7.64,72.071,4.449
+Three stage low power rocket,Simulation 2,479.475,119.935,173.798,8.989,123.969,4.539
+Three stage low power rocket,Simulation 3,644.89,129.625,143.679,11.937,165.909,4.722
+Pods--powered with recovery deployment,Simulation 1,90.703729,43.272946,264.36964,4.192304,10.415242,18.227054
+Pods--airframes and winglets,Simulation 1,31.928,24.753,123.728,2.807,10.323,4.892
+Pods--airframes and winglets,Simulation 2,89.669,45.58,149.634,4.346,24.876,4.923
+Pods--airframes and winglets,Simulation 3,197.536,71.885,164.48,6.213,51.05,4.875
+Pods--airframes and winglets,Simulation 4,206.121,102.6,174.705,5.756,51.776,5.052
+Pods--airframes and winglets,Simulation 5,244.023,126.858,216.152,5.976,60.771,5.078
