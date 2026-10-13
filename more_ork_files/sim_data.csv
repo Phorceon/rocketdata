@@ -1,0 +1,53 @@
+file,rocket_name,motors,simulation,apogee_m,max_velocity_mps,max_accel_mps2,time_to_apogee_s,flight_time_s,ground_hit_velocity_mps
+Openrocket-projects__Bryant_Test_Rocket.ork,Bryant's Test Rocket,"C18W,D13W,D21T",Simulation 1,224.585,86.629,179.037,6.032,22.907,14.145
+RocketSerializer__rocket.ork,Rocket example with Elliptical Fins,G66-LR,Simulation 1,662.045,181.876,218.701,9.735,25.121,61.047
+orhelper__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 1,50.488,29.24,142.13,3.4564,15.93,3.9812
+orhelper__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 2,133.92,53.084,180.04,5.2496,37.9,4.384
+orhelper__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 3 - too short delay,275.33,94.216,188.22,5.4409,71.933,4.0058
+orhelper__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 4,311.57,94.701,188.25,7.2982,82.455,4.3962
+orhelper__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 5,314.23,94.358,188.26,7.7516,83.165,3.8988
+ortools__simple.ork,A simple model rocket,"A8,B4,C6",Simulation 1,50.588,29.367,142.24,3.4811,15.996,4.4122
+OpenRocket-Design__Rocket_Model.ork,Rocket,G54,Low Wind,460.83,109.89,119.33,9.4603,80.909,6.4072
+OpenRocket-Design__Rocket_Model.ork,Rocket,G54,Medium Wind,456.01,109.67,119.97,9.4203,79.556,6.4
+OpenRocket-Design__Rocket_Model.ork,Rocket,G54,High Wind,436.45,108.61,121.16,9.1506,76.339,6.55
+numericalrocketry__green_eggs_openrocket_design.ork,OpenRocket Comparison of Green Eggs,C11,C-11 standard atmosphere,101.29,45.533,123.932,4.766,27.194,4.439
+openrocket-file-utils__CenturiArrow300.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 1,136.027,57.169,116.262,5.468,13.394,31.004
+openrocket-file-utils__CenturiArrow300.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 2,195.558,71.483,128.093,6.309,36.1,7.489
+openrocket-file-utils__CenturiArrow300.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 3,290.708,91.622,152.856,7.734,19.219,33.488
+openrocket-file-utils__rocket.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 1,136.027,57.169,116.262,5.468,13.394,31.004
+openrocket-file-utils__rocket.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 2,195.558,71.483,128.093,6.309,36.1,7.489
+openrocket-file-utils__rocket.ork,Centuri Arrow 300,"1/2A6,A8,B6,C6",Simulation 3,290.708,91.622,152.856,7.734,19.219,33.488
+rockets__bt_55.ork,Rocket,"C11,C6",Simulation 1,84.351,67.805,156.63,2.3571,30.891,3.1694
+project-prometeus__rocket.ork,Prometeus,"A8,B4,C6",Simulation 1,50.488,29.24,142.13,3.4564,15.93,3.9812
+project-prometeus__rocket.ork,Prometeus,"A8,B4,C6",Simulation 2,133.92,53.084,180.04,5.2496,37.9,4.384
+project-prometeus__rocket.ork,Prometeus,"A8,B4,C6",Simulation 3 - too short delay,275.33,94.216,188.22,5.4409,71.933,4.0058
+project-prometeus__rocket.ork,Prometeus,"A8,B4,C6",Simulation 4,311.57,94.701,188.25,7.2982,82.455,4.3962
+project-prometeus__rocket.ork,Prometeus,"A8,B4,C6",Simulation 5,314.23,94.358,188.26,7.7516,83.165,3.8988
+project-prometeus__rocket2.ork,Prometeus,"A8,B4,C6",Simulation 1,50.488,29.24,142.13,3.4564,15.93,3.9812
+project-prometeus__rocket2.ork,Prometeus,"A8,B4,C6",Simulation 2,133.92,53.084,180.04,5.2496,37.9,4.384
+project-prometeus__rocket2.ork,Prometeus,"A8,B4,C6",Simulation 3 - too short delay,275.33,94.216,188.22,5.4409,71.933,4.0058
+project-prometeus__rocket2.ork,Prometeus,"A8,B4,C6",Simulation 4,311.57,94.701,188.25,7.2982,82.455,4.3962
+project-prometeus__rocket2.ork,Prometeus,"A8,B4,C6",Simulation 5,314.23,94.358,188.26,7.7516,83.165,3.8988
+openrocketdoc__example_simple_1.ork,Rocket,F15,Simulation 1,474.48,102.54,67.906,10.217,24.417,43.819
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 1,617.783,127.543,71.07,11.408,146.734,4.495
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 2,635.263,142.491,82.03,11.151,24.488,73.894
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 3,639.553,142.552,82.007,11.19,24.576,74.011
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 4,644.421,144.14,83.186,11.149,24.678,73.671
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 5,619.515,135.929,77.377,11.147,24.197,75.211
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 6,612.92,135.789,77.39,11.105,24.042,74.992
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 7,611.342,135.548,77.235,11.083,186.378,3.448
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 8,615.892,135.602,77.223,11.14,187.688,3.513
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 9,621.774,135.703,77.209,11.193,189.337,3.445
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 10,619.832,136.116,77.52,11.167,189.318,3.459
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 11,638.45,140.364,80.396,11.234,160.851,4.219
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 12,629.354,140.259,80.453,11.149,158.74,4.225
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 13,644.123,141.489,81.04,11.258,162.887,4.203
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 14,592.526,127.175,71.277,11.144,141.338,4.516
+czech-rocket-challenge-2025__Raketa.ork,Raketa,GragasMAY24,Simulation 15,581.496,126.914,71.43,11.062,138.882,4.512
+openrocket-web__test-rocket.ork,X-Ray,"G74W,G80T",Simulation 1,491.609,141.301,161.696,9.17,116.768,2.669
+openrocket-web__test-rocket.ork,X-Ray,"G74W,G80T",Simulation 2,706.464,183.21,169.006,10.437,140.726,2.699
+openrocket__asimple.ork,A simple model rocket,"A8,B4,C6",Simulation 1,48.01,28.387,88.894,3.2507,15.509,4.01
+openrocket__asimple.ork,A simple model rocket,"A8,B4,C6",Simulation 2,122.92,51.139,54.016,5.0346,35.188,3.9279
+openrocket__asimple.ork,A simple model rocket,"A8,B4,C6",Simulation 3 - too short delay,251.16,88.283,74.725,5.3184,66.255,4.4004
+openrocket__asimple.ork,A simple model rocket,"A8,B4,C6",Simulation 4,274,86.784,74.957,7.0425,73.462,3.9825
+openrocket__asimple.ork,A simple model rocket,"A8,B4,C6",Simulation 5,274.09,86.758,75.683,7.1736,71.694,3.8711
