@@ -1,0 +1,9 @@
+Make a rocket with 451 m apogee, ground hit velocity ~4.6 m/s (low), liftoff mass ~357 g, length ~107 cm, flight time ~110 s, max velocity ~150 m/s, time to apogee ~8.2 s, F50T motor(s).
+
+Make a rocket with 645 m apogee, ground hit velocity ~4.7 m/s (low), liftoff mass ~149 g, length ~56 cm, flight time ~166 s, max velocity ~130 m/s, time to apogee ~11.9 s, A8, B6, C6 motor(s).
+
+Design an OpenRocket model rocket that complies with the 2027 American Rocketry Challenge rules. It must completely enclose two raw Grade A Large eggs (55-63 g each, 45 mm diameter or less) in any orientation
+Target an apogee of exactly 800 ft (243.8 m) and a total flight time of 37-40 s, measured from first motion at liftoff until the first part touches the ground. Liftoff mass must be 650 g or less including both eggs and the motor(s).
+Total length must be 650 mm or more. Use only NAR-certified motors from the ARC 2027 approved engine list, with total impulse of 80 N·s or less. The intended motor range is low-end F (45-55 N·s).
+Use at least two body tubes whose diameters differ by 10 mm or more, with one section at least 12 in of T80 tube. All parts must stay tethered together and descend under a single parachute. 
+The design must be stable (at least 1 caliber static margin at launch) with a low ground-hit velocity (about 5 m/s or less). Report apogee, max velocity, time to apogee, flight time, ground-hit velocity, liftoff mass and total length from the simulation.
