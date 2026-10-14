@@ -1,0 +1,75 @@
+Design a rocket that goes to about 3,380 m apogee with a total flight time of about 401 s.
+Design a rocket that goes to about 3,380 m apogee, reaching about 435 m/s max velocity.
+Design a rocket that goes to about 744 m apogee, hitting about Mach 0.38 and 121 m/s² max acceleration.
+Design a rocket that goes to about 3,380 m apogee in about 22 s to apogee.
+Design a rocket that goes to about 1,769 m apogee with deployment at about 38 m/s and a 96 s flight.
+Design a rocket that goes to about 1,769 m apogee with a total flight time of about 96 s.
+Design a rocket that goes to about 3,380 m apogee, reaching about 435 m/s max velocity.
+Design a rocket that goes to about 2,735 m apogee, hitting about Mach 1.22 and 248 m/s² max acceleration.
+Design a 9-stage rocket that goes to about 5,520 m apogee in about 26 s to apogee.
+Design a rocket that goes to about 14,180 m apogee with deployment at about 30 m/s and a 547 s flight.
+Design a rocket that goes to about 12,410 m apogee with a total flight time of about 402 s.
+Design a rocket that goes to about 3,571 m apogee, reaching about 439 m/s max velocity.
+Design a rocket that goes to about 2,851 m apogee, hitting about Mach 1.04 and 202 m/s² max acceleration.
+Design a rocket that goes to about 2,884 m apogee in about 21 s to apogee on a APEX | Cesaroni I216-CL(I)-14 motor.
+Design a rocket that goes to about 3,723 m apogee with deployment at about 58 m/s and a 21 s flight.
+Design a rocket that goes to about 3,236 m apogee with a total flight time of about 89 s.
+Design a rocket that goes to about 2,912 m apogee, reaching about 342 m/s max velocity.
+Design a rocket that goes to about 2,758 m apogee, hitting about Mach 1.09 and 220 m/s² max acceleration.
+Design a 2-stage rocket that goes to about 6,105 m apogee in about 34 s to apogee.
+Design a rocket that goes to about 5,804 m apogee with deployment at about 29 m/s and a 230 s flight.
+Design a rocket that goes to about 2,738 m apogee with a total flight time of about 150 s.
+Design a rocket that goes to about 2,892 m apogee, reaching about 367 m/s max velocity.
+Design a rocket that goes to about 2,884 m apogee, hitting about Mach 1.08 and 212 m/s² max acceleration.
+Design a rocket that goes to about 2,700 m apogee in about 21 s to apogee.
+Design a rocket that goes to about 5,748 m apogee with deployment at about None m/s and a 28 s flight.
+Design a rocket that goes to about 5,899 m apogee with a total flight time of about 317 s.
+Design a rocket that goes to about 543 m apogee, reaching about 95 m/s max velocity.
+Design a rocket that goes to about 550 m apogee, hitting about Mach 0.27 and 88 m/s² max acceleration.
+Design a rocket that goes to about 478 m apogee in about 10 s to apogee.
+Design a rocket that goes to about 478 m apogee with deployment at about 51 m/s and a 54 s flight.
+Design a rocket that goes to about 779 m apogee with a total flight time of about 59 s.
+Design a rocket that goes to about 1,244 m apogee, reaching about 260 m/s max velocity.
+Design a rocket that goes to about 550 m apogee, hitting about Mach 0.27 and 88 m/s² max acceleration.
+Design a rocket that goes to about 1,244 m apogee in about 14 s to apogee.
+Design a rocket that goes to about 965 m apogee with deployment at about 18 m/s and a 116 s flight.
+Design a rocket that goes to about 3,824 m apogee with a total flight time of about 234 s.
+Design a rocket that goes to about 729 m apogee, reaching about 216 m/s max velocity.
+Design a rocket that goes to about 1,364 m apogee, hitting about Mach 2.05 and 320 m/s² max acceleration.
+Design a 2-stage rocket that goes to about 1,785 m apogee in about 19 s to apogee.
+Design a rocket that goes to about 2,396 m apogee with deployment at about 28 m/s and a 123 s flight.
+Design a rocket that goes to about 673 m apogee with a total flight time of about 139 s.
+Design a rocket that goes to about 399 m apogee, reaching about 131 m/s max velocity.
+Design a rocket that goes to about 10,220 m apogee, hitting about Mach 1.97 and 161 m/s² max acceleration.
+Design a 3-stage rocket that goes to about 754 m apogee in about 10 s to apogee.
+Design a rocket that goes to about 8,306 m apogee with deployment at about 221 m/s and a 88 s flight.
+Design a rocket that goes to about 8,212 m apogee with a total flight time of about 88 s.
+Design a rocket that goes to about 8,608 m apogee, reaching about 782 m/s max velocity.
+Design a rocket that goes to about 8,175 m apogee, hitting about Mach 1.79 and 152 m/s² max acceleration.
+Design a 12-stage rocket that goes to about 8,175 m apogee in about 36 s to apogee.
+Design a rocket that goes to about 2,718 m apogee with deployment at about 25 m/s and a 145 s flight.
+Design a rocket that goes to about 365 m apogee with a total flight time of about 65 s.
+Design a rocket that goes to about 3,181 m apogee, reaching about 326 m/s max velocity.
+Design a rocket that goes to about 2,424 m apogee, hitting about Mach 0.80 and 89 m/s² max acceleration.
+Design a rocket that goes to about 1,532 m apogee in about 18 s to apogee.
+Design a rocket that goes to about 3,036 m apogee with deployment at about 229 m/s and a 48 s flight.
+Design a rocket that goes to about 3,268 m apogee with a total flight time of about 200 s.
+Design a rocket that goes to about 2,646 m apogee, reaching about 294 m/s max velocity.
+Design a rocket that goes to about 1,190 m apogee, hitting about Mach 0.56 and 122 m/s² max acceleration.
+Design a 7-stage rocket that goes to about 3,796 m apogee in about 27 s to apogee on a Blue Streak motor.
+Design a rocket that goes to about 2,685 m apogee with deployment at about 34 m/s and a 188 s flight.
+Design a rocket that goes to about 9,365 m apogee with a total flight time of about 698 s.
+Design a rocket that goes to about 9,080 m apogee, reaching about 472 m/s max velocity.
+Design a rocket that goes to about 3,225 m apogee, hitting about Mach 0.71 and 62 m/s² max acceleration.
+Design a rocket that goes to about 9,188 m apogee in about 40 s to apogee.
+Design a rocket that goes to about 3,390 m apogee with deployment at about 34 m/s and a 180 s flight.
+Design a rocket that goes to about 9,199 m apogee with a total flight time of about 448 s.
+Design a rocket that goes to about 3,488 m apogee, reaching about 315 m/s max velocity.
+Design a rocket that goes to about 662 m apogee, hitting about Mach 0.54 and 219 m/s² max acceleration.
+Design a rocket that goes to about 882 m apogee in about 15 s to apogee.
+Design a rocket that goes to about 3,598 m apogee with deployment at about 12 m/s and a 303 s flight.
+Design a rocket that goes to about 3,118 m apogee with a total flight time of about 53 s.
+Design a rocket that goes to about 3,041 m apogee, reaching about 312 m/s max velocity.
+Design a rocket that goes to about 3,339 m apogee, hitting about Mach 0.74 and 66 m/s² max acceleration.
+Design a rocket that goes to about 3,035 m apogee in about 26 s to apogee.
+Design a rocket that goes to about 1,340 m apogee with deployment at about 26 m/s and a 86 s flight.

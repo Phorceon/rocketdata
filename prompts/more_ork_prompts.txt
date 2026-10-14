@@ -1,0 +1,52 @@
+Design a rocket that goes to about 225 m apogee with a total flight time of about 22.9 s.
+Design a rocket that goes to about 662 m apogee, reaching about 181.9 m/s max velocity.
+Design a rocket that goes to about 50 m apogee, hitting about 142.1 m/s² max acceleration.
+Design a rocket that goes to about 134 m apogee in about 5.2 s to apogee on a A8 motor.
+Design a rocket that goes to about 94.2 m/s max velocity with a 71.9 s flight and touchdown at about 4.0 m/s.
+Design a rocket that goes to about 312 m apogee with a total flight time of about 82.5 s.
+Design a rocket that goes to about 314 m apogee, reaching about 94.4 m/s max velocity.
+Design a rocket that goes to about 51 m apogee, hitting about 142.2 m/s² max acceleration.
+Design a rocket that goes to about 461 m apogee in about 9.5 s to apogee on a G54 motor.
+Design a rocket that goes to about 109.7 m/s max velocity with a 79.6 s flight and touchdown at about 6.4 m/s.
+Design a rocket that goes to about 436 m apogee with a total flight time of about 76.3 s.
+Design a rocket that goes to about 101 m apogee, reaching about 45.5 m/s max velocity.
+Design a rocket that goes to about 136 m apogee, hitting about 116.3 m/s² max acceleration.
+Design a rocket that goes to about 196 m apogee in about 6.3 s to apogee on a 1/2A6 motor.
+Design a rocket that goes to about 91.6 m/s max velocity with a 19.2 s flight and touchdown at about 33.5 m/s.
+Design a rocket that goes to about 136 m apogee with a total flight time of about 13.4 s.
+Design a rocket that goes to about 196 m apogee, reaching about 71.5 m/s max velocity.
+Design a rocket that goes to about 291 m apogee, hitting about 152.9 m/s² max acceleration.
+Design a rocket that goes to about 84 m apogee in about 2.4 s to apogee on a C11 motor.
+Design a rocket that goes to about 29.2 m/s max velocity with a 15.9 s flight and touchdown at about 4.0 m/s.
+Design a rocket that goes to about 134 m apogee with a total flight time of about 37.9 s.
+Design a rocket that goes to about 275 m apogee, reaching about 94.2 m/s max velocity.
+Design a rocket that goes to about 312 m apogee, hitting about 188.2 m/s² max acceleration.
+Design a rocket that goes to about 314 m apogee in about 7.8 s to apogee on a A8 motor.
+Design a rocket that goes to about 29.2 m/s max velocity with a 15.9 s flight and touchdown at about 4.0 m/s.
+Design a rocket that goes to about 134 m apogee with a total flight time of about 37.9 s.
+Design a rocket that goes to about 275 m apogee, reaching about 94.2 m/s max velocity.
+Design a rocket that goes to about 312 m apogee, hitting about 188.2 m/s² max acceleration.
+Design a rocket that goes to about 314 m apogee in about 7.8 s to apogee on a A8 motor.
+Design a rocket that goes to about 102.5 m/s max velocity with a 24.4 s flight and touchdown at about 43.8 m/s.
+Design a rocket that goes to about 618 m apogee with a total flight time of about 146.7 s.
+Design a rocket that goes to about 635 m apogee, reaching about 142.5 m/s max velocity.
+Design a rocket that goes to about 640 m apogee, hitting about 82.0 m/s² max acceleration.
+Design a rocket that goes to about 644 m apogee in about 11.1 s to apogee on a GragasMAY24 motor.
+Design a rocket that goes to about 135.9 m/s max velocity with a 24.2 s flight and touchdown at about 75.2 m/s.
+Design a rocket that goes to about 613 m apogee with a total flight time of about 24.0 s.
+Design a rocket that goes to about 611 m apogee, reaching about 135.5 m/s max velocity.
+Design a rocket that goes to about 616 m apogee, hitting about 77.2 m/s² max acceleration.
+Design a rocket that goes to about 622 m apogee in about 11.2 s to apogee on a GragasMAY24 motor.
+Design a rocket that goes to about 136.1 m/s max velocity with a 189.3 s flight and touchdown at about 3.5 m/s.
+Design a rocket that goes to about 638 m apogee with a total flight time of about 160.9 s.
+Design a rocket that goes to about 629 m apogee, reaching about 140.3 m/s max velocity.
+Design a rocket that goes to about 644 m apogee, hitting about 81.0 m/s² max acceleration.
+Design a rocket that goes to about 593 m apogee in about 11.1 s to apogee on a GragasMAY24 motor.
+Design a rocket that goes to about 126.9 m/s max velocity with a 138.9 s flight and touchdown at about 4.5 m/s.
+Design a rocket that goes to about 492 m apogee with a total flight time of about 116.8 s.
+Design a rocket that goes to about 706 m apogee, reaching about 183.2 m/s max velocity.
+Design a rocket that goes to about 48 m apogee, hitting about 88.9 m/s² max acceleration.
+Design a rocket that goes to about 123 m apogee in about 5.0 s to apogee on a A8 motor.
+Design a rocket that goes to about 88.3 m/s max velocity with a 66.3 s flight and touchdown at about 4.4 m/s.
+Design a rocket that goes to about 274 m apogee with a total flight time of about 73.5 s.
+Design a rocket that goes to about 274 m apogee, reaching about 86.8 m/s max velocity.

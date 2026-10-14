@@ -1,0 +1,76 @@
+source_file,sim_name,template,params_used,prompt,apogee_m,flighttime_s,maxvelocity_ms,maxmach,stages
+1. Rounded Spline__70fe2c.ork,Simulation 1,0,"apogee,flighttime","Design a rocket that goes to about 3,380 m apogee with a total flight time of about 401 s.",3379.6,400.54,435.36,1.2882,1
+2. Rounded__ef26c0.ork,Simulation 1,1,"apogee,maxvelocity","Design a rocket that goes to about 3,380 m apogee, reaching about 435 m/s max velocity.",3379.6,400.54,435.36,1.2882,1
+24mmRocket__bd6d71.ork,Simulation 4,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 744 m apogee, hitting about Mach 0.38 and 121 m/s² max acceleration.",744.21,59.188,127.15,0.37831,1
+3. Linear__3a296b.ork,Simulation 1,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 3,380 m apogee in about 22 s to apogee.",3379.6,400.54,435.36,1.2882,1
+38MDL1__2cbbf2.ork,Simulation 3,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 1,769 m apogee with deployment at about 38 m/s and a 96 s flight.",1769.134,96.078,341.346,1.005,8
+38MDL2__7e70a9.ork,Simulation 3,0,"apogee,flighttime","Design a rocket that goes to about 1,769 m apogee with a total flight time of about 96 s.",1769.134,96.078,341.346,1.005,8
+4. Spline__763a0c.ork,Simulation 1,1,"apogee,maxvelocity","Design a rocket that goes to about 3,380 m apogee, reaching about 435 m/s max velocity.",3379.6,400.54,435.36,1.2882,1
+54ActiveAero__89c085.ork,Simulation 11,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 2,735 m apogee, hitting about Mach 1.22 and 248 m/s² max acceleration.",2734.921,172.357,413.088,1.22,7
+54MDL2__8d6955.ork,Simulation 7,3,"stages,apogee,timetoapogee","Design a 9-stage rocket that goes to about 5,520 m apogee in about 26 s to apogee.",5520.29,291.189,758.407,2.248,9
+54SubminL3__e60737.ork,Simulation 1,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 14,180 m apogee with deployment at about 30 m/s and a 547 s flight.",1.418e4,546.996,1069.044,3.231,3
+75MDL3__2ff3c4.ork,Simulation 2,0,"apogee,flighttime","Design a rocket that goes to about 12,410 m apogee with a total flight time of about 402 s.",1.241e4,402.113,1017.195,3.062,3
+APEX 20102020 (Longer BT)__02ca07.ork,Simulation 2,1,"apogee,maxvelocity","Design a rocket that goes to about 3,571 m apogee, reaching about 439 m/s max velocity.",3571.2,94.083,438.97,1.3003,1
+APEX 29.08.2021__179543.ork,-2º Launch,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 2,851 m apogee, hitting about Mach 1.04 and 202 m/s² max acceleration.",2851,129.39,351.38,1.0382,1
+APEX 30.08.2021__10a283.ork,-2º Launch,3,"stages,apogee,timetoapogee,motor","Design a rocket that goes to about 2,884 m apogee in about 21 s to apogee on a APEX | Cesaroni I216-CL(I)-14 motor.",2884.2,131.64,364.9,1.0783,1
+APEXJTentative__ec5252.ork,APEX,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 3,723 m apogee with deployment at about 58 m/s and a 21 s flight.",3722.8,20.965,559.27,1.6535,1
+APEX_04.21__2a660f.ork,Simulation 3,0,"apogee,flighttime","Design a rocket that goes to about 3,236 m apogee with a total flight time of about 89 s.",3235.7,88.599,407.86,1.2074,1
+APEX_AeroTech__c07a5a.ork,Simulation 5,1,"apogee,maxvelocity","Design a rocket that goes to about 2,912 m apogee, reaching about 342 m/s max velocity.",2911.7,159.26,341.77,1.0128,1
+APEX_Cesaroni__c75b0f.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 2,758 m apogee, hitting about Mach 1.09 and 220 m/s² max acceleration.",2758.3,143.94,370.19,1.0946,1
+APEX_K_Dart__a7a1a4.ork,Simulation 1,3,"stages,apogee,timetoapogee","Design a 2-stage rocket that goes to about 6,105 m apogee in about 34 s to apogee.",6104.504,132.884,411.45,1.232,2
+APEX_K_SS__cb1d67.ork,Baseline,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 5,804 m apogee with deployment at about 29 m/s and a 230 s flight.",5803.943,229.533,449.369,1.347,1
+APEX_Target__4ae962.ork,Simulation 1,0,"apogee,flighttime","Design a rocket that goes to about 2,738 m apogee with a total flight time of about 150 s.",2737.8,149.65,381.69,1.1288,1
+APEX__4f8fe7.ork,Final Sim (?),1,"apogee,maxvelocity","Design a rocket that goes to about 2,892 m apogee, reaching about 367 m/s max velocity.",2892.1,147.31,367.22,1.0894,1
+APEX__5761c9.ork,-2º Launch,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 2,884 m apogee, hitting about Mach 1.08 and 212 m/s² max acceleration.",2884.2,131.64,364.9,1.0783,1
+APEX__bf43c5.ork,Simulation 1,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 2,700 m apogee in about 21 s to apogee.",2700.4,135.76,347.22,1.0262,1
+ASCENSION__269a6b.ork,Simulation 1 (Florida baseline),4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 5,748 m apogee with deployment at about None m/s and a 28 s flight.",5747.8,28.49,612.43,1.8296,1
+ASCENSION__f5b937.ork,Simulation 1 (Florida baseline),0,"apogee,flighttime","Design a rocket that goes to about 5,899 m apogee with a total flight time of about 317 s.",5898.8,317.21,620.27,1.8538,1
+ASTRA 11.04.2021__f71068.ork,Simulation 1,1,"apogee,maxvelocity","Design a rocket that goes to about 543 m apogee, reaching about 95 m/s max velocity.",543.47,29.553,95.279,0.2815,1
+ASTRA 13.06.2021__c8c6df.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 550 m apogee, hitting about Mach 0.27 and 88 m/s² max acceleration.",550.41,30.06,95.576,0.27316,1
+ASTRA_08.03.21__1b3d83.ork,Simulation 3,3,"stages,apogee,timetoapogee",Design a rocket that goes to about 478 m apogee in about 10 s to apogee.,477.69,54.035,103.41,0.30698,1
+ASTRA_11.03.21__3ec349.ork,Simulation 3,4,"apogee,deploymentvelocity,flighttime",Design a rocket that goes to about 478 m apogee with deployment at about 51 m/s and a 54 s flight.,477.69,54.035,103.41,0.30698,1
+ASTRA_V1__36e356.ork,Simulation 4,0,"apogee,flighttime",Design a rocket that goes to about 779 m apogee with a total flight time of about 59 s.,778.92,58.929,136.4,0.40472,1
+ASTRA__bbbe1f.ork,Simulation 5,1,"apogee,maxvelocity","Design a rocket that goes to about 1,244 m apogee, reaching about 260 m/s max velocity.",1243.9,165.22,260.31,0.76729,1
+ASTRA__c3425a.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 550 m apogee, hitting about Mach 0.27 and 88 m/s² max acceleration.",550.41,30.06,95.576,0.27316,1
+ASTRAwFairing__1976e9.ork,Simulation 5,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 1,244 m apogee in about 14 s to apogee.",1243.9,165.22,260.31,0.76729,1
+DarkStar_Mini[1]__378a10.ork,Simulation 2,4,"apogee,deploymentvelocity,flighttime",Design a rocket that goes to about 965 m apogee with deployment at about 18 m/s and a 116 s flight.,965.325,115.986,187.762,0.553,4
+K2050Sim__2ffdfd.ork,Simulation 5,0,"apogee,flighttime","Design a rocket that goes to about 3,824 m apogee with a total flight time of about 234 s.",3823.511,233.757,697.833,2.056,2
+L1 Example__2358ed.ork,Simulation 1,1,"apogee,maxvelocity","Design a rocket that goes to about 729 m apogee, reaching about 216 m/s max velocity.",728.607,130.629,216.03,0.636,2
+MockUpofASCENSION(StabilityIssue)__4de54a.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 1,364 m apogee, hitting about Mach 2.05 and 320 m/s² max acceleration.",1364.4,232.11,687.34,2.0459,1
+Mojave Sphinx V1.2__c1c8d9.ork,"Mojave Sphinx, Launch 9 Simulation using Static Test 10 Thrust Curve",3,"stages,apogee,timetoapogee","Design a 2-stage rocket that goes to about 1,785 m apogee in about 19 s to apogee.",1784.934,111.781,207.797,0.62,2
+OtherTwoStager__e12bf3.ork,Simulation 1,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 2,396 m apogee with deployment at about 28 m/s and a 123 s flight.",2396.043,123.33,380.127,1.129,4
+PK37-Athena__3e873f.ork,Simulation 1,0,"apogee,flighttime",Design a rocket that goes to about 673 m apogee with a total flight time of about 139 s.,673.067,139.409,204.82,0.603,3
+RATO__e7d077.ork,Simulation 1,1,"apogee,maxvelocity","Design a rocket that goes to about 399 m apogee, reaching about 131 m/s max velocity.",398.988,84.46,131.065,0.385,3
+SIRIUS__4f0e68.ork,Simulation 2,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 10,220 m apogee, hitting about Mach 1.97 and 161 m/s² max acceleration.",1.022e4,99.028,653.808,1.966,10
+SimpleL1__417247.ork,Simulation 2,3,"stages,apogee,timetoapogee",Design a 3-stage rocket that goes to about 754 m apogee in about 10 s to apogee.,753.601,167.872,216.734,0.638,3
+Siruis_N1560__962247.ork,Simulation 2,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 8,306 m apogee with deployment at about 221 m/s and a 88 s flight.",8305.709,88.049,598.15,1.793,10
+Siruis_O3400__3b00eb.ork,Simulation 2,0,"apogee,flighttime","Design a rocket that goes to about 8,212 m apogee with a total flight time of about 88 s.",8211.785,87.627,601.84,1.804,10
+Siruis_O3800_ACTUALmass__b07ddf.ork,Simulation 5,1,"apogee,maxvelocity","Design a rocket that goes to about 8,608 m apogee, reaching about 782 m/s max velocity.",8608.465,106.002,781.794,2.35,12
+Siruis_O3800_CADmasses__44ad19.ork,Simulation 2,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 8,175 m apogee, hitting about Mach 1.79 and 152 m/s² max acceleration.",8175.169,87.552,595.711,1.786,12
+Siruis_O3800__62b0d9.ork,Simulation 2,3,"stages,apogee,timetoapogee","Design a 12-stage rocket that goes to about 8,175 m apogee in about 36 s to apogee.",8175.169,87.552,595.711,1.786,12
+TwoStager__84a275.ork,Simulation 1,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 2,718 m apogee with deployment at about 25 m/s and a 145 s flight.",2718.293,144.655,437.585,1.301,4
+aerotech_arreaux__ac75e5.ork,Simulation 1,0,"apogee,flighttime",Design a rocket that goes to about 365 m apogee with a total flight time of about 65 s.,364.92,64.64,89.15,0.263,2
+rocket__188a6a.ork,Fenix Rocket Team,1,"apogee,maxvelocity","Design a rocket that goes to about 3,181 m apogee, reaching about 326 m/s max velocity.",3180.7,210.52,326.3,0.97467,1
+rocket__19b6ba.ork,Simulation 28,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 2,424 m apogee, hitting about Mach 0.80 and 89 m/s² max acceleration.",2424.3,109.39,263.21,0.80244,2
+rocket__1cd69d.ork,Simulation 7,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 1,532 m apogee in about 18 s to apogee.",1531.9,102.96,179.9,0.5304,1
+rocket__2ba66a.ork,Simulation 3,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 3,036 m apogee with deployment at about 229 m/s and a 48 s flight.",3036.4,48.495,325.43,0.96925,1
+rocket__3b8501.ork,M1520 BlueStreak 84_5,0,"apogee,flighttime","Design a rocket that goes to about 3,268 m apogee with a total flight time of about 200 s.",3267.5,200.26,295.57,0.87546,1
+rocket__45ac95.ork,EuRoC_84deg,1,"apogee,maxvelocity","Design a rocket that goes to about 2,646 m apogee, reaching about 294 m/s max velocity.",2645.6,157.17,294.3,0.87278,1
+rocket__49c8de.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 1,190 m apogee, hitting about Mach 0.56 and 122 m/s² max acceleration.",1190,92.782,189.56,0.5587,1
+rocket__504e63.ork,Blue Streak,3,"stages,apogee,timetoapogee,motor","Design a 7-stage rocket that goes to about 3,796 m apogee in about 27 s to apogee on a Blue Streak motor.",3795.695,172.557,348.714,1.007,7
+rocket__61cb00.ork,Simulation 2,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 2,685 m apogee with deployment at about 34 m/s and a 188 s flight.",2685,188.5,193.67,0.58021,1
+rocket__620f66.ork,Taranis Nominal Flight,0,"apogee,flighttime","Design a rocket that goes to about 9,365 m apogee with a total flight time of about 698 s.",9364.904,697.53,587.755,1.764,2
+rocket__7e1fd3.ork,Simulation 5,1,"apogee,maxvelocity","Design a rocket that goes to about 9,080 m apogee, reaching about 472 m/s max velocity.",9079.9,309.41,471.6,1.4303,1
+rocket__a79076.ork,Stability vs Time,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 3,225 m apogee, hitting about Mach 0.71 and 62 m/s² max acceleration.",3225.2,211.23,240.56,0.71344,1
+rocket__b87d11.ork,Simulation 60,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 9,188 m apogee in about 40 s to apogee.",9187.9,256.77,571.93,1.716,1
+rocket__c08cee.ork,Simulation 1,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 3,390 m apogee with deployment at about 34 m/s and a 180 s flight.",3389.588,180.056,327.308,0.967,1
+rocket__c3d681.ork,EuRoC 2022 Launch at Santa Margarida Military Camp,0,"apogee,flighttime","Design a rocket that goes to about 9,199 m apogee with a total flight time of about 448 s.",9199.3,448.01,691.72,2.086,1
+rocket__d5a7f2.ork,EuRoC 2 m/s,1,"apogee,maxvelocity","Design a rocket that goes to about 3,488 m apogee, reaching about 315 m/s max velocity.",3487.703,242,315.04,0.933,3
+rocket__d73a6b.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 662 m apogee, hitting about Mach 0.54 and 219 m/s² max acceleration.",662.045,25.121,181.876,0.536,2
+rocket__d77051.ork,finalSimulation,3,"stages,apogee,timetoapogee",Design a rocket that goes to about 882 m apogee in about 15 s to apogee.,882.42,64.161,125.47,0.36177,1
+rocket__e711b1.ork,Simulation 1,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 3,598 m apogee with deployment at about 12 m/s and a 303 s flight.",3597.8,303.29,312.07,0.92543,2
+rocket__e9e655.ork,EuRoC Launch,0,"apogee,flighttime","Design a rocket that goes to about 3,118 m apogee with a total flight time of about 53 s.",3118.2,52.951,261.69,0.77642,1
+rocket__f39723.ork,Simulation 2,1,"apogee,maxvelocity","Design a rocket that goes to about 3,041 m apogee, reaching about 312 m/s max velocity.",3041,212.56,312.41,0.9285,1
+rocket__f4bcc9.ork,Simulation 1,2,"apogee,maxmach,maxacceleration","Design a rocket that goes to about 3,339 m apogee, hitting about Mach 0.74 and 66 m/s² max acceleration.",3338.9,169.44,247.38,0.73959,1
+rocket__fdc85b.ork,90deg_4mps,3,"stages,apogee,timetoapogee","Design a rocket that goes to about 3,035 m apogee in about 26 s to apogee.",3034.6,1074.7,279.81,0.83559,1
+superdx3__8c40bf.ork,Simulation 8,4,"apogee,deploymentvelocity,flighttime","Design a rocket that goes to about 1,340 m apogee with deployment at about 26 m/s and a 86 s flight.",1340.204,86.499,268.7,0.792,10
