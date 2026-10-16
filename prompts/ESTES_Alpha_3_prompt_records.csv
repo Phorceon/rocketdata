@@ -1,4 +1,0 @@
-file,rocket_name,motors,simulation,apogee_m,max_velocity_mps,max_accel_mps2,time_to_apogee_s,flight_time_s,ground_hit_velocity_mps,template,params_used,prompt,simulation_status
-ESTES Alpha 3.ork,Rakete,Klima A6-4,Simulation 1,105.36,50.573,227.44,4.6712,30.684,3.8447,,,,outdated
-ESTES Alpha 3.ork,Rakete,Klima B4-4,Simulation 2,237.68,85.849,160.69,5.8795,63.704,3.8718,,,,outdated
-ESTES Alpha 3.ork,Rakete,Klima C6-P,Simulation 3,451.1,145.03,287.9,8.241,20.468,52.126,,,,uptodate
