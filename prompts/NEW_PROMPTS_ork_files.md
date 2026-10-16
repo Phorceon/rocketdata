@@ -194,15 +194,3 @@
   - Saved sim values: motor C6; apogee 642.5 m; flight time 34.8 s; ground hit 28.8 m/s; max velocity 156.6 m/s
 
 ---
-
-## Files with no saved simulation (no prompts yet)
-
-These .ork files have no sim results saved inside them, so I could not pull numbers for prompts. To add prompts: open the file in OpenRocket, go to the Simulations tab, add a sim with a motor, run it, then write prompts from the results.
-
-- `Estes_Hi-Flier_XL_3226.ork` - Estes Hi-Flier XL (3226), no sims, no motor set
-- `mk109_bt20.ork` - Estes MK109 Stingray BT-20, no sims, no motor set
-- `mk109s_bt5.ork` - Estes MK109 Stingray BT-5, no sims, no motor set
-- `mk109s_BT50.ork` - Estes MK109 Stingray BT-50, no sims, no motor set
-- `mk109_BT70_38mm.ork` - Estes MK109 Stingray BT-70, no sims, no motor set
-
-(`OpenRocket-24_12-installer-Windows-x86_64.exe` was also uploaded; it is the OpenRocket installer, not a rocket, so it has no prompts.)
