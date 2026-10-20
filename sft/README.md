@@ -14,10 +14,64 @@ Runs on one 16 GB GPU. Tested on Windows 11 with an RTX 5080 and the Python that
 
 ## Files
 
-| File | What it does |
+| File | Purpose |
 |---|---|
-| `train_sft.py` | 16-bit LoRA training, then saves the LoRA adapter, a merged 16-bit model and a Q4_K_M GGUF |
-| `eval_test.py` | Runs a GGUF on the 43 test prompts (or the 105 RL prompts) with llama-server and checks the answer format |
+| `train_sft.py` | Trains the model and exports it |
+| `eval_test.py` | Tests a trained model and scores its answers |
+| `README.md` | This guide: how to run both scripts, the choices made, and the results |
+
+### `train_sft.py`: trains the model
+
+What it does, in order:
+
+1. Loads InternScience/Agents-A1-4B in 16-bit and adds LoRA adapters to its text layers. The image part of the
+   model stays frozen, since the task is text only.
+2. Reads the training data (`data/sft_v0.jsonl`) and the test data (`data/sft_test.jsonl`). In each answer it
+   moves the `<thought>` text into the model's own `<think>` reasoning slot. The `<design>` JSON is unchanged.
+3. Trains for 3 epochs. Loss is computed on the answer only, so the model isn't trained to repeat the prompt.
+   After each epoch it logs the loss on the test data.
+4. Saves the LoRA adapter, then exports a merged 16-bit model and a Q4_K_M GGUF (the file you chat with).
+
+Reads `data/sft_v0.jsonl` and `data/sft_test.jsonl`. Writes everything to `--out`
+(default `C:\ft\agents-a1-rocket\`).
+
+| Option | What it changes |
+|---|---|
+| `--smoke 3` | Runs 3 training steps and stops: a quick check that loading, training and VRAM are fine |
+| `--export-only` | Skips training; re-exports the merged model and GGUF from the saved adapter |
+| `--no-export` | Saves only the LoRA adapter |
+| `--train`, `--test` | Use other data files (for example a deduplicated copy) |
+| `--out` | Output folder; use a new one per run so you never overwrite a model |
+| `--epochs`, `--lr`, `--rank`, `--seed` | Training settings (defaults: 3, 2e-4, 16, 42) |
+| `--keep-thought` | Trains on `<thought>` as written, instead of moving it into `<think>` |
+
+### `eval_test.py`: tests a trained model
+
+What it does, in order:
+
+1. Starts llama-server (the one that ships with Unsloth Studio) on the GPU with the GGUF you give it.
+2. Sends every prompt from the test file and saves every answer. The default is the 43 test prompts in
+   `data/sft_test.jsonl`; `--test data\splits\rl_heldout.jsonl` uses the 105 RL prompts instead.
+3. Scores each answer:
+   - **Design:** is there a `<design>` block, and does its JSON parse?
+   - **Schema:** does it have a motor and components, a nose cone and a body tube, and only part types
+     that appear in the data?
+   - **Recovery:** is there a parachute or a streamer?
+   - **Motor:** is the motor a real one (in `data/catalog.sqlite` or the data)? When the prompt names a
+     motor, did it use that one?
+   - **Loops:** did it get stuck repeating itself until it hit the token limit?
+4. Writes `results_<label>.json`, with the summary and every answer, and prints the summary.
+
+It checks the format only. The repo has no simulator yet, so it can't tell whether a design would fly.
+
+| Option | What it changes |
+|---|---|
+| `--gguf`, `--label` | The model to test, and the name for its results file (both required) |
+| `--test` | Which prompts to use (default `data/sft_test.jsonl`) |
+| `--rescore <results file>` | Re-scores saved answers without the GPU, for example after changing a check |
+| `--no-think` | Prompts with thinking off (for a model trained with `--keep-thought`) |
+| `--temperature`, `--presence-penalty` | Sampling settings (defaults 0.3 and 0; a presence penalty breaks the JSON) |
+| `--out-dir`, `--port`, `--overwrite` | Where results go, which port the server uses, and whether to replace an old results file |
 
 ## How to run
 
