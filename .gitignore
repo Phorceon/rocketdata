@@ -1,0 +1,6 @@
+.DS_Store
+.venv/
+lib/OpenRocket.jar
+hs_err_pid*.log
+__pycache__/
+.pytest_cache/

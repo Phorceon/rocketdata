@@ -1,0 +1,8 @@
+# Python dependencies for headless OpenRocket simulation.
+# Install into a uv-managed Python 3.11 venv: see HEADLESS.md.
+# Do NOT use Apple's built-in Python 3.9; JPype crashes with it.
+
+jpype1==1.7.1
+numpy==2.4.6
+orhelper @ git+https://github.com/openrocket/orhelper.git@62530d62cea120b50212bca452372b2919e1733f
+pytest==9.1.1
