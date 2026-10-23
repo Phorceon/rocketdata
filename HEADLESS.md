@@ -78,3 +78,25 @@ Run one simulation from the command line:
   (small, mid and high power): apogee within ~2.6% for 9 of 10, flight time
   within ~2% for 8 of 10. Small differences from the stored values are expected —
   they were produced by different OpenRocket versions and random wind.
+
+## Determinism
+
+Out of the box OpenRocket 24.12 does not give the same numbers twice for the same file
+and seed. `simulate()` fixes the three causes, using helpers in
+`scripts/or_batch/OrBatch.java` (compiled automatically into `lib/or_batch_classes/`
+with the JDK's `javac` on first use):
+
+1. **Wind.** `SimulationOptions` builds its pink-noise wind models from a random seed when
+   it is constructed, and `setRandomSeed()` does not reseed them. They are rebuilt from
+   `seed`.
+2. **Component UUIDs.** Older `.ork` files store no component ids, so every load assigns
+   `UUID.randomUUID()`. Those UUIDs key OpenRocket's motor map, so the motor iteration
+   order, and with it the result of multi-motor and multi-stage sims (up to about 6% here),
+   changes from load to load. A seeded `SecureRandom` provider is installed before
+   OpenRocket boots, and every call loads the file fresh with UUID seed 42.
+3. **First-run caches.** The first run of a design in a JVM differs from later runs at
+   about 1e-14. One discarded warm-up run per (file, sim) is done.
+
+With these fixes the same inputs give bit-identical outputs, and the numbers match
+`scripts/resim_v2.py` and `new_results/sft_v2_sims.jsonl`. `simulate()` also returns
+`events`, the flight events per branch (`RECOVERY_DEVICE_DEPLOYMENT`, `GROUND_HIT`, …).

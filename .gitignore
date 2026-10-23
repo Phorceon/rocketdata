@@ -4,3 +4,4 @@ lib/OpenRocket.jar
 hs_err_pid*.log
 __pycache__/
 .pytest_cache/
+lib/or_batch_classes/
