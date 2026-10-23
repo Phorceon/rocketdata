@@ -1,4 +1,12 @@
-"""Headless OpenRocket simulation driver."""
+"""Headless OpenRocket simulation driver.
+
+Results are reproducible: before OpenRocket boots we install the deterministic
+SecureRandom provider from scripts/or_batch/OrBatch.java (component UUIDs, which key
+OpenRocket's motor HashMap, are otherwise random per load), every call loads the .ork
+fresh with UUID seed 42, and the wind models are rebuilt from `seed` (setRandomSeed()
+alone does not reseed them). Same inputs -> bit-identical outputs, and the same numbers
+as scripts/resim_v2.py / new_results/sft_v2_sims.jsonl.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +14,8 @@ import os
 import time
 from contextlib import contextmanager
 from pathlib import Path
+
+import subprocess
 
 import jpype
 import jpype.imports
@@ -15,12 +25,14 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_JAR = REPO_ROOT / "lib" / "OpenRocket.jar"
 DEFAULT_JAVA_HOME = Path.home() / ".jdks" / "jdk-17.0.20.1+1" / "Contents" / "Home"
 
-JVM_ARGS = ["-Djava.awt.headless=true"]
+JVM_ARGS = ["-Djava.awt.headless=true", "-Dsun.jnu.encoding=UTF-8", "-Dfile.encoding=UTF-8"]
+OR_BATCH_SRC = REPO_ROOT / "scripts" / "or_batch" / "OrBatch.java"
+OR_BATCH_CLASSES = REPO_ROOT / "lib" / "or_batch_classes"
+UUID_SEED = 42
 
 JVM_STARTED = False
 BOOTED = False
-_DOC_CACHE = {}
-_SIM_CACHE = {}
+_WARM = set()
 
 
 def _java_home() -> Path:
@@ -40,6 +52,18 @@ def _libjvm() -> str:
     return str(jvm)
 
 
+def _compile_or_batch(jar: str) -> str:
+    """Compile OrBatch.java (determinism helpers) into lib/or_batch_classes if stale."""
+    out = OR_BATCH_CLASSES
+    stamp = out / "OrBatch.class"
+    if not stamp.exists() or stamp.stat().st_mtime < OR_BATCH_SRC.stat().st_mtime:
+        out.mkdir(parents=True, exist_ok=True)
+        javac = _java_home() / "bin" / "javac"
+        subprocess.run([str(javac), "--release", "17", "-nowarn", "-cp", jar, "-d", str(out),
+                        str(OR_BATCH_SRC)], check=True, capture_output=True)
+    return str(out)
+
+
 def _start_jvm():
     global JVM_STARTED
     if JVM_STARTED:
@@ -48,7 +72,8 @@ def _start_jvm():
     if not os.path.exists(jar):
         raise FileNotFoundError(f"OpenRocket JAR not found at {jar}")
     if not jpype.isJVMStarted():
-        jpype.startJVM(_libjvm(), "-ea", f"-Djava.class.path={jar}", *JVM_ARGS)
+        cp = os.pathsep.join([jar, _compile_or_batch(jar)])
+        jpype.startJVM(_libjvm(), "-ea", f"-Djava.class.path={cp}", *JVM_ARGS)
     JVM_STARTED = True
 
 
@@ -57,6 +82,8 @@ def _boot_or():
     if BOOTED:
         return
     _start_jvm()
+    # must run before anything in the JVM calls UUID.randomUUID()
+    jpype.JClass("OrBatch").installDet()
     Guice = jpype.JClass("com.google.inject.Guice")
     PluginModule = jpype.JClass("info.openrocket.core.plugin.PluginModule")
     GuiModule = jpype.JClass("info.openrocket.swing.startup.GuiModule")
@@ -134,27 +161,28 @@ def simulate(ork_path, sim_name=None, seed=42):
         raise FileNotFoundError(ork_path)
 
     _boot_or()
-    key = str(ork_path.resolve())
-    import os
-    if os.environ.get('OR_NO_CACHE') == '1':
-        GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
-        File = jpype.JClass("java.io.File")
-        loader = GeneralRocketLoader(File(str(ork_path)))
-        doc = loader.load()
-    elif key not in _DOC_CACHE:
-        GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
-        File = jpype.JClass("java.io.File")
-        loader = GeneralRocketLoader(File(str(ork_path)))
-        doc = loader.load()
-        _DOC_CACHE[key] = doc
-    else:
-        doc = _DOC_CACHE[key]
+    OrBatch = jpype.JClass("OrBatch")
+    GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
+    File = jpype.JClass("java.io.File")
+    def load():
+        # fresh load every call: a reused document carries state between runs
+        OrBatch.seedUUID(UUID_SEED)
+        d = GeneralRocketLoader(File(str(ork_path))).load()
+        return d, _get_sim(d, sim_name)
 
-    sim = _get_sim(doc, sim_name)
+    key = (str(ork_path.resolve()), sim_name)
+    if key not in _WARM:
+        # the first run of a design in a JVM differs at ~1e-14 (OpenRocket fills lazy
+        # caches on first use); one discarded warm-up run makes results run-order independent
+        _, wsim = load()
+        OrBatch.reseed(wsim.getOptions(), int(seed))
+        wsim.simulate()
+        _WARM.add(key)
+    doc, sim = load()
 
     t_sim0 = time.perf_counter()
     opts = sim.getOptions()
-    opts.setRandomSeed(int(seed))
+    OrBatch.reseed(opts, int(seed))
     sim.simulate()
     sim_ms = (time.perf_counter() - t_sim0) * 1000.0
 
@@ -186,6 +214,9 @@ def simulate(ork_path, sim_name=None, seed=42):
         "deployment_velocity_ms": deploy_v,
         "wind_ms": wind_ms,
         "stability_cal": stability_cal,
+        "events": [{"branch": b, "type": str(e.getType().name()), "t": float(e.getTime())}
+                   for b in range(sd.getBranchCount())
+                   for e in sd.getBranch(b).getEvents()],
         "runtime_ms": sim_ms,
     }
     return result
