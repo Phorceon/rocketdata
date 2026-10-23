@@ -156,6 +156,19 @@ def simulate(ork_path, sim_name=None, seed=42):
     diameter_m = float(sim.getRocket().getBoundingRadius()) * 2.0
     stability_cal = _stability_calibers_from_sim(sim, diameter_m)
 
+    try:
+        max_mach = float(sd.getMaxMachNumber())
+    except Exception:
+        max_mach = float("nan")
+    try:
+        deploy_v = float(sd.getDeploymentVelocity())
+    except Exception:
+        deploy_v = float("nan")
+    try:
+        opts = sim.getOptions()
+        wind_ms = float(opts.getWindSpeedAverage())
+    except Exception:
+        wind_ms = 0.0
     result = {
         "apogee_m": float(sd.getMaxAltitude()),
         "max_velocity_ms": float(sd.getMaxVelocity()),
@@ -163,6 +176,9 @@ def simulate(ork_path, sim_name=None, seed=42):
         "flight_time_s": float(sd.getFlightTime()),
         "ground_hit_ms": float(sd.getGroundHitVelocity()),
         "max_accel_ms2": float(sd.getMaxAcceleration()),
+        "max_mach": max_mach,
+        "deployment_velocity_ms": deploy_v,
+        "wind_ms": wind_ms,
         "stability_cal": stability_cal,
         "runtime_ms": sim_ms,
     }
