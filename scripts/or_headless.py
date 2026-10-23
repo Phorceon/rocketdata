@@ -135,7 +135,13 @@ def simulate(ork_path, sim_name=None, seed=42):
 
     _boot_or()
     key = str(ork_path.resolve())
-    if key not in _DOC_CACHE:
+    import os
+    if os.environ.get('OR_NO_CACHE') == '1':
+        GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
+        File = jpype.JClass("java.io.File")
+        loader = GeneralRocketLoader(File(str(ork_path)))
+        doc = loader.load()
+    elif key not in _DOC_CACHE:
         GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
         File = jpype.JClass("java.io.File")
         loader = GeneralRocketLoader(File(str(ork_path)))
