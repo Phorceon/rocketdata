@@ -1,0 +1,2 @@
+1. Understand: apogee at least 2,000 m (minimum; the request is "as high as is sensible", so more is welcome). Motor fixed: a Cesaroni M1520. Touchdown at most 6 m/s (maximum). Wind 2 m/s (fixed). Rail 3 m (fixed). Level 3 certification means dual deployment is the sensible recovery pattern: drogue at apogee, main low.
+2. Feasibility: an M-class motor is roughly 4,000 to 8,000 N*s, which is far more than a 2,000 m floor needs on a reasonably light airframe, so the real question is the motor's exact impulse, thrust curve, mass and diameter. Looking up the M1520.

@@ -1,0 +1,2 @@
+1. Understand: the waiver is a ceiling of 1,000 ft. 1000 * 0.3048 = 305 m, and the rocket must stay at or under that. Touchdown has to be under 5 m/s. The rod is 4 ft, and 4 * 0.3048 = 1.2 m, so every flight call uses a 1.2 m rail. Wind is not stated. I assume 2 m/s, vertical, sea level, single stage.
+2. Feasibility: 305 m with no drag is sqrt(2 * 9.81 * 305) = 77 m/s. A C on a slim rocket can reach that, so the motor has to be a B or a small C on a fatter tube, and the 1.2 m rod needs enough thrust to clear 15 m/s. Looking up A8, B4, B6, and C6.

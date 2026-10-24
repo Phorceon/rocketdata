@@ -1,0 +1,210 @@
+{
+ "session_id": "g_mockupofascension_stabilityissue__p2__d1",
+ "prompt_id": "g_mockupofascension_stabilityissue__p2",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b05",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 2.44,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.24,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 70992
+ },
+ "status": "final",
+ "started_at": 1792882181.209356,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "At least 4,000 feet, dual deploy, land under 18 ft/s, 5 mph wind, off an 8 ft rail."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee has to clear 4,000 ft. 4000 * 0.3048 = 1,220 m, and that is a minimum. Dual deploy. Landing under 18 ft/s, and 18 * 0.3048 = 5.5 m/s. Wind is 5 mph, and 5 * 0.447 = 2.2 m/s. The rail is 8 ft, and 8 * 0.3048 = 2.4 m. Both go in every flight call. Single stage, vertical, sea level.\n2. Feasibility: 1,220 m with no drag is sqrt(2 * 9.81 * 1220) = 155 m/s. A J motor on a 54 mm rocket should clear that, and the drogue keeps the main from opening at apogee. Looking up a few J motors.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J350",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J420",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "I200",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "I284",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J350W\", \"class\": \"J\", \"total_impulse_ns\": 669.2, \"average_thrust_n\": 445.4, \"max_thrust_n\": 841.4, \"burn_time_s\": 1.49, \"diameter_m\": 0.038, \"length_m\": 0.337, \"loaded_mass_kg\": 0.651, \"propellant_mass_kg\": 0.361, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J420R\", \"class\": \"J\", \"total_impulse_ns\": 651.2, \"average_thrust_n\": 423.4, \"max_thrust_n\": 563.5, \"burn_time_s\": 1.54, \"diameter_m\": 0.038, \"length_m\": 0.337, \"loaded_mass_kg\": 0.6496, \"propellant_mass_kg\": 0.3763, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"I200W\", \"class\": \"I\", \"total_impulse_ns\": 326.8, \"average_thrust_n\": 188.4, \"max_thrust_n\": 304.0, \"burn_time_s\": 1.73, \"diameter_m\": 0.029, \"length_m\": 0.333, \"loaded_mass_kg\": 0.3575, \"propellant_mass_kg\": 0.1819, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"I284W\", \"class\": \"I\", \"total_impulse_ns\": 590.8, \"average_thrust_n\": 365.4, \"max_thrust_n\": 508.8, \"burn_time_s\": 1.61, \"diameter_m\": 0.038, \"length_m\": 0.299, \"loaded_mass_kg\": 0.5555, \"propellant_mass_kg\": 0.3136, \"delays_s\": [10.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: I200W is only 327 N*s. I284W is 591 N*s. J420R is 651 N*s. J350W is 669 N*s, 445 N, 38 mm, 0.337 m long, 0.651 kg, propellant 0.361 kg, and it has no delay. I'll plug it. A 54 mm rocket on that impulse should clear 1,220 m. Drogue at apogee, main at 200 m, so the landing can be under 5.5 m/s without a huge flight.\n3. Size: guessed liftoff mass 1.1 kg. Thrust-to-weight is 445 / (1.1 * 9.81) = 41. Descent mass is about 1.1 - 0.36 = 0.74 kg. A 4.5 m/s landing, under 5.5, needs 2 * 0.74 * 9.81 / (1.225 * 0.8 * 4.5^2) = 0.73 m^2, diameter sqrt(4 * 0.73 / 3.1416) = 0.96 m. I'll fit a 1.0 m main and a 0.30 m drogue.\n4. Draft: 54 mm fiberglass body, 0.70 m long, ogive nose, three plywood fins, 38 mm mount, AeroTech J350W. Wind 2.2 m/s, rail 2.4 m.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "J350 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.16,
+            "diameter_m": 0.054,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.025
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.7,
+            "outer_diameter_m": 0.054,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.3,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.0,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 200,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.1
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.041,
+              "length_m": 0.36,
+              "wall_thickness_m": 0.001,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "J350W",
+               "delay_s": null
+              },
+              "overhang_m": 0.008,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.14,
+              "tip_chord_m": 0.06,
+              "span_m": 0.09,
+              "sweep_m": 0.08,
+              "thickness_m": 0.004,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.015
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.2,
+        "rail_length_m": 2.4
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 1904.8, \"time_to_apogee_s\": 15.42, \"max_velocity_ms\": 453.4, \"max_mach\": 1.34, \"rail_exit_ms\": 53.7, \"liftoff_mass_kg\": 1.23, \"thrust_to_weight\": 36.8, \"stability_rail_exit_cal\": 1.66, \"min_stability_burn_cal\": 1.66, \"flight_time_s\": 162.9, \"total_impulse_ns\": 669.2, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.5, \"drift_m\": 269.0, \"recovery_deployed\": true, \"deploy_time_s\": 15.5, \"deploy_velocity_ms\": 1.0, \"flight_time_s\": 162.9, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.2, \"rail_length_m\": 2.4, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 1904.8 m, which is 1904.8 / 0.3048 = 6250 ft, over the 4,000 ft minimum by 1904.8 - 1220 = 685 m. Landing is 4.5 m/s, under 5.5, and the section reached the ground. Rail exit is 53.7 m/s on the 2.4 m rail, thrust-to-weight is 36.8, and margin is 1.66 cal. Wind in the run was 2.2 m/s. The drogue opened at apogee and the main lower down. There is a supersonic warning. Every check passes.\n5. Fix: no fix was needed.\n6. Uncertainty: 685 m over the minimum covers a heavier build than the 1.23 kg liftoff mass. The flight is supersonic, Mach 1.34, and the drag model warns that it is less sure there. Chute Cd is a model 0.8. Margin is 1.66 cal in a 2.2 m/s wind, enough. The main opens at 200 m, so the 4.5 m/s landing depends on that canopy.",
+   "content": "AeroTech J350W in a 54 mm fiberglass rocket, 0.86 m long, with a 0.30 m drogue at apogee and a 1.0 m main at 200 m.\nIn 2.2 m/s wind off a 2.4 m rail the apogee is 1904.8 m, about 6250 ft, above 4,000 ft.\nLanding is 4.5 m/s. Rail exit is 53.7 m/s at 1.66 cal.\n<design>{\"name\": \"J350 dual deploy\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.16, \"diameter_m\": 0.054, \"wall_thickness_m\": 0.002, \"material\": \"Fiberglass\", \"shoulder_length_m\": 0.025}, {\"type\": \"bodytube\", \"length_m\": 0.7, \"outer_diameter_m\": 0.054, \"wall_thickness_m\": 0.0015, \"material\": \"Fiberglass\", \"contents\": [{\"type\": \"parachute\", \"diameter_m\": 0.3, \"cd\": 0.8, \"deploy_event\": \"apogee\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.05}, {\"type\": \"parachute\", \"diameter_m\": 1.0, \"cd\": 0.8, \"deploy_event\": \"altitude\", \"deploy_altitude_m\": 200, \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.1}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.041, \"length_m\": 0.36, \"wall_thickness_m\": 0.001, \"material\": \"Kraft phenolic\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"J350W\", \"delay_s\": null}, \"overhang_m\": 0.008, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.14, \"tip_chord_m\": 0.06, \"span_m\": 0.09, \"sweep_m\": 0.08, \"thickness_m\": 0.004, \"material\": \"Plywood (birch)\", \"offset_from_aft_m\": 0.015}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 5,
+ "finished_at": 1792882227.649738
+}

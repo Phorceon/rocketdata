@@ -1,0 +1,2 @@
+4. Check: The clock is fixed. The simulator gives flight time 213.4 s, under 240 s, and landing 3.2 m/s. Apogee is 2433.5 m, still 4.5 m under the 2,438 m floor. Rail exit 52.6 m/s, thrust-to-weight 52.9, margin 1.01 cal at the rail and 0.84 cal in the burn. Mass 0.859 kg. The fins are already on the 1 cal line, so I will not shrink them.
+5. Fix: 2433.5 m is the remaining miss. I am shortening the tube from 0.72 m to 0.58 m and the nose from 0.14 m to 0.11 m to take a little skin drag off. Drogue, main, diameter, and fins stay. Wind stays 2.24 m/s.

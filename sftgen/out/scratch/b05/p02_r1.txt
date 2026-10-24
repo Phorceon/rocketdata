@@ -1,0 +1,2 @@
+1. Understand: apogee about 1,250 ft. 1250 * 0.3048 = 381 m, so the band is 381 m ±5%. Flight time is a hard window of 110 to 120 s. Wind is about 5 mph, and 5 * 0.447 = 2.2 m/s. Rail and landing speed are not given, so I assume a 1.5 m rail and a 6 m/s touchdown limit. Single stage, vertical, sea level.
+2. Feasibility: drag-free speed for 381 m is sqrt(2 * 9.81 * 381) = 86 m/s. That is a C or a small D on a light airframe; a bigger motor would need ballast to stay under 400 m and the flight would get short. I need the catalog numbers.

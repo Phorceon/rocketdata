@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 3324.9 m. The band floor is 3,560 m, and 3560 - 3324.9 = 235 m short. Landing is 5.1 m/s and the section reached the ground. Rail exit is 22.5 m/s and thrust-to-weight is 14.3. Margin is 0.96 cal, under 1.0. Bigger fins would fix the margin and cost more altitude, so the motor is short as well as the fins. There is a supersonic warning.
+5. Fix: look up a larger L in the same 75 mm class before changing the airframe. L850W is not enough impulse for 3,750 m on this tube.

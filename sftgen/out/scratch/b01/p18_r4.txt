@@ -1,0 +1,3 @@
+4. Check: The simulator gives 427.7 m, still within 5% of 450 m. Drift is 393 m, inside 800 m. Margin is 1.02 cal at the rail and through the burn. Rail exit 20.6 m/s, thrust-to-weight 6.6, landing 4.5 m/s, chute at 10.4 s, and it reached the ground. Mass 0.173 kg.
+5. Fix: 427.7 m, 393 m of drift, and 1.02 cal all clear, so I am leaving the nose weight where it is.
+6. Uncertainty: 427.7 m and 1.02 cal are both close to the line. Another 5 g in the nose, or a fin that is a little smaller, could drop one of them under. Five m/s of wind is doing real work: the drift is 393 m, and a longer hang time would use up the 800 m budget. The 8 s delay opens at 10.4 s, after the 8.85 s apogee. Cd 0.8 is what makes 4.5 m/s.

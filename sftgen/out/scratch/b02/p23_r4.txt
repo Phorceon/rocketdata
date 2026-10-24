@@ -1,0 +1,5 @@
+2. Feasibility: C2 from WECO is 15 mm, 7.6 N*s, average thrust only 1.5 N, peak 8.2 N, burn 5.04 s, length 0.095 m, mass 0.024 kg, and it lists no delays. That is the only motor so far that both fits under a 20 mm skin and has more than a couple of newton-seconds. D2.3T and A8 are 18 mm. The C2 flies plugged, chute at apogee.
+
+3. Size: Body 18 mm, under 20 mm. Mount OD 0.0162 m around the 15 mm motor. Liftoff guess 0.040 kg. Thrust-to-weight on the average thrust is 1.5 / (0.040 * 9.81) = 3.8, just over 3. Weight is 0.040 * 9.81 = 0.392 N, rail acceleration (1.5 - 0.392) / 0.040 = 27.7 m/s^2, exit speed on the 1 m rail sqrt(2 * 27.7 * 1) = 7.4 m/s. That estimate is under 15 m/s. The 8.2 N peak may do better than the average, so I will fly it rather than reject it on the average. Chute for about 0.030 kg at 5 m/s: area 2 * 0.030 * 9.81 / (1.225 * 0.8 * 25) = 0.024 m^2, diameter sqrt(4 * 0.024 / pi) = 0.17 m. I will fly 0.20 m.
+
+4. Draft: 18 mm cardboard, tube 0.28 m, small ogive nose, three balsa fins, WECO C2 plugged, 0.20 m chute at apogee. Wind 6 m/s, rail 1 m.

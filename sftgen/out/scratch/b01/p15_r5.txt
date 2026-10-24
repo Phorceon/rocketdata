@@ -1,0 +1,2 @@
+4. Check: The simulator gives 1124.4 m. That is under 1,200 m and just under a 1,140 m about-floor. Gates pass: margin 1.34 cal at the rail and through the burn, rail exit 39.8 m/s, thrust-to-weight 49.5, landing 3.6 m/s, chute at 11.3 s. Mass 0.408 kg. There is margin to trade for drag.
+5. Fix: 1124.4 m is the remaining miss. Last pass: tube and nose from 0.038 m to 0.035 m, and fin span from 0.09 m to 0.08 m with root 0.11 m. The 1.34 cal can give up a little. Motor and chute stay.

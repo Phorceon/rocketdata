@@ -1,0 +1,73 @@
+{
+  "design": {
+    "name": "33 mm C6 about 250",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.07,
+            "diameter_m": 0.033,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.02
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.3,
+            "outer_diameter_m": 0.033,
+            "wall_thickness_m": 0.0005,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "mass",
+                "name": "nose weight (clay)",
+                "mass_kg": 0.008,
+                "position_from_top_m": 0.0
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 0.3,
+                "cd": 0.8,
+                "deploy_event": "ejection",
+                "material": "Polyethylene (thin)",
+                "position_from_top_m": 0.03
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.019,
+                "length_m": 0.08,
+                "wall_thickness_m": 0.0004,
+                "material": "Cardboard",
+                "motor": {
+                  "manufacturer": "Estes",
+                  "designation": "C6",
+                  "delay_s": 5.0
+                },
+                "overhang_m": 0.003,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Cardboard"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.11,
+                "tip_chord_m": 0.04,
+                "span_m": 0.072,
+                "sweep_m": 0.048,
+                "thickness_m": 0.002,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {
+    "rail_length_m": 1.0
+  }
+}

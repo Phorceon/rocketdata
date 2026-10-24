@@ -1,0 +1,3 @@
+4. Check: Splitting the clay landed between the two misses. The simulator gives 460.3 m, above 450 m, and margin 0.76 cal, under 1.0. Rail exit is 17.9 m/s, thrust-to-weight 3.7, landing 4.3 m/s. From the two clay flights, 0.0035 kg was 460.3 m at 0.76 cal and 0.006 kg was 434.0 m at 1.25 cal. The step between them is about 0.5 cal and 26 m. Reaching 1.0 cal looks like it costs most of the 10 m I have left.
+
+5. Fix: The failing value is margin 0.76 cal. One change: clay from 0.0035 kg to 0.0045 kg. That is the last revision. If the apogee falls under 450 m, the diameter, the 1 m rail and the 450 m floor cannot all be met with this motor.

@@ -1,0 +1,31 @@
+{"session_id": "g_38mdl1__p3__d1", "reasons": ["apogee_m 1699.7 < target min 1750"]}
+{"session_id": "g_apex_k_ss__p2__d1", "reasons": ["apogee_m 5160 not within 5% of 5791.2"]}
+{"session_id": "g_apexjtentative__p3__d1", "reasons": ["lint:steps: step 2 ('Feasibility') comes after step 5"]}
+{"session_id": "g_astra_11_04_2021__p2__d1", "reasons": ["target:motor: design uses ['G54W'], prompt fixed ['159G54']"]}
+{"session_id": "g_baseline_rocket__p2__d1", "reasons": ["session open: "]}
+{"session_id": "g_estes_alpha_vi_1958__p3__d1", "reasons": ["apogee_m 259.8 not within 5% of 400"]}
+{"session_id": "g_estes_boosted_bertha_1946__p1__d1", "reasons": ["apogee_m 246.6 not within 5% of 228.6"]}
+{"session_id": "g_estes_mark2__p3__d1", "reasons": ["session open: "]}
+{"session_id": "g_k2050sim__p3__d1", "reasons": ["session abandoned: must steps: step 4 Check after step 5 in a turn that only read motor_lookup"]}
+{"session_id": "g_nemesis150_v4_3__p1__d1", "reasons": ["lint:fix: fix without a failure: the design changed although the previous simulate passed every gate and target"]}
+{"session_id": "g_openrocket_projects_bryant_test_rocket__p2__d1", "reasons": ["stability_rail_exit_cal 0.75 < 1 (min launch margin)", "apogee_m 312.6 not within 5% of 228.6"]}
+{"session_id": "g_parth_l1__p1__d1", "reasons": ["session open: "]}
+{"session_id": "g_rocket_620f66__p3__d1", "reasons": ["session open: "]}
+{"session_id": "g_rocket_a79076__p1__d1", "reasons": ["session abandoned: duplicate identical simulate recorded (call_2 and call_3); no-op re-run"]}
+{"session_id": "g_rocket_a79076__p2__d1", "reasons": ["session open: "]}
+{"session_id": "g_rocket_d77051__p3__d1", "reasons": ["apogee_m 628.3 < target min 762"]}
+{"session_id": "g_rocket_fdc85b__p3__d1", "reasons": ["apogee_m 3713.7 not within 5% of 3000"]}
+{"session_id": "g_rocketserializer_rocket__p2__d1", "reasons": ["session abandoned: must structure: three motor_lookup calls omitted the required designation argument"]}
+{"session_id": "g_rocketserializer_rocket__p3__d1", "reasons": ["apogee_m 842.8 not within 5% of 650"]}
+{"session_id": "g_siriusrocketry_eradicator_s_0017__p2__d1", "reasons": ["session abandoned: must precision: 19812 has 5 sig figs in the first turn"]}
+{"session_id": "g_siruis_n1560__p1__d1", "reasons": ["session abandoned: must precision: impulse sum 28369 has 5 sig figs in a committed turn"]}
+{"session_id": "g_siruis_n1560__p1__d2", "reasons": ["replay: call_3 simulate output differs on re-run"]}
+{"session_id": "g_siruis_n1560__p2__d1", "reasons": ["session abandoned: must-level precision: derived 26455 has 5 sig figs in a committed sizing turn"]}
+{"session_id": "g_siruis_n1560__p2__d2", "reasons": ["replay: call_3 simulate output differs on re-run"]}
+{"session_id": "g_siruis_o3400__p1__d1", "reasons": ["session abandoned: must precision: derived 28369 N*s has 5 sig figs in a committed turn"]}
+{"session_id": "g_siruis_o3400__p1__d2", "reasons": ["replay: call_3 simulate output differs on re-run", "replay: call_4 simulate output differs on re-run"]}
+{"session_id": "g_siruis_o3400__p2__d1", "reasons": ["session abandoned: must precision: derived 26455 has 5 sig figs"]}
+{"session_id": "g_siruis_o3400__p2__d2", "reasons": ["session abandoned: replay quoted the previous draft's sim numbers; seed changed the results"]}
+{"session_id": "g_siruis_o3400__p2__d3", "reasons": ["stability_rail_exit_cal 0.5 < 1 (min launch margin)", "Sustainer landing_ms 5.8 > 5.49", "replay: call_7 simulate output differs on re-run"]}
+{"session_id": "g_siruis_o3400__p4__d1", "reasons": ["replay: call_4 simulate output differs on re-run", "replay: call_5 simulate output differs on re-run", "replay: call_6 simulate output differs on re-run"]}
+{"session_id": "g_three_stage_low_power_rocket__p1__d1", "reasons": ["rail_exit_ms 13.5 < 15 (min rail-exit speed)", "Sustainer landing_ms 4.6 > 4.57"]}

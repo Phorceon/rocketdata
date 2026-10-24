@@ -1,0 +1,2 @@
+1. Understand: apogee has to clear 4,000 ft. 4000 * 0.3048 = 1,220 m, and that is a minimum. Dual deploy. Landing under 18 ft/s, and 18 * 0.3048 = 5.5 m/s. Wind is 5 mph, and 5 * 0.447 = 2.2 m/s. The rail is 8 ft, and 8 * 0.3048 = 2.4 m. Both go in every flight call. Single stage, vertical, sea level.
+2. Feasibility: 1,220 m with no drag is sqrt(2 * 9.81 * 1220) = 155 m/s. A J motor on a 54 mm rocket should clear that, and the drogue keeps the main from opening at apogee. Looking up a few J motors.

@@ -1,0 +1,2 @@
+1. Understand: Apogee about 3,000 m, so the band is roughly 2,850 to 3,150 m. No motor, diameter, drift, or time limit. I assume one stage, a 1.5 m rail, 2 m/s wind, vertical launch, and a 6 m/s landing. A single chute is enough, because nothing asked for dual deploy.
+2. Feasibility: sqrt(2 * 9.81 * 3000) = 243 m/s with no drag. A G will not get a real airframe there. This is a J or a small K on a 54 mm tube. I need impulse, mass, and diameter before I draw it.

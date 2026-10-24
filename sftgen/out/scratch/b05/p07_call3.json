@@ -1,0 +1,68 @@
+{
+  "design": {
+    "name": "Four G80 cluster",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.2,
+            "diameter_m": 0.086,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.6,
+            "outer_diameter_m": 0.086,
+            "wall_thickness_m": 0.002,
+            "material": "Blue tube",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 1.3,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.08
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.032,
+                "length_m": 0.15,
+                "wall_thickness_m": 0.0012,
+                "material": "Kraft phenolic",
+                "motor": {
+                  "manufacturer": "AeroTech",
+                  "designation": "G80T",
+                  "delay_s": null
+                },
+                "cluster_count": 4,
+                "overhang_m": 0.01,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Plywood (birch)"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 4,
+                "root_chord_m": 0.16,
+                "tip_chord_m": 0.07,
+                "span_m": 0.11,
+                "sweep_m": 0.09,
+                "thickness_m": 0.004,
+                "material": "Plywood (birch)",
+                "offset_from_aft_m": 0.01
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {
+    "wind_ms": 4.5
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "design": {
+    "name": "H128 over 1500 ft",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {"type": "nosecone", "shape": "ogive", "length_m": 0.15, "diameter_m": 0.038, "wall_thickness_m": 0.001, "material": "Cardboard"},
+          {"type": "bodytube", "length_m": 0.65, "outer_diameter_m": 0.038, "wall_thickness_m": 0.001, "material": "Cardboard", "contents": [
+            {"type": "mass", "name": "nose weight", "mass_kg": 0.015, "position_from_top_m": 0.04},
+            {"type": "parachute", "diameter_m": 0.70, "cd": 0.8, "deploy_event": "ejection", "material": "Ripstop nylon", "position_from_top_m": 0.08},
+            {"type": "motor_mount", "outer_diameter_m": 0.032, "length_m": 0.21, "wall_thickness_m": 0.001, "material": "Kraft phenolic", "motor": {"manufacturer": "AeroTech", "designation": "H128W", "delay_s": 14.0}, "overhang_m": 0.006, "centering_ring_count": 2, "centering_ring_material": "Plywood (birch)"},
+            {"type": "trapezoidal_fins", "count": 3, "root_chord_m": 0.12, "tip_chord_m": 0.05, "span_m": 0.09, "sweep_m": 0.05, "thickness_m": 0.003, "material": "Plywood (birch)", "offset_from_aft_m": 0.008}
+          ]}
+        ]
+      }
+    ]
+  }
+}

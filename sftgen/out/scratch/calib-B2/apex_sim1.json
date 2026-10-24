@@ -1,0 +1,81 @@
+{
+  "design": {
+    "name": "75 mm J800 dual-deploy",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.19,
+            "diameter_m": 0.076,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+          },
+          {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 0.85,
+            "outer_diameter_m": 0.076,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+              {
+                "type": "mass",
+                "name": "altimeter and bay",
+                "mass_kg": 0.05,
+                "position_from_top_m": 0.12
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 1.2,
+                "cd": 0.8,
+                "deploy_event": "altitude",
+                "deploy_altitude_m": 150.0,
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.04
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 0.3,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.28
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.057,
+                "length_m": 0.33,
+                "wall_thickness_m": 0.001,
+                "material": "Cardboard",
+                "motor": {
+                  "manufacturer": "AeroTech",
+                  "designation": "J800T",
+                  "delay_s": null
+                },
+                "overhang_m": 0.01,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Plywood (birch)"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.16,
+                "tip_chord_m": 0.06,
+                "span_m": 0.09,
+                "sweep_m": 0.08,
+                "thickness_m": 0.003,
+                "material": "Plywood (birch)",
+                "offset_from_aft_m": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {"wind_ms": 2.0}
+}

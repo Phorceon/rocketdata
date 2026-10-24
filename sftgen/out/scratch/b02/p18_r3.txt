@@ -1,0 +1,3 @@
+4. Check: Altitude is in the band. The simulator gives 821.3 m. (821.3 - 800) / 800 = 2.7%, inside 5%. Margin is 0.97 cal at rail exit and through the burn, just under 1.0. Landing is 4.2 m/s. Rail exit is 34.9 m/s, thrust-to-weight 23.0. Impulse is 118 N*s, class G, under I. Ejection is at 12.4 s, after apogee at 9.71 s, opening at 14.6 m/s. Late, but the landing speed passes and the prompt did not cap opening speed.
+
+5. Fix: The failing value is margin 0.97 cal. One change: 0.015 kg of clay at the top of the tube. Fins stay balsa and small so the apogee, which is already inside 760 to 840 m, does not get dragged out the bottom. Motor, delay and chute stay.

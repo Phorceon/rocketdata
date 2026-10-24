@@ -1,0 +1,2 @@
+4. Check: The simulator gives 328.4 m, under the 380 m floor, and the rail margin is -0.37 cal. The burn minimum is also -0.37 cal. It is pitching over, so 328.4 m is not a real coast. Rail exit 22.7 m/s, thrust-to-weight 8.8, and landing 4.5 m/s all pass. The chute opens at 8.7 s, just after the 7.49 s apogee. Mass is 0.121 kg. The fins are too small for a D in the tail.
+5. Fix: The failing number is -0.37 cal. Fins grow to root 0.08 m, tip 0.035 m, span 0.055 m, sweep 0.035 m. Motor, tube, chute, and the 300 m site stay.

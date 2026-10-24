@@ -1,0 +1,5 @@
+4. Check: The L clears the floor. The simulator gives 3890.1 m, above 3,500 m. Drift is 938 m, inside 2,000 m. Landing is 3.9 m/s, under 6 m/s, which is the main rather than the 0.50 m drogue. Margin is 2.53 cal at rail exit and through the burn. Rail exit is 35.2 m/s, thrust-to-weight 30.5. The drogue opened at 21.2 s, at apogee, at 4.2 m/s. Wind is 4 m/s. The section reached the ground. Peak Mach is 2.07, with the supersonic body-calc warning.
+
+5. Fix: nothing left that fails.
+
+6. Uncertainty: Liftoff mass is 3.32 kg. The 18 s motor delay was not used, because dual deploy needs the altimeter. I cannot see a separate main-opening time in the output, only the apogee deploy and the final landing speed. Chute Cd is 0.8 on both canopies. The K1200 version was 3177.2 m, short of the floor, which is why the motor changed.

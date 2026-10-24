@@ -1,0 +1,3 @@
+4. Check: The simulator gives 781.4 m, under 850 m, and the margin is 1.15 cal at the rail and through the burn. Rail exit 25.6 m/s, thrust-to-weight 15.4, landing 3.9 m/s, chute at 12.3 s, and it reached the ground. Mass 0.307 kg. Flying straight brought the peak up a little from the last pass and it is still under the cap.
+5. Fix: 781.4 m and 1.15 cal both clear, so I am leaving the nose weight in.
+6. Uncertainty: 781.4 m is about 70 m under the ceiling, and 2.78 m/s of wind will move that if the nose weight is not where it was drawn. The 10 s delay opens at 12.3 s, after the 10.29 s apogee. Cd 0.8 is what makes 3.9 m/s. A real G40 in a heavier paint job still stays under 850 m; a lighter one might not.

@@ -1,0 +1,71 @@
+{
+  "design": {
+    "name": "54 mm K550 altitude rocket",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.16,
+            "diameter_m": 0.062,
+            "wall_thickness_m": 0.003,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.025
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.72,
+            "outer_diameter_m": 0.062,
+            "wall_thickness_m": 0.002,
+            "material": "Kraft phenolic",
+            "contents": [
+              {
+                "type": "mass",
+                "name": "altimeter",
+                "mass_kg": 0.03,
+                "position_from_top_m": 0.02
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 1.2,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.05
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.0565,
+                "length_m": 0.43,
+                "wall_thickness_m": 0.001,
+                "material": "Kraft phenolic",
+                "motor": {
+                  "manufacturer": "AeroTech",
+                  "designation": "K550W",
+                  "delay_s": null
+                },
+                "overhang_m": 0.01,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Plywood (birch)"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.16,
+                "tip_chord_m": 0.06,
+                "span_m": 0.08,
+                "sweep_m": 0.09,
+                "thickness_m": 0.003,
+                "material": "Plywood (birch)",
+                "offset_from_aft_m": 0.01
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {"wind_ms": 4.0}
+}

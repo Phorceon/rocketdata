@@ -1,0 +1,2 @@
+1. Understand: the only number is 3,750 m, so that is the apogee target. I will treat it as about 3,750 m, a band of 3750 * 0.95 = 3560 m to 3750 * 1.05 = 3940 m. Nothing else is stated. I assume one stage, a 1.5 m rail, 2 m/s wind, vertical, sea level, and a 6 m/s landing. The section has to reach the ground.
+2. Feasibility: 3,750 m with no drag is sqrt(2 * 9.81 * 3750) = 271 m/s. That wants an L motor. A single chute sized for about 5 m/s still gets down in well under the simulation cap. Looking up L850 and L1000.

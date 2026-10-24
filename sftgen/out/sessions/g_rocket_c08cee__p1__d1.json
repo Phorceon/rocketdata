@@ -1,0 +1,323 @@
+{
+ "session_id": "g_rocket_c08cee__p1__d1",
+ "prompt_id": "g_rocket_c08cee__p1",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b04",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 698078
+ },
+ "status": "final",
+ "started_at": 1792880221.000513,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Must fly on an AeroTech L1520, max altitude, stable, land < 5 m/s, at least 9,000 feet, single-stage."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: motor is fixed, an AeroTech L1520. Goal is maximum altitude, with a floor of at least 9,000 ft. 9000 * 0.3048 = 2740 m. Landing speed is a maximum of 5 m/s. Single stage (fixed). Stable means a launch margin of at least 1 cal and a positive margin through the burn. Wind, rail and site are not stated, so I use 2 m/s, a 1.5 m rail, vertical, sea level.\n2. Feasibility: 2740 m with no drag needs sqrt(2 * 9.81 * 2740) = 232 m/s, which an L motor clears easily. The real job is keeping the rocket light and narrow so it goes as high as it can, then still landing under 5 m/s. I need the L1520's diameter, impulse and delays before I size the airframe.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L1520",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"L1520T\", \"class\": \"L\", \"total_impulse_ns\": 3769.0, \"average_thrust_n\": 1511.4, \"max_thrust_n\": 1696.6, \"burn_time_s\": 2.49, \"diameter_m\": 0.075, \"length_m\": 0.5179, \"loaded_mass_kg\": 3.62, \"propellant_mass_kg\": 1.773, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: the catalog's AeroTech L1520 is the L1520T, 3769 N*s, average thrust 1511 N, burn 2.49 s, 75 mm by 0.518 m, loaded mass 3.62 kg. The only listed delay is 0 s, so a motor ejection would open the chute at burnout and throw away the coast. For maximum altitude the motor flies plugged and an electronic chute opens at apogee. Impulse is far past the 2740 m floor on any reasonable single-stage airframe; the design problem is drag, stability and a soft landing.\n3. Size: a near-minimum-diameter fiberglass tube, 81 mm OD and 1.05 m long, is about pi * 0.0795 * 1.05 * 0.0015 * 1850 = 0.728 kg. Nose, fins, mount and a large chute add about 0.80 kg, so liftoff is 0.728 + 0.80 + 3.62 = 5.15 kg. Thrust-to-weight = 1511 / (5.15 * 9.81) = 29.9. Rail acceleration (1511 - 50.5) / 5.15 = 284 m/s^2, exit speed sqrt(2 * 284 * 1.5) = 29.2 m/s. Descent mass 5.15 - 1.77 = 3.38 kg. At 4.2 m/s and Cd 0.8, area = 2 * 3.38 * 9.81 / (1.225 * 0.8 * 4.2^2) = 3.84 m^2, diameter sqrt(4 * 3.84 / 3.1416) = 2.21 m. Fin span 0.12 m is 0.12 / 0.081 = 1.5 calibers, which should put the CP behind a motor that is most of the mass.\n4. Draft: 81 mm fiberglass airframe, haack nose, three carbon fins, 75 mm mount, L1520T plugged, 2.2 m ripstop chute at apogee. Defaults: 2 m/s wind, 1.5 m rail.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm L1520 altitude",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.28,
+            "diameter_m": 0.081,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.081,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0775,
+              "length_m": 0.53,
+              "wall_thickness_m": 0.001,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L1520T",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.22,
+              "tip_chord_m": 0.08,
+              "span_m": 0.12,
+              "sweep_m": 0.14,
+              "thickness_m": 0.003,
+              "material": "Carbon fiber",
+              "offset_from_aft_m": 0.01
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 4345.0, \"time_to_apogee_s\": 23.92, \"max_velocity_ms\": 649.8, \"max_mach\": 1.93, \"rail_exit_ms\": 28.5, \"liftoff_mass_kg\": 5.35, \"thrust_to_weight\": 28.8, \"stability_rail_exit_cal\": 0.52, \"min_stability_burn_cal\": 0.52, \"flight_time_s\": 925.5, \"total_impulse_ns\": 3769.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.3, \"drift_m\": 1674.0, \"recovery_deployed\": true, \"deploy_time_s\": 23.9, \"deploy_velocity_ms\": 2.6, \"flight_time_s\": 925.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives 4345 m, well above the 2740 m floor, and that is the altitude this airframe can reach. Landing 4.3 m/s is under 5. Rail exit 28.5 m/s, thrust-to-weight 28.8, chute open at 23.9 s right at apogee. The miss is stability: 0.52 cal at rail exit, below the 1.0 cal gate. The margin stays 0.52 cal through the burn, so it never goes negative, but it is not stable enough to fly. Liftoff mass 5.35 kg is close to my 5.15 kg guess. There is a supersonic warning at Mach 1.93.\n5. Fix: 0.52 cal fails the 1 cal gate because the 3.62 kg motor sits on the tail. Nose weight would buy margin by giving up altitude, so I am enlarging the fins instead. Planform area goes from (0.22 + 0.08) / 2 * 0.12 = 0.018 m^2 to (0.30 + 0.12) / 2 * 0.20 = 0.042 m^2, and 0.042 / 0.018 = 2.3 times the area. Root 0.30 m, tip 0.12 m, span 0.20 m, sweep 0.18 m. Everything else stays, including the plugged L1520T and the apogee chute.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm L1520 altitude",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.28,
+            "diameter_m": 0.081,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.081,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0775,
+              "length_m": 0.53,
+              "wall_thickness_m": 0.001,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L1520T",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.3,
+              "tip_chord_m": 0.12,
+              "span_m": 0.2,
+              "sweep_m": 0.18,
+              "thickness_m": 0.003,
+              "material": "Carbon fiber",
+              "offset_from_aft_m": 0.01
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3579.7, \"time_to_apogee_s\": 21.86, \"max_velocity_ms\": 576.4, \"max_mach\": 1.71, \"rail_exit_ms\": 28.9, \"liftoff_mass_kg\": 5.73, \"thrust_to_weight\": 26.9, \"stability_rail_exit_cal\": 0.96, \"min_stability_burn_cal\": 0.96, \"flight_time_s\": 741.5, \"total_impulse_ns\": 3769.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.6, \"drift_m\": 1286.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.9, \"deploy_velocity_ms\": 3.5, \"flight_time_s\": 741.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives a margin of 0.96 cal at rail exit, still under 1.0, and 0.96 cal through the burn. Apogee fell to 3579.7 m, which is still above 2740 m: (3579.7 - 2740) / 2740 = 0.306. Landing 4.6 m/s is under 5, rail exit 28.9 m/s, thrust-to-weight 26.9. Doubling the fin area only bought 0.96 - 0.52 = 0.44 cal, so more fin is a weak knob now.\n5. Fix: 0.96 cal is the value that still fails. A small nose mass moves the CG forward without another big fin. 0.20 kg is 0.20 / 5.73 = 0.035 of liftoff mass, a few percent of altitude at most, and 3579 m has room above 2740 m. Adding a 0.20 kg nose weight at the top of the tube. Fins, motor and chute stay as they are. Landing was 4.6 m/s, so the extra mass should leave it under 5.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm L1520 altitude",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.28,
+            "diameter_m": 0.081,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.081,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.2,
+              "position_from_top_m": 0.0
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 2.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0775,
+              "length_m": 0.53,
+              "wall_thickness_m": 0.001,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L1520T",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.3,
+              "tip_chord_m": 0.12,
+              "span_m": 0.2,
+              "sweep_m": 0.18,
+              "thickness_m": 0.003,
+              "material": "Carbon fiber",
+              "offset_from_aft_m": 0.01
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3594.1, \"time_to_apogee_s\": 22.13, \"max_velocity_ms\": 561.0, \"max_mach\": 1.66, \"rail_exit_ms\": 28.1, \"liftoff_mass_kg\": 5.93, \"thrust_to_weight\": 26.0, \"stability_rail_exit_cal\": 1.25, \"min_stability_burn_cal\": 1.25, \"flight_time_s\": 726.9, \"total_impulse_ns\": 3769.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.7, \"drift_m\": 1244.0, \"recovery_deployed\": true, \"deploy_time_s\": 22.1, \"deploy_velocity_ms\": 3.8, \"flight_time_s\": 726.9, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives 1.25 cal at rail exit and 1.25 cal through the burn, above the 1.0 cal gate. Apogee is 3594.1 m, and (3594.1 - 2740) / 2740 = 0.312, so the 9,000 ft floor is cleared with room. It even rose slightly versus the unweighted airframe: 3594.1 - 3579.7 = 14.4 m, which fits a rocket that was weathercocking at 0.96 cal. Landing is 4.7 m/s against a 5 m/s limit, 5 - 4.7 = 0.3 m/s of margin. Rail exit 28.1 m/s, thrust-to-weight 26.0, chute at 22.1 s on the 22.13 s apogee. Motor is the plugged L1520T.\n5. Fix: no further change; the margin, the altitude floor and the landing speed all pass.\n6. Uncertainty: Mach 1.66 comes with a warning that the body-tube drag may be off at supersonic speed, so 3594 m can move a few hundred metres either way and should still clear 2740 m. Landing at 4.7 m/s is close to 5 m/s; a heavier finish or a chute that opens less cleanly than Cd 0.8 would eat the 0.3 m/s margin. Drift in a 2 m/s wind was 1244 m, so the field has to be large. The 0.20 kg nose weight is what holds the 1.25 cal margin.",
+   "content": "Single-stage 81 mm fiberglass rocket on a plugged AeroTech L1520T, with a 2.2 m apogee chute and 0.20 kg of nose weight.\nThe simulator gives 3594 m, above the 2740 m floor, 1.25 cal of margin, and a 4.7 m/s landing.\nIt is supersonic (Mach 1.66), and the tool warns that drag at that speed is approximate.\n<design>{\"name\": \"75 mm L1520 altitude\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"haack\", \"length_m\": 0.28, \"diameter_m\": 0.081, \"wall_thickness_m\": 0.002, \"material\": \"Fiberglass\", \"shoulder_length_m\": 0.05}, {\"type\": \"bodytube\", \"name\": \"airframe\", \"length_m\": 1.05, \"outer_diameter_m\": 0.081, \"wall_thickness_m\": 0.0015, \"material\": \"Fiberglass\", \"contents\": [{\"type\": \"mass\", \"name\": \"nose weight\", \"mass_kg\": 0.2, \"position_from_top_m\": 0.0}, {\"type\": \"parachute\", \"diameter_m\": 2.2, \"cd\": 0.8, \"deploy_event\": \"apogee\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.08}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.0775, \"length_m\": 0.53, \"wall_thickness_m\": 0.001, \"material\": \"Fiberglass\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"L1520T\", \"delay_s\": null}, \"overhang_m\": 0.01, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.3, \"tip_chord_m\": 0.12, \"span_m\": 0.2, \"sweep_m\": 0.18, \"thickness_m\": 0.003, \"material\": \"Carbon fiber\", \"offset_from_aft_m\": 0.01}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 4,
+ "finished_at": 1792880400.527369
+}

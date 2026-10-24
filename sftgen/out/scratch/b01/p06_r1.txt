@@ -1,0 +1,2 @@
+1. Understand: Apogee about 310 m, so the 5% band is roughly 295 to 325 m. Nothing else is specified. I assume one stage, a 1.5 m rail, 2 m/s wind, vertical launch, and a 6 m/s landing limit. "Thanks" does not add a constraint. A simple single-motor sport rocket is the right shape.
+2. Feasibility: Drag-free speed is sqrt(2 * 9.81 * 310) = 78 m/s. That is C or D territory on a small cardboard rocket. I need the impulse of both before I choose.

@@ -1,0 +1,5 @@
+2. Feasibility: The O3400 delivers 21,041 N*s at 3,421 N for 6.14 s. It is a 98 mm case, 1.24 m long, loaded mass 16.8 kg. The M2045 delivers 7,328 N*s at 2,084 N for 3.51 s, a 75 mm case, 0.89 m long, loaded mass 6.07 kg. Both list only a 0 s delay, so they fly plugged and each stage gets an apogee chute. Rounded, 21000 + 7330 = 28,300 N*s, under the 40,960 N*s ceiling. Guessing 32 kg at liftoff with only the booster lit, thrust-to-weight is 3421 / (32 * 9.81) = 10.9. Weight is 32 * 9.81 = 314 N, rail acceleration (3421 - 314) / 32 = 97.1 m/s^2, exit speed sqrt(2 * 97.1 * 1.5) = 17.1 m/s. The peak near 4,700 N covers the rod.
+
+3. Size: Sustainer at 84 mm around the 75 mm motor, booster at 110 mm around the 98 mm motor, with a conical transition. Fins have to be large because almost 23 kg of motor sits in the tail: booster span about two calibers, sustainer a bit over two. Chutes aimed under 5 m/s: 3.0 m on the sustainer and 4.2 m on the booster, Cd 0.8. Separation at booster burnout, upper motor lights at that instant.
+
+4. Draft: Fiberglass nose, tubes, transition and fins. O3400 below, M2045 above, both plugged. Flying it at 2 m/s on the 1.5 m rail.

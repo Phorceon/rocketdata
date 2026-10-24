@@ -1,0 +1,2 @@
+1. Understand: Break 1,400 ft is a floor. 1400 * 0.3048 = 427 m. Mid-power, G max, so nothing above a G. Wind is 5 mph: 5 * 0.44704 = 2.24 m/s, and that goes on every run. Rail, site, and landing are not stated: 1.5 m, sea level, 6 m/s.
+2. Feasibility: 427 m is comfortable for a G and possible for an F. I will look up a G and use it if the card is legal, with fins and a little nose mass so it stays over 1 cal in 2.24 m/s of wind.

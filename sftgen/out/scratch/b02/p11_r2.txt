@@ -1,0 +1,5 @@
+2. Feasibility: A B6 is 4.3 N*s and 5.2 N, 18 mm, mass 0.016 kg, and the only delay is 0 s. Four of them are 4.3 * 4 = 17.2 N*s and 5.2 * 4 = 20.8 N, still a B-class motor, under the D ceiling. Four C6s would be about twice that and would sail past 229 m. Four A8s are only 2.2 N*s each and would likely fall short in the fat tube a cluster requires. The B6s fly plugged, chute at apogee, because a 0 s delay would open at burnout.
+
+3. Size: A 4-motor cluster of 19.5 mm mounts needs about 47 mm of inside width, so the tube is 56 mm. Liftoff guess 0.14 kg. Thrust-to-weight is 20.8 / (0.14 * 9.81) = 15.1. Weight is 0.14 * 9.81 = 1.37 N, rail acceleration (20.8 - 1.37) / 0.14 = 139 m/s^2, exit speed sqrt(2 * 139 * 1.5) = 20.4 m/s. A 0.45 m chute covers a burnout mass near 0.12 kg at under 6 m/s.
+
+4. Draft: 56 mm cardboard, 0.40 m long, ogive nose, four balsa fins, one mount with cluster_count 4, four Estes B6 motors, one 0.45 m chute at apogee. Default rail and 2 m/s wind.

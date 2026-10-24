@@ -1,0 +1,1 @@
+2. Feasibility: P10000 is not in the pinned database, and the suggestion list came back empty. The Cesaroni 21062O3400-P is a real motor, but it is class O with 21041 N*s, about half of the 40,960 N*s cap, so it is not a P. I am trying a few other P designations, plus a larger O, before deciding the request cannot be built from this catalog.

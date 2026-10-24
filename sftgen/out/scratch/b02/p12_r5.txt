@@ -1,0 +1,5 @@
+4. Check: Nose clay fixed the margin without pushing through the ceiling. The simulator gives 635.4 m, under 750 m. Margin is 1.29 cal at rail exit and through the burn. Landing is 4.8 m/s, under 6 m/s. Rail exit is 24.5 m/s, thrust-to-weight 12.2. Impulse is 118 N*s, class G. The chute opens at 10.4 s, 8.3 m/s, after apogee at 9.79 s. Late, but the landing speed passes and the prompt did not cap opening speed. Wind is 6 m/s. Drift is 668 m with no drift limit stated.
+
+5. Fix: nothing left that fails a gate or the ceiling.
+
+6. Uncertainty: Liftoff mass is 0.509 kg, so the 0.06 kg clay is a real fraction of the rocket. Fin plywood is what made the first margin worse. Chute Cd is 0.8. A 10 s delay would open closer to this apogee, but the 8 s delay already lands under 6 m/s and I am not changing a passing flight.

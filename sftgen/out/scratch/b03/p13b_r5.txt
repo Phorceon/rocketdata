@@ -1,0 +1,3 @@
+4. Check: the clay put the margin over the line. The simulator gives 1.13 cal at rail exit and through the burn. Apogee is 693.6 m, and 693.6 - 610 = 83.6 m over the floor. Landing is 3.5 m/s, under 5.5 m/s. The tube is 0.041 m, under 0.0508 m. Rail exit 34.2 m/s, thrust-to-weight 31.4. The chute opens at 7.4 s, just before the 7.87 s apogee, at 14.7 m/s. Mass is 0.181 kg.
+5. Fix: no further change. Altitude, diameter, landing speed and the stability gates all pass.
+6. Uncertainty: the F50 has only a 6 s delay, so the canopy opens slightly early at 14.7 m/s. There is no longer delay in the catalog. Margin is 1.13 cal. A heavier paint job still has 83.6 m of spare altitude. The 3.5 m/s landing assumes this 0.55 m chute is the one packed.

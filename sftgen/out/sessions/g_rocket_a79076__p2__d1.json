@@ -1,0 +1,32 @@
+{
+ "session_id": "g_rocket_a79076__p2__d1",
+ "prompt_id": "g_rocket_a79076__p2",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b03",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 757554
+ },
+ "status": "open",
+ "started_at": 1792881546.486934,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Need a hand. I need about 10,500 ft, the whole flight done in under 30 seconds, and landing under 15 ft/s."
+  }
+ ],
+ "call_counter": 0
+}

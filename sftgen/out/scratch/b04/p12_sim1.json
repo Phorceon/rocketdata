@@ -1,0 +1,39 @@
+{
+  "design": {
+    "name": "O3400 M1297 two stage",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {"type": "nose", "shape": "haack", "length_m": 0.4, "diameter_m": 0.12, "thickness_m": 0.004, "material": "Fiberglass"},
+          {
+            "type": "body", "length_m": 1.5, "diameter_m": 0.12, "thickness_m": 0.003, "material": "Fiberglass",
+            "contents": [
+              {"type": "parachute", "diameter_m": 4.0, "material": "Ripstop nylon", "cd": 0.8, "deploy_event": "apogee", "position_from_top_m": 0.08},
+              {"type": "motor_mount", "length_m": 0.7, "outer_diameter_m": 0.08, "wall_thickness_m": 0.0015, "material": "Fiberglass", "position_from_bottom_m": 0.0,
+               "motor": {"designation": "M1297W", "manufacturer": "AeroTech", "delay_s": null, "ignition_delay_s": 0.0}}
+            ]
+          },
+          {"type": "fins", "count": 3, "root_m": 0.25, "tip_m": 0.08, "span_m": 0.12, "sweep_m": 0.14, "thickness_m": 0.005, "material": "Fiberglass", "position_from_bottom_m": 0.0}
+        ]
+      },
+      {
+        "name": "Booster",
+        "separation_event": "burnout",
+        "separation_delay_s": 0.0,
+        "components": [
+          {
+            "type": "body", "length_m": 1.8, "diameter_m": 0.12, "thickness_m": 0.003, "material": "Fiberglass",
+            "contents": [
+              {"type": "parachute", "diameter_m": 4.0, "material": "Ripstop nylon", "cd": 0.8, "deploy_event": "apogee", "position_from_top_m": 0.05},
+              {"type": "motor_mount", "length_m": 1.28, "outer_diameter_m": 0.104, "wall_thickness_m": 0.002, "material": "Fiberglass", "position_from_bottom_m": 0.0,
+               "motor": {"designation": "21062O3400-P", "manufacturer": "Cesaroni Technology Inc.", "delay_s": null}}
+            ]
+          },
+          {"type": "fins", "count": 4, "root_m": 0.5, "tip_m": 0.18, "span_m": 0.28, "sweep_m": 0.3, "thickness_m": 0.008, "material": "Fiberglass", "position_from_bottom_m": 0.0}
+        ]
+      }
+    ]
+  },
+  "conditions": {"rail_length_m": 2.5}
+}

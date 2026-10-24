@@ -1,0 +1,61 @@
+{
+  "design": {
+    "name": "66 mm twin C11",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.1,
+            "diameter_m": 0.066,
+            "wall_thickness_m": 0.002,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.02
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.45,
+            "outer_diameter_m": 0.066,
+            "wall_thickness_m": 0.0015,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 0.7,
+                "cd": 0.8,
+                "deploy_event": "ejection",
+                "material": "Polyethylene (thin)",
+                "position_from_top_m": 0.04
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.026,
+                "length_m": 0.08,
+                "wall_thickness_m": 0.0005,
+                "material": "Cardboard",
+                "motor": {"manufacturer": "Estes", "designation": "C11", "delay_s": 5.0},
+                "cluster_count": 2,
+                "overhang_m": 0.005,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Cardboard"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 4,
+                "root_chord_m": 0.08,
+                "tip_chord_m": 0.03,
+                "span_m": 0.055,
+                "sweep_m": 0.035,
+                "thickness_m": 0.003,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.008
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

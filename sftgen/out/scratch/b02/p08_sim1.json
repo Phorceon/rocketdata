@@ -1,0 +1,17 @@
+{
+  "design": {
+    "name": "28 mm D21 altitude rocket",
+    "stages": [{
+      "name": "Sustainer",
+      "components": [
+        {"type": "nosecone", "shape": "ogive", "length_m": 0.07, "diameter_m": 0.028, "wall_thickness_m": 0.002, "material": "Polystyrene", "shoulder_length_m": 0.015},
+        {"type": "bodytube", "length_m": 0.32, "outer_diameter_m": 0.028, "wall_thickness_m": 0.0007, "material": "Cardboard", "contents": [
+          {"type": "parachute", "diameter_m": 0.3, "cd": 0.8, "deploy_event": "ejection", "material": "Polyethylene (thin)", "position_from_top_m": 0.02},
+          {"type": "motor_mount", "outer_diameter_m": 0.02, "length_m": 0.075, "wall_thickness_m": 0.0006, "material": "Cardboard", "motor": {"manufacturer": "AeroTech", "designation": "D21T", "delay_s": 7.0}, "overhang_m": 0.004, "centering_ring_count": 2, "centering_ring_material": "Cardboard"},
+          {"type": "trapezoidal_fins", "count": 3, "root_chord_m": 0.06, "tip_chord_m": 0.025, "span_m": 0.04, "sweep_m": 0.03, "thickness_m": 0.003, "material": "Balsa", "offset_from_aft_m": 0.004}
+        ]}
+      ]
+    }]
+  },
+  "conditions": {"rail_length_m": 1.0}
+}

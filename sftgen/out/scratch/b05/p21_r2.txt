@@ -1,0 +1,3 @@
+2. Feasibility: I200W is only 327 N*s. I284W is 591 N*s. J420R is 651 N*s. J350W is 669 N*s, 445 N, 38 mm, 0.337 m long, 0.651 kg, propellant 0.361 kg, and it has no delay. I'll plug it. A 54 mm rocket on that impulse should clear 1,220 m. Drogue at apogee, main at 200 m, so the landing can be under 5.5 m/s without a huge flight.
+3. Size: guessed liftoff mass 1.1 kg. Thrust-to-weight is 445 / (1.1 * 9.81) = 41. Descent mass is about 1.1 - 0.36 = 0.74 kg. A 4.5 m/s landing, under 5.5, needs 2 * 0.74 * 9.81 / (1.225 * 0.8 * 4.5^2) = 0.73 m^2, diameter sqrt(4 * 0.73 / 3.1416) = 0.96 m. I'll fit a 1.0 m main and a 0.30 m drogue.
+4. Draft: 54 mm fiberglass body, 0.70 m long, ogive nose, three plywood fins, 38 mm mount, AeroTech J350W. Wind 2.2 m/s, rail 2.4 m.

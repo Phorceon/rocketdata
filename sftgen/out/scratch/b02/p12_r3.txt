@@ -1,0 +1,3 @@
+4. Check: The simulator gives 739.3 m, under the 750 m ceiling, with 10.7 m to spare. That is not the problem. Margin is 0.69 cal at rail exit and through the burn, under 1.0. Landing is 4.2 m/s, under 6 m/s. Rail exit is 28.1 m/s, thrust-to-weight 15.7. Impulse is 118 N*s, class G, inside H or below. The chute opened at 10.4 s, just after apogee at 10.05 s. Wind in the run is 6 m/s. Drift is 970 m, and the prompt did not cap drift.
+
+5. Fix: The failing value is margin 0.69 cal. One change: larger fins, span 0.13 m and root 0.18 m. Extra fin drag should also pull the apogee further under 750 m, which is the direction the ceiling wants. Motor, tube and chute stay.

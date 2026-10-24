@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 711.5 m, which clears the 350 m minimum by 711.5 - 350 = 362 m. Landing is 4.3 m/s, under 6. Rail exit is 34.4 m/s and thrust-to-weight is 31.3. The failure is margin: 0.74 cal at rail exit, and 0.74 cal through the burn, under 1.0. The F50 is heavy for these fins. Wind in the run was 4 m/s.
+5. Fix: grow the fins. Span goes from 0.055 m to 0.08 m and root chord from 0.09 m to 0.11 m. There is hundreds of metres of spare altitude, so the extra drag will not threaten the 350 m minimum. Motor, chute, and the 4 m/s wind stay.

@@ -1,0 +1,5 @@
+2. Feasibility: H128W is an AeroTech H, 178 N*s, 153 N average, burn 1.16 s, diameter 0.029 m, length 0.194 m, mass 0.202 kg. The only delay is 14 s. Class H, which is the ceiling. Drag-free speed is sqrt(2 * 9.81 * 750) = 121 m/s. A 38 mm tube is just over the 29 mm motor, so the floor should be cleared rather than barely met.
+
+3. Size: Liftoff guess 0.35 kg. Thrust-to-weight is 153 / (0.35 * 9.81) = 44.6. Weight is 0.35 * 9.81 = 3.43 N, rail acceleration (153 - 3.43) / 0.35 = 427 m/s^2, exit speed on the 2 m rail sqrt(2 * 427 * 2) = 41.3 m/s. Chute for about 0.25 kg at 5 m/s: area 2 * 0.25 * 9.81 / (1.225 * 0.8 * 25) = 0.200 m^2, diameter sqrt(4 * 0.200 / pi) = 0.50 m. I will fly 0.65 m. Delay 14 s. If apogee is near 11 s the charge is late, and I will only change that if the landing fails.
+
+4. Draft: 38 mm cardboard, tube 0.55 m, ogive nose, four balsa fins, AeroTech H128W with a 14 s delay, 0.65 m chute. Rail 2 m, wind 2 m/s.

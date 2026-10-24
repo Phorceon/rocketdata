@@ -1,0 +1,3 @@
+1. Understand: Two-stage, motors fixed. The C6-5 is the booster and the upper stage is an Estes C6 (delay not specified, I will choose one). Apogee about 750 ft, within 5%. 750 * 0.3048 = 229 m. Landing under 5 m/s (maximum), and I take that to mean both sections. Wind 12 mph: 12 * 0.447 = 5.36 m/s. Rail 12 ft: 12 * 0.3048 = 3.66 m. Launch angle and site not stated: vertical, sea level.
+
+2. Feasibility: Drag-free speed for 229 m is sqrt(2 * 9.81 * 229) = 67 m/s. Two C6s is a lot of impulse for that altitude, so the airframe has to be fairly fat or the flight will sail past 229 m. Only the booster is lit on the rail. I need the C6 thrust and mass before I check the 3.66 m rail.

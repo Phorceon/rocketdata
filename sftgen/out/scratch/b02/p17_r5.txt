@@ -1,0 +1,5 @@
+4. Check: Nose clay cleared the margin and the altitude came back. The simulator gives 3337.2 m, above 10,000 ft. Flight time is 236.8 s, inside 300 s. Landing is 4.2 m/s, under 6 m/s. Margin is 1.18 cal at rail exit and through the burn. Rail exit is 37.9 m/s, thrust-to-weight 43.1. The drogue opened at 20.1 s, at apogee, at 2.3 m/s. The section reached the ground. Wind is 5.36 m/s. Drift is 972 m. Peak Mach is 1.99, with the supersonic body-calc warning.
+
+5. Fix: nothing left that fails.
+
+6. Uncertainty: Liftoff mass is 2.81 kg. The 0.10 kg clay is what moved the margin, after a larger fin set dropped the flight under the altitude floor and still left the margin at 0.94 cal. The output shows the apogee deploy and the landing speed, not a separate main-opening time. Chute Cd is 0.8. The motor's 16 s delay was not used.

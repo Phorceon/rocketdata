@@ -1,0 +1,166 @@
+{
+ "session_id": "g_openrocket_design_rocket_model__p1__d1",
+ "prompt_id": "g_openrocket_design_rocket_model__p1",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b01",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 964103
+ },
+ "status": "final",
+ "started_at": 1792882039.29036,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Over 1,500 ft, nothing above an H."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: Over 1,500 ft is a floor. 1500 * 0.3048 = 457 m. Nothing above an H, so H or smaller. No wind, rail, site, or landing number: 2 m/s, 1.5 m, sea level, 6 m/s.\n2. Feasibility: 457 m is a low bar for an H. A G might also clear it, but an H has more margin if the fins have to grow. I will look up two H motors and pick the one that clears 457 m without a huge airframe.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "H128"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "H180"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"H128W\", \"class\": \"H\", \"total_impulse_ns\": 177.8, \"average_thrust_n\": 152.6, \"max_thrust_n\": 190.5, \"burn_time_s\": 1.16, \"diameter_m\": 0.029, \"length_m\": 0.194, \"loaded_mass_kg\": 0.2016, \"propellant_mass_kg\": 0.0941, \"delays_s\": [14.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"H180W\", \"class\": \"H\", \"total_impulse_ns\": 233.7, \"average_thrust_n\": 198.3, \"max_thrust_n\": 243.1, \"burn_time_s\": 1.18, \"diameter_m\": 0.029, \"length_m\": 0.238, \"loaded_mass_kg\": 0.2464, \"propellant_mass_kg\": 0.121, \"delays_s\": [6.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: H128W is class H, 177.8 N*s, 152.6 N, 1.16 s, 29 mm by 0.194 m, 0.2016 kg, and the only delay is 14 s. H180W is 233.7 N*s with only a 6 s delay, which would open the chute early. The H128 is enough for a 457 m floor. On a guessed 0.40 kg rocket, thrust-to-weight is 152.6 / (0.40 * 9.81) = 38.9. Ejection at 1.16 + 14 = 15.2 s, which should be after apogee.\n3. Size: For 0.40 kg at 5 m/s the chute is 2 * 0.40 * 9.81 / (1.225 * 0.8 * 5^2) = 0.32 m^2, diameter sqrt(4 * 0.32 / 3.1416) = 0.64 m. I will use 0.70 m. Tube 0.038 m, mount 0.032 m. Fins on the large side because an H in the tail has been short of 1 cal with small fins.\n4. Draft: Cardboard ogive 0.15 m on a 0.65 m cardboard tube, outer diameter 0.038 m, wall 1 mm. H128W with the 14 s delay, chute at ejection. Nose mass 0.015 kg. Three birch fins, root 0.12 m, tip 0.05 m, span 0.09 m, sweep 0.05 m, 3 mm. Sea-level defaults.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "H128 over 1500 ft",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.15,
+            "diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard"
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.65,
+            "outer_diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.015,
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.7,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.032,
+              "length_m": 0.21,
+              "wall_thickness_m": 0.001,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "H128W",
+               "delay_s": 14.0
+              },
+              "overhang_m": 0.006,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.12,
+              "tip_chord_m": 0.05,
+              "span_m": 0.09,
+              "sweep_m": 0.05,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.008
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 1005.2, \"time_to_apogee_s\": 10.91, \"max_velocity_ms\": 354.5, \"max_mach\": 1.04, \"rail_exit_ms\": 36.8, \"liftoff_mass_kg\": 0.37, \"thrust_to_weight\": 42.0, \"stability_rail_exit_cal\": 1.58, \"min_stability_burn_cal\": 1.58, \"flight_time_s\": 262.0, \"total_impulse_ns\": 177.8, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 3.8, \"drift_m\": 497.0, \"recovery_deployed\": true, \"deploy_time_s\": 15.3, \"deploy_velocity_ms\": 18.6, \"flight_time_s\": 262.0, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The simulator gives 1005.2 m, well over the 457 m floor. Margin 1.58 cal at the rail and through the burn. Rail exit 36.8 m/s, thrust-to-weight 42.0, landing 3.8 m/s, chute at 15.3 s, and it reached the ground. Mass 0.37 kg. The 14 s delay opens after the 10.91 s apogee.\n5. Fix: 1005.2 m clears the floor and the gates pass, so this is the rocket.\n6. Uncertainty: 1005.2 m is far enough over 457 m that a heavier paint job still clears. Peak Mach is 1.04, just over sonic, and this run did not attach a drag warning, so I would not lean on the last 50 m. Cd 0.8 is what makes 3.8 m/s. The chute opens at 15.3 s already on the way down.",
+   "content": "AeroTech H128W-14 in a 38 mm cardboard airframe.\nApogee is 1005.2 m, over the 457 m floor, and the motor is an H.\nMargin 1.58 cal, landing 3.8 m/s, and it reached the ground.\n<design>{\"name\": \"H128 over 1500 ft\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.15, \"diameter_m\": 0.038, \"wall_thickness_m\": 0.001, \"material\": \"Cardboard\"}, {\"type\": \"bodytube\", \"length_m\": 0.65, \"outer_diameter_m\": 0.038, \"wall_thickness_m\": 0.001, \"material\": \"Cardboard\", \"contents\": [{\"type\": \"mass\", \"name\": \"nose weight\", \"mass_kg\": 0.015, \"position_from_top_m\": 0.04}, {\"type\": \"parachute\", \"diameter_m\": 0.7, \"cd\": 0.8, \"deploy_event\": \"ejection\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.08}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.032, \"length_m\": 0.21, \"wall_thickness_m\": 0.001, \"material\": \"Kraft phenolic\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"H128W\", \"delay_s\": 14.0}, \"overhang_m\": 0.006, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.12, \"tip_chord_m\": 0.05, \"span_m\": 0.09, \"sweep_m\": 0.05, \"thickness_m\": 0.003, \"material\": \"Plywood (birch)\", \"offset_from_aft_m\": 0.008}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 3,
+ "finished_at": 1792882070.302887
+}

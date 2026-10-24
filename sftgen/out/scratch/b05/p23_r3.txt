@@ -1,0 +1,3 @@
+4. Check: the simulator gives apogee 664.5 m, over the 600 m minimum by 664.5 - 600 = 64.5 m. Flight time is 152.5 s, and 180 - 152.5 = 27.5 s under the 180 s cap. Landing is 4.6 m/s, under 6, and the section reached the ground. Rail exit is 34.5 m/s, thrust-to-weight is 31.3, and margin is 1.37 cal. The one chute opened at apogee. Every check passes.
+5. Fix: no fix was needed.
+6. Uncertainty: 64.5 m over 600 m is comfortable, but a much lighter build than the 0.178 kg liftoff mass climbs, and the spare 27.5 s would shrink. Chute Cd is a model 0.8. Margin is 1.37 cal in the assumed 2 m/s wind. Drift in the run was 269 m. The prompt's worry was drifting off the field, and there is no numeric drift cap, only the flight-time cap.

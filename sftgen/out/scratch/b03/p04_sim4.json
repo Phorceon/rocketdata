@@ -1,0 +1,68 @@
+{
+  "design": {
+    "name": "64 mm J800 altitude",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.15,
+            "diameter_m": 0.064,
+            "wall_thickness_m": 0.002,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.03
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.62,
+            "outer_diameter_m": 0.064,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 0.9,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.04
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.058,
+                "length_m": 0.33,
+                "wall_thickness_m": 0.001,
+                "material": "Cardboard",
+                "motor": {
+                  "manufacturer": "AeroTech",
+                  "designation": "J800T",
+                  "delay_s": null
+                },
+                "overhang_m": 0.008,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Cardboard"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 4,
+                "root_chord_m": 0.24,
+                "tip_chord_m": 0.1,
+                "span_m": 0.18,
+                "sweep_m": 0.12,
+                "thickness_m": 0.005,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {
+    "wind_ms": 8.9,
+    "rail_length_m": 1.5
+  }
+}

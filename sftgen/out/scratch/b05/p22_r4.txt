@@ -1,0 +1,4 @@
+2. Feasibility: L2200G is 5,104 N*s, about 5104 / 3695 = 1.4 times the L850W, at 2,243 N, 75 mm, 0.68 m long, 4.75 kg, propellant 2.52 kg. Same mount diameter, so the tube stays 90 mm. The motor is heavier, which will push the margin the wrong way from 0.96 cal, so the fins grow in the same change.
+3. Size: guessed liftoff mass 7.3 kg. Thrust-to-weight is 2243 / (7.3 * 9.81) = 31. The chute stays 2.0 m. Descent mass rises, so the landing may move up from 5.1 m/s but should stay under 6.
+4. Draft: swap in the L2200G, lengthen the mount to 0.72 m, and grow the fins to span 0.18 m and root 0.32 m. Body, nose, and chute stay.
+5. Fix: this is the change for the short apogee of 3324.9 m and the 0.96 cal margin.

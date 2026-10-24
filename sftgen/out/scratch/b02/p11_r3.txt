@@ -1,0 +1,3 @@
+4. Check: The simulator gives 188.8 m. About 229 m allows 5%, and (229 - 188.8) / 229 = 18% low. Margin is 0.97 cal, under 1.0, and the burn minimum is the same 0.97 cal. Landing is 4.9 m/s, under 6 m/s. Rail exit is 23.9 m/s, thrust-to-weight 9.9. Total impulse is 17.2 N*s, four B motors, inside the D ceiling. Liftoff mass is 0.214 kg, heavier than my 0.14 kg guess, which is part of why the altitude is short.
+
+5. Fix: The failing values are apogee 188.8 m and margin 0.97 cal. The margin is a gate, so that comes first. One change: larger fins, span 0.075 m and root 0.11 m. I know that adds drag and the altitude may fall further. The motor stays a B cluster until the rocket is stable.

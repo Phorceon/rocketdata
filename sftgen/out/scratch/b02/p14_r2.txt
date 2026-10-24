@@ -1,0 +1,5 @@
+2. Feasibility: D12 is 16.8 N*s and 10.4 N, class D. E12 is 27.1 N*s and 11.2 N, class E, 24 mm, delays 0, 4, 6 and 8 s. F40W is 78.1 N*s, class F, which is legal but about three times the E and would need a much fatter rocket to stay near 375 m. I will use the E12. Drag-free speed is sqrt(2 * 9.81 * 375) = 85.8 m/s. The 5% band is 356 to 394 m.
+
+3. Size: 48 mm cardboard, light, so the E does not overshoot the way a 24 mm airframe would. Liftoff guess 0.14 kg. Thrust-to-weight is 11.2 / (0.14 * 9.81) = 8.2. Weight is 0.14 * 9.81 = 1.37 N, rail acceleration (11.2 - 1.37) / 0.14 = 70.2 m/s^2, exit speed on the 2 m rail sqrt(2 * 70.2 * 2) = 16.8 m/s. That is only just over 15 m/s, so the rocket has to stay light. Delay 6 s, ejection. A 0.40 m chute is enough for a burnout mass near 0.10 kg at under 6 m/s.
+
+4. Draft: 48 mm tube 0.36 m, ogive nose, three balsa fins, Estes E12-6, 0.40 m chute. Rail 2 m, wind 2 m/s.

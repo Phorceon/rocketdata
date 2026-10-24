@@ -1,0 +1,3 @@
+2. Feasibility: the F50 lookup returned an F50T, 68.7 N*s, 54.5 N average, 29 mm, 0.098 m long, 0.090 kg loaded, delays 4, 6 and 9 s. 68.7 N*s is plenty for a 350 m minimum on a small rocket. Thrust is high, so a 1.5 m rail is not the problem. I'll keep the motor plugged and open the chute at apogee so a short delay cannot dump it early.
+3. Size: guessed liftoff mass 0.20 kg. Thrust-to-weight is 54.5 / (0.20 * 9.81) = 28. Descent mass is about 0.20 - 0.034 = 0.17 kg. A 5 m/s landing, under the assumed 6 m/s, needs 2 * 0.17 * 9.81 / (1.225 * 0.8 * 5^2) = 0.14 m^2, diameter sqrt(4 * 0.14 / 3.1416) = 0.42 m. I'll fit a 0.45 m chute.
+4. Draft: 41 mm cardboard tube, 0.50 m long, ogive nose, three balsa fins, 29 mm mount, AeroTech F50T. Wind in the call is 4 m/s.

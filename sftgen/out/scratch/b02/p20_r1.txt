@@ -1,0 +1,3 @@
+1. Understand: Apogee about 1,750 m, within 5%, so 1,660 to 1,840 m. Wind is 45 km/h. 45 / 3.6 = 12.5 m/s. Rail, angle and site are not stated: 1.5 m vertical rail, sea level. Landing is not stated, so the 6 m/s gate applies.
+
+2. Feasibility: The wind gate is 8.94 m/s, about 20 mph. 12.5 m/s is above that, so a flight in the stated wind fails the gate no matter what the rocket is. The 45 km/h wind cannot be met. The closest safe flight is just under the gate, at 8.9 m/s, still aiming at about 1,750 m. Drag-free speed is sqrt(2 * 9.81 * 1,750) = 185 m/s. That wants an I or a small J. Looking up two motors.

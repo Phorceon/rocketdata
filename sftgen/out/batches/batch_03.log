@@ -1,0 +1,14 @@
+g_38mdl1__p3	g_38mdl1__p3__d1	final	4	3	stable and slow landing; apogee still 1699.7 m vs 1750 m min
+g_renegade__p1	g_renegade__p1__d1	final	3	2	369.3 m within 5% of 375; drift 431 m flagged
+g_bigheavy1_simulation__p1	g_bigheavy1_simulation__p1__d1	final	1	0	1443 m, landing 3.2 m/s, 1.17 cal; hard chute opening
+g_54activeaero__p2	g_54activeaero__p2__d1	final	5	4	12 m/s wind over 8.94 limit; closest stable flight 1495 m not 2750
+g_tlp_phoenix_k_017__p1	g_tlp_phoenix_k_017__p1__d1	final	2	1	603.8 m, drift 258 m, dual deploy, margin 1.16 cal
+g_dual_parachute_deployment__p2	g_dual_parachute_deployment__p2__d1	final	1	0	1141 m on H210R; prompt text did not ask for dual deploy; chute opens at 21.8 m/s
+g_estes_mark2__p1	g_estes_mark2__p1__d1	final	2	1	461.9 m at 1300 m site on Estes C6; 1.1 cal
+g_rocket_a79076__p1	g_rocket_a79076__p1__d2	final	1	0	d1 abandoned: duplicate simulate; d2 3372 m, 1.42 cal, landing 5.1 m/s
+g_starfire_bell_x_1__p2	g_starfire_bell_x_1__p2__d1	final	4	3	716.7 m within 5% of 700; 1.25 cal after nose clay; chute opens at 16.3 m/s
+g_starfire73_talon__p3	g_starfire73_talon__p3__d1	final	4	3	E12 after D12 fell short; 526.4 m, landing 3.0 m/s, 1.38 cal
+g_siriusrocketry_eradicator_s_0017__p2	g_siriusrocketry_eradicator_s_0017__p2__d2	final	1	0	d1 abandoned for 5-sig 19812; d2 infeasible, I205 tops out at 1664 m
+g_dual_parachute_deployment__p3	g_dual_parachute_deployment__p3__d1	final	3	2	732.9 m within 5% of 700; landing 3.0 m/s; chute opens at 20 m/s
+g_rocketserializer_rocket__p2	g_rocketserializer_rocket__p2__d2	final	3	2	d1 abandoned bad lookup key; 693.6 m over 610 m floor, margin 1.13
+g_openrocket_estes_super_shot_design__p1	g_openrocket_estes_super_shot_design__p1__d1	final	4	3	C6-5, 255.8 m in band; 1 m rod exit 19.7; first sim rejected chute material

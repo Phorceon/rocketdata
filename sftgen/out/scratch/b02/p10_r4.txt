@@ -1,0 +1,5 @@
+4. Check: The simulator gives 5854.9 m, essentially the same flight as before, which is the altitude this motor and diameter can reasonably make. Landing is 4.9 m/s, under 5.5 m/s. Margin is 1.9 cal, rail exit 26.8 m/s, thrust-to-weight 12.8. The chute opens at 29.8 s, at the 29.75 s apogee. Mach 1.72 still carries the supersonic warning. The section reached the ground.
+
+5. Fix: no further change; the landing limit and the gates pass, and the altitude is the high one this airframe can make.
+
+6. Uncertainty: Mach 1.72 means the drag model is doing a lot of work in that 5854.9 m, and the liftoff mass is 12.3 kg. A heavier build loses height and can also slow the rail exit, though 26.8 m/s has room. Landing at 4.9 m/s is close to 5.5 m/s if the canopy Cd is below 0.8. Margin of 1.9 cal will weathercock some in 4 m/s wind; drift in the result is 3551 m, which the request did not cap. The motor is plugged, so the flight depends on the altimeter.

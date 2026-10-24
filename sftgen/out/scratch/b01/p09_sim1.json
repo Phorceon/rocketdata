@@ -1,0 +1,17 @@
+{
+  "design": {
+    "name": "44 mm J350 altitude",
+    "stages": [{
+      "name": "Sustainer",
+      "components": [
+        {"type": "nosecone", "shape": "ogive", "length_m": 0.18, "diameter_m": 0.044, "wall_thickness_m": 0.002, "material": "Fiberglass"},
+        {"type": "bodytube", "length_m": 0.75, "outer_diameter_m": 0.044, "wall_thickness_m": 0.0012, "material": "Cardboard", "contents": [
+          {"type": "mass", "name": "altimeter", "mass_kg": 0.05, "position_from_top_m": 0.06},
+          {"type": "parachute", "diameter_m": 1.0, "cd": 0.8, "deploy_event": "apogee", "material": "Ripstop nylon", "position_from_top_m": 0.1},
+          {"type": "motor_mount", "outer_diameter_m": 0.0405, "length_m": 0.35, "wall_thickness_m": 0.001, "material": "Kraft phenolic", "motor": {"manufacturer": "AeroTech", "designation": "J350W", "delay_s": null}, "overhang_m": 0.01, "centering_ring_count": 2, "centering_ring_material": "Plywood (birch)"},
+          {"type": "trapezoidal_fins", "count": 3, "root_chord_m": 0.13, "tip_chord_m": 0.05, "span_m": 0.065, "sweep_m": 0.06, "thickness_m": 0.003, "material": "Fiberglass", "offset_from_aft_m": 0.01}
+        ]}
+      ]
+    }]
+  }
+}

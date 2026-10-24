@@ -1,0 +1,3 @@
+4. Check: Altitude is not the problem. The simulator gives 800.1 m, well above 200 m. Margin is -0.03 cal at rail exit and through the burn. The rocket is unstable. Landing is 3.6 m/s. Rail exit is 32.4 m/s, thrust-to-weight 24.0. Impulse is 47.3 N*s, class F, and the motor is 24 mm. Wind is 6 m/s. The chute opened at 9.1 s, just before apogee at 9.38 s, at 4.6 m/s. Drift is 1287 m, with no drift cap.
+
+5. Fix: The failing value is margin -0.03 cal. The fins are too small for a short tube with the motor at the tail. One change: span to 0.09 m and root to 0.12 m. That will add drag and the apogee will fall, but 200 m is a long way below 800 m. Motor, tube and chute stay.

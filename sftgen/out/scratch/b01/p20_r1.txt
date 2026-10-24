@@ -1,0 +1,2 @@
+1. Understand: Over 1,500 ft is a floor. 1500 * 0.3048 = 457 m. Nothing above an H, so H or smaller. No wind, rail, site, or landing number: 2 m/s, 1.5 m, sea level, 6 m/s.
+2. Feasibility: 457 m is a low bar for an H. A G might also clear it, but an H has more margin if the fins have to grow. I will look up two H motors and pick the one that clears 457 m without a huge airframe.

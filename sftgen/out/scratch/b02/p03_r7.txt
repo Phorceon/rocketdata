@@ -1,0 +1,5 @@
+4. Check: The simulator gives 438.9 m. The 5% floor under 457 m is 457 * 0.95 = 434 m, and 438.9 m is above it. (457 - 438.9) / 457 = 4%, inside the band. Flight time is 115.0 s, on the lower edge of 115 to 125 s but not under it. Margin is 1.07 cal, over 1.0. Rail exit 22.3 m/s, thrust-to-weight 8.5 and landing 4.0 m/s pass. The chute opens at 10.4 s.
+
+5. Fix: no further change; altitude, duration and the gates all pass.
+
+6. Uncertainty: 438.9 m and 115.0 s are both near an edge, so a slightly heavier build or a chute that does not match Cd 0.8 will walk one of them out. Margin is only 1.07 cal, and the heavier E12 is what put the CG back there. Deployment speed is 17.9 m/s, which the sim did not flag, but a thin plastic chute may not like it. Drag is still a model value at Mach 0.37.

@@ -1,0 +1,72 @@
+{
+  "design": {
+    "name": "E12 single chute",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.12,
+            "diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard"
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.5,
+            "outer_diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "mass",
+                "name": "nose weight",
+                "mass_kg": 0.022,
+                "position_from_top_m": 0.03
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 0.42,
+                "cd": 0.8,
+                "deploy_event": "ejection",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.06
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.028,
+                "length_m": 0.11,
+                "wall_thickness_m": 0.001,
+                "material": "Kraft phenolic",
+                "motor": {
+                  "manufacturer": "Estes",
+                  "designation": "E12",
+                  "delay_s": 8.0
+                },
+                "overhang_m": 0.005,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Plywood (birch)"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.09,
+                "tip_chord_m": 0.04,
+                "span_m": 0.06,
+                "sweep_m": 0.04,
+                "thickness_m": 0.003,
+                "material": "Plywood (birch)",
+                "offset_from_aft_m": 0.006
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {
+    "wind_ms": 5.0
+  }
+}

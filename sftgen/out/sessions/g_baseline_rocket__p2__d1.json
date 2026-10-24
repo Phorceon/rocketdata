@@ -1,0 +1,180 @@
+{
+ "session_id": "g_baseline_rocket__p2__d1",
+ "prompt_id": "g_baseline_rocket__p2",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b05",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 761714
+ },
+ "status": "final",
+ "started_at": 1792882356.7276502,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Please propose a design. Target is at least 600 m. Total flight under 3 minutes so it doesn't drift off the field. One main chute at apogee is what we fly. Please include your assumptions."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee is at least 600 m. Total flight has to be under 3 minutes, and 3 * 60 = 180 s. One main chute, opening at apogee. Landing speed is not stated, so I assume 6 m/s. Rail and wind are not stated. I assume a 1.5 m rail, 2 m/s wind, vertical, sea level, one stage. The section has to reach the ground.\n2. Feasibility: 600 m with no drag is sqrt(2 * 9.81 * 600) = 108 m/s. A single chute at 5 m/s from 600 m takes about 600 / 5 = 120 s, inside 180 s. If the rocket goes much past about 6 * 170 = 1,000 m, a 6 m/s landing cannot finish in time. An F or a small G on a 41 mm rocket is the range. Looking those up.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "F50",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "G80",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "G64",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"F50T\", \"class\": \"F\", \"total_impulse_ns\": 68.7, \"average_thrust_n\": 54.5, \"max_thrust_n\": 73.8, \"burn_time_s\": 1.26, \"diameter_m\": 0.029, \"length_m\": 0.098, \"loaded_mass_kg\": 0.0898, \"propellant_mass_kg\": 0.0336, \"delays_s\": [4.0, 6.0, 9.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"G80T\", \"class\": \"G\", \"total_impulse_ns\": 135.6, \"average_thrust_n\": 80.6, \"max_thrust_n\": 107.0, \"burn_time_s\": 1.68, \"diameter_m\": 0.029, \"length_m\": 0.124, \"loaded_mass_kg\": 0.129, \"propellant_mass_kg\": 0.069, \"delays_s\": [4.0, 7.0, 10.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"G64W\", \"class\": \"G\", \"total_impulse_ns\": 118.0, \"average_thrust_n\": 60.9, \"max_thrust_n\": 108.1, \"burn_time_s\": 1.92, \"diameter_m\": 0.029, \"length_m\": 0.124, \"loaded_mass_kg\": 0.1512, \"propellant_mass_kg\": 0.0625, \"delays_s\": [4.0, 8.0, 10.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: G80T is 136 N*s and G64W is 118 N*s. Either one can push a small rocket past the altitude where a 6 m/s landing still fits in 180 s. F50T is 68.7 N*s, 54.5 N, 29 mm, 0.098 m long, 0.090 kg, delays 4, 6 and 9 s. That impulse should clear 600 m and still come down in time. I'll plug it and open the one chute at apogee.\n3. Size: guessed liftoff mass 0.18 kg. Thrust-to-weight is 54.5 / (0.18 * 9.81) = 31. Descent mass is about 0.18 - 0.034 = 0.15 kg. A 5 m/s landing, under 6, needs 2 * 0.15 * 9.81 / (1.225 * 0.8 * 5^2) = 0.12 m^2, diameter sqrt(4 * 0.12 / 3.1416) = 0.39 m. I'll fit a 0.42 m chute.\n4. Draft: 41 mm cardboard body, 0.48 m long, ogive nose, three balsa fins with enough span for the margin, 29 mm mount, AeroTech F50T. Defaults: 1.5 m rail, 2 m/s wind.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "F50 time window",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.12,
+            "diameter_m": 0.041,
+            "wall_thickness_m": 0.002,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.02
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.48,
+            "outer_diameter_m": 0.041,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.42,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.032,
+              "length_m": 0.11,
+              "wall_thickness_m": 0.001,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "F50T",
+               "delay_s": null
+              },
+              "overhang_m": 0.006,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.1,
+              "tip_chord_m": 0.045,
+              "span_m": 0.075,
+              "sweep_m": 0.055,
+              "thickness_m": 0.003,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.01
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 664.5, \"time_to_apogee_s\": 8.74, \"max_velocity_ms\": 257.8, \"max_mach\": 0.76, \"rail_exit_ms\": 34.5, \"liftoff_mass_kg\": 0.178, \"thrust_to_weight\": 31.3, \"stability_rail_exit_cal\": 1.37, \"min_stability_burn_cal\": 1.37, \"flight_time_s\": 152.5, \"total_impulse_ns\": 68.7, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.6, \"drift_m\": 269.0, \"recovery_deployed\": true, \"deploy_time_s\": 8.8, \"deploy_velocity_ms\": 0.8, \"flight_time_s\": 152.5, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 664.5 m, over the 600 m minimum by 664.5 - 600 = 64.5 m. Flight time is 152.5 s, and 180 - 152.5 = 27.5 s under the 180 s cap. Landing is 4.6 m/s, under 6, and the section reached the ground. Rail exit is 34.5 m/s, thrust-to-weight is 31.3, and margin is 1.37 cal. The one chute opened at apogee. Every check passes.\n5. Fix: no fix was needed.\n6. Uncertainty: 64.5 m over 600 m is comfortable, but a much lighter build than the 0.178 kg liftoff mass climbs, and the spare 27.5 s would shrink. Chute Cd is a model 0.8. Margin is 1.37 cal in the assumed 2 m/s wind. Drift in the run was 269 m. The prompt's worry was drifting off the field, and there is no numeric drift cap, only the flight-time cap.",
+   "content": "AeroTech F50T in a 41 mm cardboard rocket, 0.60 m long, with one 0.42 m chute at apogee.\nApogee is 664.5 m, above 600 m. Flight time is 152.5 s, under 180 s, and the landing is 4.6 m/s.\nRail exit is 34.5 m/s at 1.37 cal. Assumptions were a 1.5 m rail, 2 m/s wind, and a 6 m/s landing limit.\n<design>{\"name\": \"F50 time window\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.12, \"diameter_m\": 0.041, \"wall_thickness_m\": 0.002, \"material\": \"Polystyrene\", \"shoulder_length_m\": 0.02}, {\"type\": \"bodytube\", \"length_m\": 0.48, \"outer_diameter_m\": 0.041, \"wall_thickness_m\": 0.0008, \"material\": \"Cardboard\", \"contents\": [{\"type\": \"parachute\", \"diameter_m\": 0.42, \"cd\": 0.8, \"deploy_event\": \"apogee\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.04}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.032, \"length_m\": 0.11, \"wall_thickness_m\": 0.001, \"material\": \"Cardboard\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"F50T\", \"delay_s\": null}, \"overhang_m\": 0.006, \"centering_ring_count\": 2, \"centering_ring_material\": \"Cardboard\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.1, \"tip_chord_m\": 0.045, \"span_m\": 0.075, \"sweep_m\": 0.055, \"thickness_m\": 0.003, \"material\": \"Balsa\", \"offset_from_aft_m\": 0.01}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 4,
+ "finished_at": 1792882503.869011
+}

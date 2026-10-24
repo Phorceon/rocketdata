@@ -1,0 +1,12 @@
+g_openrocket_projects_bryant_test_rocket__p4	g_openrocket_projects_bryant_test_rocket__p4__d1	final	3	2	C6-5, 38 mm cardboard, 231 m in 5.36 m/s wind
+g_l1_example__p3	g_l1_example__p3__d1	final	1	0	G80T-10 54 mm, 856 m under 900 m waiver; should-level 0.225/225 coincidence
+g_rocket_c08cee__p1	g_rocket_c08cee__p1__d1	final	3	2	L1520T min-diam, 3594 m, margin fixed 0.52 then 0.96 with fins then 0.20 kg
+g_trinetraone__p3	g_trinetraone__p3__d1	final	3	2	I300T-10 82 mm, 1130 m under 1200 m, fins opened after 0.99 cal
+g_astra_bbbe1f__p1	g_astra_bbbe1f__p1__d1	final	1	0	636I216-14A, 1883 m on a 2.5 m rail, first pass
+g_astra_11_04_2021__p2	g_astra_11_04_2021__p2__d1	final	3	2	G54W-10, 703 m, fins then 40 g nose weight for margin
+g_locprecision_starburst_pk_28__p2	g_locprecision_starburst_pk_28__p2__d1	final	3	2	twin C11-5, 94.9 m after nose-weight tuning
+g_simulation_1__p3	g_simulation_1__p3__d1	final	3	2	infeasible 30000 ft on G; closest safe G80T is 815 m
+g_fred_v_2_3__p1	g_fred_v_2_3__p1__d1	final	2	1	D12-5 egg loft, 172.6 m and 55.6 s after delay fix
+g_navya_l1__p1	g_navya_l1__p1__d1	final	5	4	H165R-10 102 mm, 436 m; diameter, fins, then weight and chute
+g_estes_boosted_bertha_1946_mod24__p1	g_estes_boosted_bertha_1946_mod24__p1__d1	final	5	4	D12-5/C6-5 at 1300 m, 309 m after nose-weight interpolation
+g_siruis_n1560__p2	g_siruis_n1560__p2__d2	final	1	0	d1 abandoned for 5-sig 26455; O3400/M1297 8387 m, booster landed 4.2, sustainer still descending at time cap

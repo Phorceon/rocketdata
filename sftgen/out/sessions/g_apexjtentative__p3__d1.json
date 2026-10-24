@@ -1,0 +1,523 @@
+{
+ "session_id": "g_apexjtentative__p3__d1",
+ "prompt_id": "g_apexjtentative__p3",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b05",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 768652
+ },
+ "status": "final",
+ "started_at": 1792882227.894675,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Rocket for 3,750 m."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: the only number is 3,750 m, so that is the apogee target. I will treat it as about 3,750 m, a band of 3750 * 0.95 = 3560 m to 3750 * 1.05 = 3940 m. Nothing else is stated. I assume one stage, a 1.5 m rail, 2 m/s wind, vertical, sea level, and a 6 m/s landing. The section has to reach the ground.\n2. Feasibility: 3,750 m with no drag is sqrt(2 * 9.81 * 3750) = 271 m/s. That wants an L motor. A single chute sized for about 5 m/s still gets down in well under the simulation cap. Looking up L850 and L1000.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L850",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L1000",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"L850W\", \"class\": \"L\", \"total_impulse_ns\": 3695.0, \"average_thrust_n\": 868.2, \"max_thrust_n\": 1184.8, \"burn_time_s\": 4.24, \"diameter_m\": 0.075, \"length_m\": 0.531, \"loaded_mass_kg\": 3.6732, \"propellant_mass_kg\": 2.0653, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"HP-L1000W\", \"class\": \"L\", \"total_impulse_ns\": 2702.1, \"average_thrust_n\": 991.0, \"max_thrust_n\": 1322.3, \"burn_time_s\": 2.72, \"diameter_m\": 0.054, \"length_m\": 0.635, \"loaded_mass_kg\": 2.194, \"propellant_mass_kg\": 1.4, \"delays_s\": [18.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: HP-L1000W is 2,702 N*s in a 54 mm case. L850W is 3,695 N*s, 868 N, 75 mm, 0.531 m long, 3.67 kg, propellant 2.07 kg, and it has no delay. The extra impulse is what 3,750 m needs. I'll plug it and open one chute at apogee.\n3. Size: guessed liftoff mass 5.5 kg. Thrust-to-weight is 868 / (5.5 * 9.81) = 16. Descent mass is about 5.5 - 2.07 = 3.4 kg. A 5 m/s landing, under the assumed 6 m/s, needs 2 * 3.4 * 9.81 / (1.225 * 0.8 * 5^2) = 2.7 m^2, diameter sqrt(4 * 2.7 / 3.1416) = 1.9 m. I'll fit a 2.0 m chute. From 3,750 m at that sink rate the flight is about 3750 / 5 = 750 s, so it reaches the ground.\n4. Draft: 90 mm fiberglass body, 1.00 m long, ogive nose, four plywood fins, 75 mm mount, AeroTech L850W. Defaults: 1.5 m rail, 2 m/s wind.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "L850 3750 m",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.28,
+            "diameter_m": 0.09,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "length_m": 1.0,
+            "outer_diameter_m": 0.09,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.08,
+              "length_m": 0.58,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L850W",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.26,
+              "tip_chord_m": 0.12,
+              "span_m": 0.14,
+              "sweep_m": 0.16,
+              "thickness_m": 0.006,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.02
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3324.9, \"time_to_apogee_s\": 21.88, \"max_velocity_ms\": 432.4, \"max_mach\": 1.29, \"rail_exit_ms\": 22.5, \"liftoff_mass_kg\": 6.19, \"thrust_to_weight\": 14.3, \"stability_rail_exit_cal\": 0.96, \"min_stability_burn_cal\": 0.96, \"flight_time_s\": 620.9, \"total_impulse_ns\": 3695.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.1, \"drift_m\": 1039.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.9, \"deploy_velocity_ms\": 4.1, \"flight_time_s\": 620.9, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 3324.9 m. The band floor is 3,560 m, and 3560 - 3324.9 = 235 m short. Landing is 5.1 m/s and the section reached the ground. Rail exit is 22.5 m/s and thrust-to-weight is 14.3. Margin is 0.96 cal, under 1.0. Bigger fins would fix the margin and cost more altitude, so the motor is short as well as the fins. There is a supersonic warning.\n5. Fix: look up a larger L in the same 75 mm class before changing the airframe. L850W is not enough impulse for 3,750 m on this tube.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L2200",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"L2200G\", \"class\": \"L\", \"total_impulse_ns\": 5104.1, \"average_thrust_n\": 2243.0, \"max_thrust_n\": 3101.8, \"burn_time_s\": 2.27, \"diameter_m\": 0.075, \"length_m\": 0.681, \"loaded_mass_kg\": 4.751, \"propellant_mass_kg\": 2.516, \"delays_s\": [0.0, 6.0, 10.0, 14.0, 18.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: L2200G is 5,104 N*s, about 5104 / 3695 = 1.4 times the L850W, at 2,243 N, 75 mm, 0.68 m long, 4.75 kg, propellant 2.52 kg. Same mount diameter, so the tube stays 90 mm. The motor is heavier, which will push the margin the wrong way from 0.96 cal, so the fins grow in the same change.\n3. Size: guessed liftoff mass 7.3 kg. Thrust-to-weight is 2243 / (7.3 * 9.81) = 31. The chute stays 2.0 m. Descent mass rises, so the landing may move up from 5.1 m/s but should stay under 6.\n4. Draft: swap in the L2200G, lengthen the mount to 0.72 m, and grow the fins to span 0.18 m and root 0.32 m. Body, nose, and chute stay.\n5. Fix: this is the change for the short apogee of 3324.9 m and the 0.96 cal margin.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "L2200 3750 m",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.28,
+            "diameter_m": 0.09,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.09,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.08,
+              "length_m": 0.72,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L2200G",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.32,
+              "tip_chord_m": 0.14,
+              "span_m": 0.18,
+              "sweep_m": 0.18,
+              "thickness_m": 0.006,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.02
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3459.8, \"time_to_apogee_s\": 21.3, \"max_velocity_ms\": 574.4, \"max_mach\": 1.7, \"rail_exit_ms\": 32.5, \"liftoff_mass_kg\": 7.67, \"thrust_to_weight\": 29.8, \"stability_rail_exit_cal\": 1.47, \"min_stability_burn_cal\": 1.47, \"flight_time_s\": 577.3, \"total_impulse_ns\": 5104.1, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.7, \"drift_m\": 1002.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.3, \"deploy_velocity_ms\": 2.6, \"flight_time_s\": 577.3, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 3459.8 m. The band floor is 3,560 m, and 3560 - 3459.8 = 100 m still short. Margin is now 1.47 cal, over 1.0. Landing is 5.7 m/s, under 6, and the section reached the ground. Rail exit is 32.5 m/s and thrust-to-weight is 29.8. The fins did their job. The remaining miss is drag on the 90 mm tube.\n5. Fix: slim the airframe from 90 mm to 86 mm. The mount is 80 mm, so 86 mm still clears it. Nose diameter matches. Motor, fins, and chute stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "L2200 3750 m",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.28,
+            "diameter_m": 0.086,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.086,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.08,
+              "length_m": 0.72,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L2200G",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.32,
+              "tip_chord_m": 0.14,
+              "span_m": 0.18,
+              "sweep_m": 0.18,
+              "thickness_m": 0.006,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.02
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3526.9, \"time_to_apogee_s\": 21.48, \"max_velocity_ms\": 582.0, \"max_mach\": 1.72, \"rail_exit_ms\": 32.8, \"liftoff_mass_kg\": 7.6, \"thrust_to_weight\": 30.1, \"stability_rail_exit_cal\": 1.56, \"min_stability_burn_cal\": 1.56, \"flight_time_s\": 591.2, \"total_impulse_ns\": 5104.1, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.7, \"drift_m\": 1028.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.5, \"deploy_velocity_ms\": 2.6, \"flight_time_s\": 591.2, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 3526.9 m. The band floor is 3,560 m, and 3560 - 3526.9 = 33 m still short. Landing is 5.7 m/s and the section reached the ground. Margin is 1.56 cal, rail exit is 32.8 m/s, and thrust-to-weight is 30.1. Slimming helped: 3526.9 - 3459.8 = 67 m. The tube is still longer than the motor needs.\n5. Fix: shorten the body from 1.05 m to 0.88 m. The mount is 0.72 m, so the chute still fits. Diameter, motor, fins, and chute stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_7",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "L2200 3750 m",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.28,
+            "diameter_m": 0.086,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.88,
+            "outer_diameter_m": 0.086,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.08,
+              "length_m": 0.72,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L2200G",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.32,
+              "tip_chord_m": 0.14,
+              "span_m": 0.18,
+              "sweep_m": 0.18,
+              "thickness_m": 0.006,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.02
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_7",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3559.3, \"time_to_apogee_s\": 21.49, \"max_velocity_ms\": 593.7, \"max_mach\": 1.76, \"rail_exit_ms\": 31.8, \"liftoff_mass_kg\": 7.43, \"thrust_to_weight\": 30.8, \"stability_rail_exit_cal\": 1.4, \"min_stability_burn_cal\": 1.4, \"flight_time_s\": 605.5, \"total_impulse_ns\": 5104.1, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.6, \"drift_m\": 1048.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.5, \"deploy_velocity_ms\": 2.8, \"flight_time_s\": 605.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 3559.3 m. The 5% floor is 0.95 * 3750 = 3560 m, and 3560 - 3559.3 = 0.7 m still short. Landing is 5.6 m/s and the section reached the ground. Margin is 1.40 cal, rail exit is 31.8 m/s, and thrust-to-weight is 30.8. Shortening helped: 3559.3 - 3526.9 = 32 m.\n5. Fix: shorten the body from 0.88 m to 0.82 m. The mount is 0.72 m, so the chute at the top still fits. That should clear the last metre of the band.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_8",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "L2200 3750 m",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.28,
+            "diameter_m": 0.086,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.82,
+            "outer_diameter_m": 0.086,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 2.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.08,
+              "length_m": 0.72,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "L2200G",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.32,
+              "tip_chord_m": 0.14,
+              "span_m": 0.18,
+              "sweep_m": 0.18,
+              "thickness_m": 0.006,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.02
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_8",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3570.5, \"time_to_apogee_s\": 21.47, \"max_velocity_ms\": 597.9, \"max_mach\": 1.77, \"rail_exit_ms\": 32.0, \"liftoff_mass_kg\": 7.37, \"thrust_to_weight\": 31.0, \"stability_rail_exit_cal\": 1.36, \"min_stability_burn_cal\": 1.36, \"flight_time_s\": 610.7, \"total_impulse_ns\": 5104.1, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.6, \"drift_m\": 1059.0, \"recovery_deployed\": true, \"deploy_time_s\": 21.5, \"deploy_velocity_ms\": 2.9, \"flight_time_s\": 610.7, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 3570.5 m. The target is 3,750 m, and 3750 - 3570.5 = 180 m, inside the 5% band of 0.05 * 3750 = 188 m. Landing is 5.6 m/s, under 6, and the section reached the ground. Margin is 1.36 cal, rail exit is 32.0 m/s, and thrust-to-weight is 31.0. The chute opened. There is a supersonic warning. Every check passes.\n5. Fix: no further change; the altitude band and the landing both pass.\n6. Uncertainty: 180 m under 3,750 m is near the edge of the band, so a heavier build than the 7.37 kg liftoff mass falls short. The flight is supersonic, Mach 1.77, and the drag model warns that it is less sure there. Chute Cd is a model 0.8. Margin is 1.36 cal in the assumed 2 m/s wind. Drift in the run was 1059 m, with no drift limit stated.",
+   "content": "AeroTech L2200G in an 86 mm fiberglass rocket, 1.1 m long, with a 2.0 m chute at apogee.\nApogee is 3570.5 m, inside the band around 3,750 m, and the landing is 5.6 m/s.\nRail exit is 32.0 m/s at 1.36 cal. Assumptions were a 1.5 m rail and 2 m/s wind.\n<design>{\"name\": \"L2200 3750 m\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.28, \"diameter_m\": 0.086, \"wall_thickness_m\": 0.003, \"material\": \"Fiberglass\", \"shoulder_length_m\": 0.04}, {\"type\": \"bodytube\", \"length_m\": 0.82, \"outer_diameter_m\": 0.086, \"wall_thickness_m\": 0.002, \"material\": \"Fiberglass\", \"contents\": [{\"type\": \"parachute\", \"diameter_m\": 2.0, \"cd\": 0.8, \"deploy_event\": \"apogee\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.08}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.08, \"length_m\": 0.72, \"wall_thickness_m\": 0.002, \"material\": \"Fiberglass\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"L2200G\", \"delay_s\": null}, \"overhang_m\": 0.01, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 4, \"root_chord_m\": 0.32, \"tip_chord_m\": 0.14, \"span_m\": 0.18, \"sweep_m\": 0.18, \"thickness_m\": 0.006, \"material\": \"Plywood (birch)\", \"offset_from_aft_m\": 0.02}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 8,
+ "finished_at": 1792882356.596225
+}

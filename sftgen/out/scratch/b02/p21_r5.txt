@@ -1,0 +1,5 @@
+4. Check: Clay cleared the margin and the altitude stayed far above the floor. The simulator gives 656.7 m, above 200 m. Margin is 1.06 cal at rail exit and through the burn. Landing is 4.2 m/s, under 6 m/s. Rail exit is 29.6 m/s, thrust-to-weight 19.0. Impulse is 47.3 N*s, class F, motor diameter 0.024 m. The chute opened at 9.1 s, just after apogee at 8.98 s, at 2.9 m/s. The section reached the ground. Wind is 6 m/s.
+
+5. Fix: nothing left that fails.
+
+6. Uncertainty: Liftoff mass is 0.129 kg. The first two fin sizes left the margin near zero, and 0.02 kg of clay is what crossed 1.0 cal. It is only 1.06 cal, close to the floor. Chute Cd is 0.8. Drift is 853 m in 6 m/s wind, and the prompt did not cap it.

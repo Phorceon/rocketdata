@@ -1,0 +1,2 @@
+1. Understand: Stay under 2,000 ft. 2000 * 0.3048 = 610 m, and that is a ceiling. The motor is at most 38 mm across and under 250 N*s. Wind is 10 mph: 10 * 0.44704 = 4.47 m/s. The rail is at 3 degrees. Both go on every run. Landing at or under 6 m/s. Rail length and site are not stated: 1.5 m and sea level.
+2. Feasibility: 250 N*s is a small I, and an I on a slim tube will bust 610 m. I want an F or a small G, 38 mm or less, with enough fin to be stable in 4.47 m/s of wind, and enough drag that the peak stays under the ceiling.

@@ -1,0 +1,3 @@
+4. Check: The simulator gives 216.1 m. About 175 m allows roughly 5%, and (216.1 - 175) / 175 = 23% high, so this misses. Everything else passes: margin 2.25 cal, rail exit 28.3 m/s, thrust-to-weight 13.6, landing 3.1 m/s under 6 m/s, one chute open at 5.9 s. Liftoff mass is 0.0391 kg, lighter than I guessed, which is part of the overshoot.
+
+5. Fix: The failing value is apogee 216.1 m against about 175 m. One change: widen the tube and nose from 25 mm to 34 mm with a 1 mm wall. The 18 mm mount still fits, and the extra frontal area is what should spend the B6's impulse. Fins, chute and motor stay.

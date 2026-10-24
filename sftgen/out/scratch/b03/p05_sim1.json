@@ -1,0 +1,70 @@
+{
+  "design": {
+    "name": "41 mm F24 dual deploy",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.10,
+            "diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.025
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.45,
+            "outer_diameter_m": 0.041,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 0.20,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.02
+              },
+              {
+                "type": "parachute",
+                "diameter_m": 0.50,
+                "cd": 0.8,
+                "deploy_event": "altitude",
+                "deploy_altitude_m": 150.0,
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.08
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.028,
+                "length_m": 0.08,
+                "wall_thickness_m": 0.0008,
+                "material": "Cardboard",
+                "motor": {"manufacturer": "AeroTech", "designation": "F24W", "delay_s": null},
+                "overhang_m": 0.005,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Cardboard"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.07,
+                "tip_chord_m": 0.03,
+                "span_m": 0.045,
+                "sweep_m": 0.035,
+                "thickness_m": 0.003,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {"wind_ms": 3.0}
+}

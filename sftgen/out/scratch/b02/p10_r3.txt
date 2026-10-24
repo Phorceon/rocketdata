@@ -1,0 +1,3 @@
+4. Check: Altitude is what a near-minimum-diameter M should do. The simulator gives 5859.7 m, rail exit 25.6 m/s on the 2.5 m rail, thrust-to-weight 12.9, margin 1.81 cal. The miss is the landing: 5.5 m/s, which is not under 5.5 m/s. The chute opened at 29.7 s, at apogee. Mach 1.73, with the supersonic warning. Liftoff mass is 12.2 kg.
+
+5. Fix: The failing value is landing 5.5 m/s against a limit under 5.5 m/s. One change: chute diameter from 2.5 m to 2.8 m. Descent speed scales about with the inverse of diameter, so 5.5 * 2.5 / 2.8 = 4.9 m/s, which clears the cap. Fins and motor stay; the extra canopy does not fly until apogee, so the altitude should barely move.

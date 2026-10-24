@@ -1,0 +1,280 @@
+{
+ "session_id": "g_rocketarium_trident__p2__d1",
+ "prompt_id": "g_rocketarium_trident__p2",
+ "draft": 1,
+ "generator": {
+  "name": "swe2-calib-A",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.0"
+ },
+ "sim_conditions": {
+  "rail_length_m": 0.91,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 278613
+ },
+ "status": "abandoned",
+ "started_at": 1792872837.470478,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "I want to try a three-motor cluster, nothing above a C. It should get to roughly 1,000 ft. Keep the landing under 5.5 m/s. Our pad has a 3 ft rod. What would you build?"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee about 1,000 ft = 1000 * 0.3048 = 305 m (approximate, aim within 5%). Three motors in one cluster, each at most C class (fixed). Touchdown under 5.5 m/s (maximum). Rail is only 3 ft = 3 * 0.3048 = 0.91 m (fixed; the binding constraint — a short rod demands high thrust). Wind not stated, assume 2 m/s. Single stage.\n2. Feasibility: clearing 15 m/s off a 0.91 m rod needs a >= 15^2 / (2 * 0.91) = 124 m/s^2 of acceleration. Three C6s only make about 14.4 N total, which caps liftoff near 0.108 kg — lighter than any triple-mount airframe I can build. The cluster needs higher-thrust C motors. Checking C6, C11, C12 and B6 for thrust, mass and diameter.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C6"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C11"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C12"
+      }
+     }
+    },
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "B6"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"C6\", \"class\": \"C\", \"total_impulse_ns\": 8.8, \"average_thrust_n\": 4.8, \"max_thrust_n\": 14.1, \"burn_time_s\": 1.83, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0231, \"propellant_mass_kg\": 0.0108, \"delays_s\": [0.0, 3.0, 5.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"C11\", \"class\": \"C\", \"total_impulse_ns\": 8.8, \"average_thrust_n\": 11.3, \"max_thrust_n\": 21.7, \"burn_time_s\": 0.78, \"diameter_m\": 0.024, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0353, \"propellant_mass_kg\": 0.012, \"delays_s\": [0.0, 3.0, 5.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Quest\", \"designation\": \"C12\", \"class\": \"C\", \"total_impulse_ns\": 9.9, \"average_thrust_n\": 11.9, \"max_thrust_n\": 17.7, \"burn_time_s\": 0.83, \"diameter_m\": 0.018, \"length_m\": 0.0787, \"loaded_mass_kg\": 0.0237, \"propellant_mass_kg\": 0.0104, \"delays_s\": [4.0, 6.0, 8.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"B6\", \"class\": \"B\", \"total_impulse_ns\": 4.3, \"average_thrust_n\": 5.2, \"max_thrust_n\": 12.1, \"burn_time_s\": 0.83, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0156, \"propellant_mass_kg\": 0.0056, \"delays_s\": [0.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: the Quest C12 is the answer — 11.9 N average each, so three of them give 3 * 11.9 = 35.7 N on only 3 * 0.0237 = 0.071 kg of motors, and they are still C class at 9.9 N*s apiece. The C11 offers similar thrust but is 24 mm wide and heavier; the C6 and B6 cannot lift a cluster off a 0.91 m rod. Maximum liftoff mass for rail exit is about 35.7 / (124 + 9.81) = 0.267 kg.\n3. Size: airframe about 0.10 kg plus motors gives liftoff near 0.175 kg. Thrust-to-weight = 35.7 / (0.175 * 9.81) = 20.8. On the rod a = (35.7 - 1.72) / 0.175 = 194 m/s^2, so v = sqrt(2 * 194 * 0.91) = 18.8 m/s at exit. Ideal delta-v = 29.7 / 0.175 = 170 m/s; a 45 mm airframe burns a lot of that to drag, so the result should land in the few-hundred-metre band around the goal. Three 19.5 mm mounts pack a cluster span of 19.5 * 2.155 = 42.0 mm, which needs a body ID of at least 42 mm — a 45 mm tube with 0.8 mm walls leaves 43.4 mm. Descent mass about 0.175 - 0.0312 = 0.14 kg; a 0.40 m chute at Cd 0.8 gives sqrt(2 * 0.14 * 9.81 / (1.225 * 0.8 * 0.126)) = 4.7 m/s. Delay: three ejection charges fire together, so ignition redundancy is built in; C12 offers 4, 6 and 8 s, and for a ~300 m flight I'll take the 4 s option.\n4. Draft: 45 mm card body, 0.50 m long, hollow plastic ogive nose, four balsa fins, triple 19.5 mm mounts on two plywood rings, Quest C12-4s, 0.40 m chute. Simulating on the 0.91 m rod.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "C12 triple cluster",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.12,
+            "diameter_m": 0.045,
+            "wall_thickness_m": 0.0015,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.5,
+            "outer_diameter_m": 0.045,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.4,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0195,
+              "length_m": 0.08,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "Quest",
+               "designation": "C12",
+               "delay_s": 4.0
+              },
+              "cluster_count": 3,
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.08,
+              "tip_chord_m": 0.04,
+              "span_m": 0.05,
+              "sweep_m": 0.03,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "rail_length_m": 0.91
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 367.8, \"time_to_apogee_s\": 5.46, \"max_velocity_ms\": 182.2, \"max_mach\": 0.54, \"rail_exit_ms\": 19.4, \"liftoff_mass_kg\": 0.146, \"thrust_to_weight\": 24.9, \"stability_rail_exit_cal\": 0.86, \"min_stability_burn_cal\": 0.86, \"flight_time_s\": 91.0, \"total_impulse_ns\": 29.7, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.6, \"drift_m\": 158.0, \"recovery_deployed\": true, \"deploy_time_s\": 4.9, \"deploy_velocity_ms\": 25.6, \"flight_time_s\": 91.0, \"reached_ground\": true}], \"warnings\": [\"Recovery device deployment at high speed (25.6 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 0.91, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulated apogee of 367.8 m is 21% over the 305 m goal, outside the 5% band. Stability at rail exit is 0.86 cal against the 1.0 cal gate, a real failure. And the chute fired at 4.9 s while apogee was at 5.46 s, so it opened at 25.6 m/s and drew a high-speed deployment warning. Good numbers: rail exit 19.4 m/s off the short rod, thrust-to-weight 24.9, touchdown 4.6 m/s. Liftoff mass came back 0.146 kg, lighter than my 0.175 kg guess.\n5. Fix: three items, two changes. Margin 0.86 cal vs the 1.0 gate and the 21% altitude overshoot share one cause — not enough fin area aft — so fins grow: root 0.08 to 0.10 m, span 0.05 to 0.065 m, tip 0.04 to 0.05 m, about 60% more area, moving CP aft and adding drag. Separately, the 25.6 m/s deployment comes from the 4 s delay firing 0.5 s before apogee; the C12's 6 s option puts ejection about 1.5 s past apogee on this trajectory. Re-simulating.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "C12 triple cluster",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.12,
+            "diameter_m": 0.045,
+            "wall_thickness_m": 0.0015,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.5,
+            "outer_diameter_m": 0.045,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.4,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0195,
+              "length_m": 0.08,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "Quest",
+               "designation": "C12",
+               "delay_s": 6.0
+              },
+              "cluster_count": 3,
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.1,
+              "tip_chord_m": 0.05,
+              "span_m": 0.065,
+              "sweep_m": 0.04,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "rail_length_m": 0.91
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 369.0, \"time_to_apogee_s\": 7.04, \"max_velocity_ms\": 176.9, \"max_mach\": 0.52, \"rail_exit_ms\": 19.2, \"liftoff_mass_kg\": 0.149, \"thrust_to_weight\": 24.5, \"stability_rail_exit_cal\": 1.26, \"min_stability_burn_cal\": 1.26, \"flight_time_s\": 92.0, \"total_impulse_ns\": 29.7, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.8, \"drift_m\": 153.0, \"recovery_deployed\": true, \"deploy_time_s\": 6.9, \"deploy_velocity_ms\": 1.7, \"flight_time_s\": 92.0, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 0.91, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  }
+ ],
+ "call_counter": 6,
+ "abandon_reason": "generator interrupted by rate limit mid-trace; restarted as a new draft"
+}

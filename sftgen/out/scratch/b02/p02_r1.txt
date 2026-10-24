@@ -1,0 +1,3 @@
+1. Understand: Apogee roughly 650 m, so about 650 m, within 5%. Motor diameter at most 38 mm, which is 0.038 m (maximum). Landing softer than 15 ft/s. 15 * 0.3048 = 4.57 m/s, so touchdown must stay under that (maximum). Wind, rail and site are not stated: I assume 2 m/s wind, a vertical 1.5 m rail and sea level. Single stage, no payload and no duration cap.
+
+2. Feasibility: Drag-free speed for 650 m is sqrt(2 * 9.81 * 650) = 113 m/s. A 29 mm G will usually fall short of that once drag is included, and a light 38 mm I will sail past it. An H in a modest 38 mm airframe is the band I want. Looking up a few H and I motors in that diameter before sizing.

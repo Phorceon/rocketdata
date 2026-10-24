@@ -1,0 +1,19 @@
+{
+  "design": {
+    "name": "D12 contest",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {"type": "nosecone", "shape": "ogive", "length_m": 0.12, "diameter_m": 0.041, "wall_thickness_m": 0.001, "material": "Cardboard"},
+          {"type": "bodytube", "length_m": 0.5, "outer_diameter_m": 0.041, "wall_thickness_m": 0.001, "material": "Cardboard", "contents": [
+            {"type": "parachute", "diameter_m": 0.36, "cd": 0.8, "deploy_event": "ejection", "material": "Ripstop nylon", "position_from_top_m": 0.06},
+            {"type": "motor_mount", "outer_diameter_m": 0.028, "length_m": 0.08, "wall_thickness_m": 0.001, "material": "Kraft phenolic", "motor": {"manufacturer": "Estes", "designation": "D12", "delay_s": 7.0}, "overhang_m": 0.005, "centering_ring_count": 2, "centering_ring_material": "Plywood (birch)"},
+            {"type": "trapezoidal_fins", "count": 3, "root_chord_m": 0.06, "tip_chord_m": 0.03, "span_m": 0.04, "sweep_m": 0.03, "thickness_m": 0.003, "material": "Plywood (birch)", "offset_from_aft_m": 0.005}
+          ]}
+        ]
+      }
+    ]
+  },
+  "conditions": {"site_altitude_m": 300}
+}

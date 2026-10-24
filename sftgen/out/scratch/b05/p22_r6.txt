@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 3526.9 m. The band floor is 3,560 m, and 3560 - 3526.9 = 33 m still short. Landing is 5.7 m/s and the section reached the ground. Margin is 1.56 cal, rail exit is 32.8 m/s, and thrust-to-weight is 30.1. Slimming helped: 3526.9 - 3459.8 = 67 m. The tube is still longer than the motor needs.
+5. Fix: shorten the body from 1.05 m to 0.88 m. The mount is 0.72 m, so the chute still fits. Diameter, motor, fins, and chute stay.

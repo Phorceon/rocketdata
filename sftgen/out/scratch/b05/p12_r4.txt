@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 931.7 m, still over 700 by 931.7 - 700 = 232 m. Landing is 4.8 m/s. Impulse is 188.3 N*s. Rail exit is 18.8 m/s. Margin only rose to 0.41 cal, still under 1.0. Larger fins moved the center of pressure, but the heavy motor keeps the center of gravity too far aft.
+5. Fix: add 0.08 kg at the front of the body tube. That pulls the center of gravity forward without another motor. Spare altitude is 232 m, so the extra mass should still clear 700 m. Fins, chute, and the 1,200 m site stay.

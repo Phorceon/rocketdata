@@ -1,0 +1,62 @@
+{
+  "design": {
+    "name": "C11 three-motor cluster",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.14,
+            "diameter_m": 0.056,
+            "wall_thickness_m": 0.002,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.025
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.42,
+            "outer_diameter_m": 0.056,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 0.48,
+                "cd": 0.8,
+                "deploy_event": "ejection",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.05
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.0254,
+                "length_m": 0.075,
+                "wall_thickness_m": 0.0005,
+                "material": "Cardboard",
+                "motor": {"manufacturer": "Estes", "designation": "C11", "delay_s": 5.0},
+                "cluster_count": 3,
+                "overhang_m": 0.005,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Plywood (birch)"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.1,
+                "tip_chord_m": 0.04,
+                "span_m": 0.08,
+                "sweep_m": 0.05,
+                "thickness_m": 0.0032,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.012
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "conditions": {"rail_length_m": 0.914}
+}

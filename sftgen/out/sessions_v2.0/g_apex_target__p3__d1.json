@@ -1,0 +1,612 @@
+{
+ "session_id": "g_apex_target__p3__d1",
+ "prompt_id": "g_apex_target__p3",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-calib-B",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.0"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 701408
+ },
+ "status": "abandoned",
+ "started_at": 1792875936.474148,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "I'm new to rocketry. It should reach at least 2,500 m and be back on the ground in under 4 minutes, so it doesn't drift off the field. Dual deploy is fine. Wind is usually around 2 m/s. Something I can actually build, please."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee at least 2,500 m. Total flight time at most 4 minutes, which is 4 * 60 = 240 s, so the rocket is back before it can drift far. Dual deploy is allowed. Wind is about 2 m/s. Nothing is said about rail length, launch angle, or landing speed, so I assume a 1.5 m rail, a vertical launch, and the usual 6 m/s touchdown limit. One stage is enough; the builder asked for something they can actually make.\n2. Feasibility: a single chute cannot do both jobs. At the 6 m/s landing limit the descent alone from 2,500 m takes 2500 / 6 = 417 s, and the climb is extra, so the flight would run well past 240 s. Dual deploy is required: a small drogue from apogee, then a main low enough that the slow part stays short. The no-drag burnout speed for 2,500 m is sqrt(2 * 9.81 * 2500) = 221 m/s. Drag will eat a large share of that, so I want on the order of 600 to 1,200 N*s in a light 54 mm airframe rather than a huge Level 3 motor. I need real impulse, thrust, mass, and delay data before I pick one.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J350W"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J90W"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J800T"
+      }
+     }
+    },
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K550W"
+      }
+     }
+    },
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K360W"
+      }
+     }
+    },
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J415W"
+      }
+     }
+    },
+    {
+     "id": "call_7",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "I600R"
+      }
+     }
+    },
+    {
+     "id": "call_8",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J570W"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J350W\", \"class\": \"J\", \"total_impulse_ns\": 669.2, \"average_thrust_n\": 445.4, \"max_thrust_n\": 841.4, \"burn_time_s\": 1.49, \"diameter_m\": 0.038, \"length_m\": 0.337, \"loaded_mass_kg\": 0.651, \"propellant_mass_kg\": 0.361, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J90W\", \"class\": \"J\", \"total_impulse_ns\": 689.4, \"average_thrust_n\": 97.6, \"max_thrust_n\": 187.2, \"burn_time_s\": 7.05, \"diameter_m\": 0.054, \"length_m\": 0.243, \"loaded_mass_kg\": 0.8525, \"propellant_mass_kg\": 0.4274, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J800T\", \"class\": \"J\", \"total_impulse_ns\": 1264.4, \"average_thrust_n\": 665.0, \"max_thrust_n\": 841.3, \"burn_time_s\": 1.9, \"diameter_m\": 0.054, \"length_m\": 0.316, \"loaded_mass_kg\": 1.0859, \"propellant_mass_kg\": 0.6133, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K550W\", \"class\": \"K\", \"total_impulse_ns\": 1624.9, \"average_thrust_n\": 536.2, \"max_thrust_n\": 797.9, \"burn_time_s\": 3.02, \"diameter_m\": 0.054, \"length_m\": 0.41, \"loaded_mass_kg\": 1.4874, \"propellant_mass_kg\": 0.9197, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Cesaroni Technology Inc.\", \"designation\": \"1281K360-13A\", \"class\": \"K\", \"total_impulse_ns\": 1280.4, \"average_thrust_n\": 367.7, \"max_thrust_n\": 405.2, \"burn_time_s\": 3.48, \"diameter_m\": 0.054, \"length_m\": 0.329, \"loaded_mass_kg\": 1.232, \"propellant_mass_kg\": 0.747, \"delays_s\": [4.0, 6.0, 8.0, 10.0, 13.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J415W\", \"class\": \"K\", \"total_impulse_ns\": 1290.5, \"average_thrust_n\": 423.0, \"max_thrust_n\": 553.9, \"burn_time_s\": 3.04, \"diameter_m\": 0.054, \"length_m\": 0.314, \"loaded_mass_kg\": 1.1572, \"propellant_mass_kg\": 0.6863, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_7",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"I600R\", \"class\": \"J\", \"total_impulse_ns\": 640.1, \"average_thrust_n\": 571.8, \"max_thrust_n\": 817.8, \"burn_time_s\": 1.12, \"diameter_m\": 0.038, \"length_m\": 0.3454, \"loaded_mass_kg\": 0.617, \"propellant_mass_kg\": 0.3237, \"delays_s\": [6.0, 10.0, 14.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_8",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J570W\", \"class\": \"J\", \"total_impulse_ns\": 1033.8, \"average_thrust_n\": 533.6, \"max_thrust_n\": 1149.8, \"burn_time_s\": 1.93, \"diameter_m\": 0.038, \"length_m\": 0.479, \"loaded_mass_kg\": 0.8861, \"propellant_mass_kg\": 0.5479, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: the J800T returns 1264.4 N*s, 665.0 N average, a 1.9 s burn, 0.054 m diameter and 1.0859 kg loaded. That is enough impulse for 2,500 m if the airframe stays near 2 kg, and the thrust will leave a 1.5 m rail quickly. The J90W has a similar 689.4 N*s but only 97.6 N average. At 2.0 kg its thrust-to-weight is 97.6 / (2.0 * 9.81) = 5.0, and the rail-exit estimate is sqrt(2 * 39.0 * 1.5) = 10.8 m/s after (97.6 - 2.0 * 9.81) / 2.0 = 39.0 m/s^2, short of 15 m/s. The J350W and I600R are about half the impulse and are 38 mm motors. The K550W at 1624.9 N*s would clear the altitude with room, but it is more motor than this flight needs, so I am holding it as the backup. The J800T delay list is only 0, so the motor stays plugged and electronics fire the chutes.\n3. Size: liftoff mass about 2.0 kg, so burnout mass is 2.0 - 0.61 = 1.39 kg, call it 1.4 kg. Thrust-to-weight is 665.0 / (2.0 * 9.81) = 33.9. Net acceleration is (665.0 - 2.0 * 9.81) / 2.0 = 323 m/s^2, so rail exit is about sqrt(2 * 323 * 1.5) = 31.1 m/s. Drogue area 3.1416 * 0.15 * 0.15 = 0.0707 m^2 gives sqrt(2 * 1.4 * 9.81 / (1.225 * 0.8 * 0.0707)) = 19.9 m/s. Main area 3.1416 * 0.6 * 0.6 = 1.13 m^2 gives sqrt(2 * 1.4 * 9.81 / (1.225 * 0.8 * 1.13)) = 5.0 m/s. From 2,500 m down to a 150 m main, drogue time is (2500 - 150) / 19.9 = 118 s, the main takes 150 / 5.0 = 30 s, and with about 25 s to apogee the flight is 25 + 118 + 30 = 173 s, inside 240 s. A higher apogee eats that margin.\n4. Draft: 76 mm fiberglass airframe, 0.85 m tube plus a 0.19 m ogive nose, three plywood fins, a 54 mm mount for the plugged J800T, a 0.30 m drogue at apogee and a 1.2 m main at 150 m. A 50 g altimeter mass stands in for the bay. Flying it in the stated 2 m/s wind.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_9",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm J800 dual-deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.19,
+            "diameter_m": 0.076,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 0.85,
+            "outer_diameter_m": 0.076,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "altimeter and bay",
+              "mass_kg": 0.05,
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 150.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.3,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.28
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.057,
+              "length_m": 0.33,
+              "wall_thickness_m": 0.001,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "J800T",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.16,
+              "tip_chord_m": 0.06,
+              "span_m": 0.09,
+              "sweep_m": 0.08,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_9",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2340.8, \"time_to_apogee_s\": 16.86, \"max_velocity_ms\": 518.1, \"max_mach\": 1.53, \"rail_exit_ms\": 35.7, \"liftoff_mass_kg\": 2.03, \"thrust_to_weight\": 33.4, \"stability_rail_exit_cal\": 0.66, \"min_stability_burn_cal\": 0.66, \"flight_time_s\": 150.3, \"total_impulse_ns\": 1264.4, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.3, \"drift_m\": 203.0, \"recovery_deployed\": true, \"deploy_time_s\": 16.9, \"deploy_velocity_ms\": 1.1, \"flight_time_s\": 150.3, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (20.3 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives 2340.8 m, and 2500 - 2340.8 = 159 m short of the 2,500 m minimum, so altitude fails. Flight time 150.3 s is under 240 s, with 240 - 150.3 = 90 s of margin. Landing 5.3 m/s is under 6 m/s. Rail exit 35.7 m/s and thrust-to-weight 33.4 both clear their gates, and liftoff mass 2.03 kg matches the 2.0 kg estimate. Stability at rail exit is 0.66 cal, below the 1.0 cal minimum, so the flight is not safe. The drogue-speed warning of 20.3 m/s lines up with the 19.9 m/s estimate; the main opens at that speed and still lands at 5.3 m/s, so I am leaving the chutes alone. It also went supersonic, Mach 1.53, which the fiberglass tube was meant to survive.\n5. Fix: the failing margin is 0.66 cal against a 1.0 cal floor. The fins are too small for a heavy 54 mm motor in the tail. I am only enlarging them: root 0.20 m, tip 0.08 m, span 0.14 m, sweep 0.10 m. New fin area is (0.20 + 0.08) / 2 * 0.14 = 0.0196 m^2 against the old (0.16 + 0.06) / 2 * 0.09 = 0.0099 m^2, and 0.0196 / 0.0099 = 1.98 times the area. Span in calibers is 0.14 / 0.076 = 1.8. Altitude is still short, but that number came from an under-stable rocket, so I want a stable flight before I change the motor.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_10",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm J800 dual-deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.19,
+            "diameter_m": 0.076,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 0.85,
+            "outer_diameter_m": 0.076,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "altimeter and bay",
+              "mass_kg": 0.05,
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 150.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.3,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.28
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.057,
+              "length_m": 0.33,
+              "wall_thickness_m": 0.001,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "J800T",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.2,
+              "tip_chord_m": 0.08,
+              "span_m": 0.14,
+              "sweep_m": 0.1,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_10",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2055.1, \"time_to_apogee_s\": 15.85, \"max_velocity_ms\": 478.0, \"max_mach\": 1.41, \"rail_exit_ms\": 35.2, \"liftoff_mass_kg\": 2.08, \"thrust_to_weight\": 32.5, \"stability_rail_exit_cal\": 1.36, \"min_stability_burn_cal\": 1.36, \"flight_time_s\": 134.5, \"total_impulse_ns\": 1264.4, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.3, \"drift_m\": 158.0, \"recovery_deployed\": true, \"deploy_time_s\": 15.8, \"deploy_velocity_ms\": 1.6, \"flight_time_s\": 134.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (20.7 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: larger fins fixed the margin. The simulator gives 1.36 cal at rail exit, above 1.0, and the burn minimum is the same 1.36 cal. Rail exit 35.2 m/s, thrust-to-weight 32.5, landing 5.3 m/s and flight time 134.5 s all still pass. Apogee fell to 2055.1 m. That is 2500 - 2055.1 = 445 m under the minimum, so altitude still fails. The extra fin area cost 2340.8 - 2055.1 = 286 m. Liftoff mass only rose to 2.08 kg, so the loss is drag, and the rocket still reaches Mach 1.41.\n5. Fix: the failing value is 2055.1 m against a 2,500 m minimum. The K550W backup is 1624.9 N*s and 1.4874 kg against the J800T's 1264.4 N*s and 1.0859 kg. Added mass is 1.4874 - 1.0859 = 0.4015 kg, so liftoff becomes 2.08 + 0.4015 = 2.48 kg. Impulse ratio 1624.9 / 1264.4 = 1.29, mass ratio 2.48 / 2.08 = 1.19, and 1.29 / 1.19 = 1.08. Scaled altitude 2055.1 * 1.08 = 2220 m, still short of 2,500 m, so the K550W is the wrong step. I need a motor with clearly more impulse and I am looking those up before I change the rocket.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_11",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K1050W"
+      }
+     }
+    },
+    {
+     "id": "call_12",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K700W"
+      }
+     }
+    },
+    {
+     "id": "call_13",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L850W"
+      }
+     }
+    },
+    {
+     "id": "call_14",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L1000W"
+      }
+     }
+    },
+    {
+     "id": "call_15",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L1520T"
+      }
+     }
+    },
+    {
+     "id": "call_16",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K1440"
+      }
+     }
+    },
+    {
+     "id": "call_17",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "L730"
+      }
+     }
+    },
+    {
+     "id": "call_18",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K185W"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_11",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K1050W\", \"class\": \"K\", \"total_impulse_ns\": 2522.0, \"average_thrust_n\": 1060.9, \"max_thrust_n\": 1468.5, \"burn_time_s\": 2.37, \"diameter_m\": 0.054, \"length_m\": 0.627, \"loaded_mass_kg\": 2.259, \"propellant_mass_kg\": 1.373, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_12",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K700W\", \"class\": \"K\", \"total_impulse_ns\": 2283.7, \"average_thrust_n\": 688.9, \"max_thrust_n\": 1029.3, \"burn_time_s\": 3.3, \"diameter_m\": 0.054, \"length_m\": 0.568, \"loaded_mass_kg\": 2.0353, \"propellant_mass_kg\": 1.2916, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_13",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"L850W\", \"class\": \"L\", \"total_impulse_ns\": 3695.0, \"average_thrust_n\": 868.2, \"max_thrust_n\": 1184.8, \"burn_time_s\": 4.24, \"diameter_m\": 0.075, \"length_m\": 0.531, \"loaded_mass_kg\": 3.6732, \"propellant_mass_kg\": 2.0653, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_14",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"HP-L1000W\", \"class\": \"L\", \"total_impulse_ns\": 2702.1, \"average_thrust_n\": 991.0, \"max_thrust_n\": 1322.3, \"burn_time_s\": 2.72, \"diameter_m\": 0.054, \"length_m\": 0.635, \"loaded_mass_kg\": 2.194, \"propellant_mass_kg\": 1.4, \"delays_s\": [18.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_15",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"L1520T\", \"class\": \"L\", \"total_impulse_ns\": 3769.0, \"average_thrust_n\": 1511.4, \"max_thrust_n\": 1696.6, \"burn_time_s\": 2.49, \"diameter_m\": 0.075, \"length_m\": 0.5179, \"loaded_mass_kg\": 3.62, \"propellant_mass_kg\": 1.773, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_16",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Cesaroni Technology Inc.\", \"designation\": \"2372K1440-17A\", \"class\": \"K\", \"total_impulse_ns\": 2371.1, \"average_thrust_n\": 1427.2, \"max_thrust_n\": 1718.8, \"burn_time_s\": 1.66, \"diameter_m\": 0.054, \"length_m\": 0.572, \"loaded_mass_kg\": 1.893, \"propellant_mass_kg\": 1.129, \"delays_s\": [8.0, 11.0, 14.0, 17.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_17",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Cesaroni Technology Inc.\", \"designation\": \"2765L730-P\", \"class\": \"L\", \"total_impulse_ns\": 2763.2, \"average_thrust_n\": 739.1, \"max_thrust_n\": 1216.6, \"burn_time_s\": 3.74, \"diameter_m\": 0.054, \"length_m\": 0.649, \"loaded_mass_kg\": 2.247, \"propellant_mass_kg\": 1.351, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_18",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K185W\", \"class\": \"K\", \"total_impulse_ns\": 1378.6, \"average_thrust_n\": 193.5, \"max_thrust_n\": 339.7, \"burn_time_s\": 7.1, \"diameter_m\": 0.054, \"length_m\": 0.437, \"loaded_mass_kg\": 1.4341, \"propellant_mass_kg\": 0.827, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "5. Fix: 2055.1 m is still short of 2,500 m. The K700W is the lightest step up that might do it, at 2283.7 N*s, but it is another short, heavy burn and the margin would be thin. The 75 mm L850W and L1520T do not fit a 0.073 m tube. The 2765L730-P is a 54 mm plugged reload: 2763.2 N*s, 739.1 N average, 3.74 s burn, 0.649 m long and 2.247 kg. It has more impulse and a longer burn than the J800T, which is what the Mach 1.41 flight was asking for.\nMass added by the casing swap is 2.247 - 1.0859 = 1.16 kg, so 2.08 + 1.16 = 3.24 kg before the longer tube. I am allowing about 0.15 kg for the extra 0.20 m of airframe, 3.24 + 0.15 = 3.39 kg, and sizing to 3.4 kg. Thrust-to-weight is 739.1 / (3.4 * 9.81) = 22.2. Rail acceleration is (739.1 - 3.4 * 9.81) / 3.4 = 208 m/s^2, and sqrt(2 * 208 * 1.5) = 25.0 m/s. Impulse ratio 2763.2 / 1264.4 = 2.19, mass ratio 3.4 / 2.08 = 1.63, and 2.19 / 1.63 = 1.34, so a rough altitude is 2055.1 * 1.34 = 2750 m.\nThe heavier burnout needs a bigger main. Old burnout was 2.08 - 0.6133 = 1.47 kg. Empty motors are 1.0859 - 0.6133 = 0.473 kg and 2.247 - 1.351 = 0.896 kg, so the new burnout is 1.47 - 0.473 + 0.896 + 0.15 = 2.04 kg. Speed scales by sqrt(2.04 / 1.47) = 1.18, and 5.3 * 1.18 = 6.25 m/s, over the 6 m/s limit. A main of 1.2 * 6.25 / 5.0 = 1.5 m brings that back near 5 m/s. The mount grows to 0.67 m and the tube to 1.05 m so the motor and the chutes both fit. Fins stay as they are.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_19",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "75 mm L730 dual-deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.19,
+            "diameter_m": 0.076,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.04
+           },
+           {
+            "type": "bodytube",
+            "name": "airframe",
+            "length_m": 1.05,
+            "outer_diameter_m": 0.076,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "altimeter and bay",
+              "mass_kg": 0.05,
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.5,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 150.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.3,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.28
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.057,
+              "length_m": 0.67,
+              "wall_thickness_m": 0.001,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "Cesaroni Technology Inc.",
+               "designation": "2765L730-P",
+               "delay_s": null
+              },
+              "overhang_m": 0.01,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.2,
+              "tip_chord_m": 0.08,
+              "span_m": 0.14,
+              "sweep_m": 0.1,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_19",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 3507.5, \"time_to_apogee_s\": 20.3, \"max_velocity_ms\": 562.8, \"max_mach\": 1.67, \"rail_exit_ms\": 32.2, \"liftoff_mass_kg\": 3.46, \"thrust_to_weight\": 21.8, \"stability_rail_exit_cal\": 2.36, \"min_stability_burn_cal\": 2.36, \"flight_time_s\": 176.8, \"total_impulse_ns\": 2763.2, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.1, \"drift_m\": 146.0, \"recovery_deployed\": true, \"deploy_time_s\": 20.3, \"deploy_velocity_ms\": 3.0, \"flight_time_s\": 176.8, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (24.7 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  }
+ ],
+ "call_counter": 19,
+ "abandon_reason": "must leakage: chute area 1.13 matched a later K1440 propellant mass of 1.129"
+}

@@ -1,0 +1,2 @@
+1. Understand: two motors in a cluster (fixed count). Each motor is class D or smaller. Apogee about 95 m, so within 5%, roughly 90 to 100 m. Landing under 18 ft/s: 18 * 0.3048 = 5.49 m/s maximum. Wind, rail and site are not stated, so 2 m/s, a 1.5 m rail, vertical, sea level. Single stage. One parachute.
+2. Feasibility: 95 m with no drag needs sqrt(2 * 9.81 * 95) = 43 m/s. Two D motors are about 30 N*s together, which on a light rocket overshoots 95 m, and two C motors may not lift a fat airframe at 3:1. I need both classes before I choose.

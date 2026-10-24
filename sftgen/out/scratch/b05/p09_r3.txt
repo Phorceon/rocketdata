@@ -1,0 +1,3 @@
+4. Check: the simulator gives apogee 419.1 m. The ceiling is 457 m, and 457 - 419.1 = 38 m of room under it, so the maximum passes. Landing is 3.6 m/s, under 4.6. Rail exit is 22.0 m/s, thrust-to-weight is 8.4, and margin is 2.13 cal. The motor is an E12, inside the E cap. The chute opened. Every check passes.
+5. Fix: no fix was needed.
+6. Uncertainty: 38 m under the ceiling is enough for a normal build, but a lighter rocket than the 0.137 kg in the run will go higher and can cross 457 m. Chute Cd is a model 0.8, so the 3.6 m/s landing will move if the real canopy differs. Wind was assumed at 2 m/s. Margin is 2.13 cal, stable, with some weathercock if the wind is stronger.

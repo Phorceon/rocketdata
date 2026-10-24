@@ -1,0 +1,3 @@
+1. Understand: Two-stage, motors fixed. Booster is a Cesaroni O3400. Sustainer is a Cesaroni M2045. Apogee about 8,000 m, within 5%. Both sections land under 5 m/s (maximum). Wind about 2 m/s, so I will fly at 2 m/s. Rail and site are not stated: 1.5 m vertical rail, sea level.
+
+2. Feasibility: 8,000 m drag-free needs sqrt(2 * 9.81 * 8000) = 396 m/s at burnout, and drag will take a large cut, so these motors only work in a narrow, light-for-their-class airframe. An O plus an M may also bump into the 40,960 N*s total-impulse ceiling. I need both motors' impulse, thrust, diameter and mass before I size anything.

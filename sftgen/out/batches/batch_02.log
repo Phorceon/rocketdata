@@ -1,0 +1,22 @@
+g_endurance__p3	g_endurance__p3__d1	final	4	3	K185W 58mm; fins then tube then long-burn to clear 2500 m
+g_rocketserializer_rocket__p3	g_rocketserializer_rocket__p3__d1	final	4	3	G64W still 843 m vs about 650 m; gates pass
+g_starfire73_talon__p1	g_starfire73_talon__p1__d1	final	5	4	E12-8 42mm; 439 m and 115 s on the edges
+g_twostager__p4	g_twostager__p4__d1	final	1	0	K185W 60mm clean pass, 2619 m
+g_estes_rubicon_2189__p2	g_estes_rubicon_2189__p2__d1	final	3	2	B6 31mm single chute, 173 m
+g_estes_boosted_bertha_1946__p1	g_estes_boosted_bertha_1946__p1__d1	final	5	4	C6-5/C6-5 50mm; 247 m still over about 229 m
+g_starfire_star_crusher__p3	g_starfire_star_crusher__p3__d1	final	1	0	E30-7 34mm clean pass, 584 m on 1 m rail
+g_3d_printable_nose_cone_and_fins__p1	g_3d_printable_nose_cone_and_fins__p1__d1	final	1	0	D21T 28mm clean pass, 483 m
+g_siruis_o3400__p1	g_siruis_o3400__p1__d2	final	2	1	d1 abandoned for 5-sig sum; d2 O3400/M2045 7861 m, sim caps at 1200 s
+g_nemesis150_v4_3__p1	g_nemesis150_v4_3__p1__d1	final	2	1	M1545 86mm, chute to 4.9 m/s, 5855 m
+g_openrocket_projects_bryant_test_rocket__p2	g_openrocket_projects_bryant_test_rocket__p2__d1	final	4	3	four C6-5 56mm; 313 m and 0.75 cal still miss
+g_sainath_l1__p3	g_sainath_l1__p3__d1	final	3	2	G64W 54mm; 635 m under 750, margin 1.29 after clay
+g_borealisa8_10_final__p1	g_borealisa8_10_final__p1__d1	final	1	0	K1200 60mm clean pass, 3613 m, landing 3.6
+g_darkstar_mini_1__p3	g_darkstar_mini_1__p3__d1	final	4	3	E12-6 48mm; 371 m in band, margin 1.16 after clay
+g_k2050sim__p3	g_k2050sim__p3__d2	final	1	0	d1 abandoned for step-4-after-5; d2 L1000 dual deploy 3886 m, drift 895
+g_two_stage_02__p4	g_two_stage_02__p4__d1	final	2	1	I200W 38mm; 1432 m above 1250
+g_apex_04_21__p3	g_apex_04_21__p3__d1	final	3	2	K1200 60mm dual deploy; 3337 m and 237 s, should-level 3048 sig figs
+g_myles_l1__p2	g_myles_l1__p2__d1	final	2	1	G64W 46mm; 834 m in band, margin 1.3 after clay
+g_myles_l1__p1	g_myles_l1__p1__d1	final	1	0	H128W 38mm clean pass, 943 m; chute opens at 37.5 m/s
+g_mojave_sphinx_v1_2__p1	g_mojave_sphinx_v1_2__p1__d1	final	1	0	45 km/h infeasible (12.5>8.94); closest I200 at 8.9 m/s, 1789 m
+g_test_1__p3	g_test_1__p3__d1	final	3	2	F24W 29mm; 657 m above 200, margin 1.06 after clay
+g_siriusrocketry_eradicator_s_0017__p1	g_siriusrocketry_eradicator_s_0017__p1__d1	final	1	0	HP-I205W 38mm clean pass, 1335 m; chute opens at 38.9 m/s

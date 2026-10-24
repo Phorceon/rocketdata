@@ -1,0 +1,2 @@
+4. Check: the flight did not run. The tool rejected the design because the chute material was plain polyethylene, which is not an allowed surface material.
+5. Fix: the failing item is the chute material. I am changing it to polyethylene (thin). The airframe, C6-5, fins and the 1 m rod stay the same.

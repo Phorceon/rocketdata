@@ -1,0 +1,60 @@
+{
+  "design": {
+    "name": "38 mm I205 altitude",
+    "stages": [
+      {
+        "name": "Sustainer",
+        "components": [
+          {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.10,
+            "diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.02
+          },
+          {
+            "type": "bodytube",
+            "length_m": 0.48,
+            "outer_diameter_m": 0.038,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+              {
+                "type": "parachute",
+                "diameter_m": 0.55,
+                "cd": 0.8,
+                "deploy_event": "apogee",
+                "material": "Ripstop nylon",
+                "position_from_top_m": 0.03
+              },
+              {
+                "type": "motor_mount",
+                "outer_diameter_m": 0.033,
+                "length_m": 0.32,
+                "wall_thickness_m": 0.0008,
+                "material": "Cardboard",
+                "motor": {"manufacturer": "AeroTech", "designation": "HP-I205W", "delay_s": null},
+                "overhang_m": 0.005,
+                "centering_ring_count": 2,
+                "centering_ring_material": "Cardboard"
+              },
+              {
+                "type": "trapezoidal_fins",
+                "count": 3,
+                "root_chord_m": 0.10,
+                "tip_chord_m": 0.04,
+                "span_m": 0.055,
+                "sweep_m": 0.05,
+                "thickness_m": 0.003,
+                "material": "Balsa",
+                "offset_from_aft_m": 0.0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

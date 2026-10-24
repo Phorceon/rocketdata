@@ -1,0 +1,2 @@
+1. Understand: Around 1,700 m means within 5% of 1,700 m. Nothing else is stated: landing at or under 6 m/s, wind 2 m/s, rail 1.5 m, sea level. Drag-free speed is sqrt(2 * 9.81 * 1700) = 183 m/s.
+2. Feasibility: An H180 has been nearer 1,200 m once it is flying straight, and a J350 has been over 2,400 m on a slim tube. An I should sit between them. I will look up three I motors.

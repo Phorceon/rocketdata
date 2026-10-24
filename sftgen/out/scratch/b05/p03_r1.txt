@@ -1,0 +1,2 @@
+1. Understand: apogee about 375 m, so the band is 375 m ±5%. Body outer diameter at most 30 mm (0.030 m). Wind about 3 m/s. Rail is fixed at 1 m, shorter than a usual club rail. Landing speed is not stated, so I assume 6 m/s. Single stage, vertical, sea level.
+2. Feasibility: drag-free speed for 375 m is sqrt(2 * 9.81 * 375) = 86 m/s. That is C-class impulse on a small airframe. The 1 m rod is the tight part: average thrust has to get the rocket through 15 m/s before the rod ends. I need motor thrust and diameter before I commit.

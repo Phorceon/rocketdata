@@ -1,0 +1,5 @@
+4. Check: At the legal wind, the altitude is in the band. The simulator gives 1788.5 m. (1788.5 - 1,750) / 1,750 = 2.2%, inside 5%. Margin is 1.44 cal. Landing is 5.0 m/s, under 6 m/s. Rail exit is 36.7 m/s, thrust-to-weight 28.4. The chute opened at 15.3 s, at apogee, at 5.0 m/s. The section reached the ground in 356 s. Wind in the run is 8.9 m/s, under 8.94 m/s. Drift is 2807 m. Peak Mach is 1.19, with the supersonic body-calc warning.
+
+5. Fix: nothing on this flight fails. The requested 45 km/h wind still cannot be met.
+
+6. Uncertainty: Liftoff mass is 0.676 kg, heavier than the 0.51 kg guess, and the altitude still landed in the band. Chute Cd is 0.8. Drift of 2807 m at 8.9 m/s would be worse at 12.5 m/s, but that wind is already illegal, so I did not fly it. The motor has no useful delay.

@@ -1,0 +1,3 @@
+4. Check: The simulator gives 1029.2 m. (1,250 - 1029) / 1,250 = 18% under the floor. Margin is 1.12 cal. Landing is 4.2 m/s. Rail exit is 38.9 m/s, thrust-to-weight 45.4. The 14 s delay opened at 15.3 s, well after apogee at 10.86 s, and the canopy was doing 19.0 m/s. That did not lower the apogee number, but it is a bad opening. Peak Mach is 1.11. The H does not have the impulse once the plywood fins and the 38 mm tube are on it.
+
+5. Fix: The failing value is apogee 1029.2 m. One change: AeroTech I200W instead of the H128W. It is 327 N*s, about twice the H, and its only delay is 0 s, so it flies plugged and the chute moves to apogee. The tube grows to 0.70 m and the mount to 0.35 m so the 0.333 m motor fits. Diameter, fins and the 0.60 m chute stay.

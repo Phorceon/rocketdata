@@ -1,0 +1,2 @@
+1. Understand: about 250 m, landing softer than 6 m/s, an 18 mm motor mount, and a 1 m launch rod. No wind is stated, so 2 m/s is the default. The 1 m rod has to be passed on every flight.
+2. Feasibility: about 250 m is a 5% band, 238 to 262 m. An 18 mm mount takes an 18 mm motor, so 24 mm Estes motors are out. Vacuum speed is sqrt(2 * 9.81 * 250) = 70.0 m/s. With drag, a C-class motor near 10 N*s is the right size; a B may fall short. The 1 m rod needs a light rocket so rail exit stays above 15 m/s. Looking up C6 and B6.

@@ -1,0 +1,407 @@
+{
+ "session_id": "g_rocket_620f66__p3__d1",
+ "prompt_id": "g_rocket_620f66__p3",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b04",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 3.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 477533
+ },
+ "status": "open",
+ "started_at": 1792881450.669198,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "About 9,500 m, on the ground within 10 minutes (since there's a highway downwind), dual deploy, 3 m/s wind."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee about 9,500 m, so within 5%. On the ground within 10 minutes: 10 * 60 = 600 s total. Dual deploy is required, so a drogue at apogee and a main at a set altitude. Wind is 3 m/s and has to be passed on the flight. No rail, angle, or site is stated, so 1.5 m, vertical, sea level. No landing-speed number, so the 6 m/s default applies. One stage is enough.\n2. Feasibility: 9,500 m with no drag needs sqrt(2 * 9.81 * 9500) = 432 m/s, and the 600 s cap means the drogue has to come down fast or the main opens too late to matter. An M is unlikely to get there. Looking up a small O and a couple of N motors.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "O3400"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "N2000"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "N2500"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Cesaroni Technology Inc.\", \"designation\": \"21062O3400-P\", \"class\": \"O\", \"total_impulse_ns\": 21041.0, \"average_thrust_n\": 3421.0, \"max_thrust_n\": 4698.6, \"burn_time_s\": 6.14, \"diameter_m\": 0.098, \"length_m\": 1.239, \"loaded_mass_kg\": 16.842, \"propellant_mass_kg\": 11.272, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"N2000W\", \"class\": \"N\", \"total_impulse_ns\": 13263.4, \"average_thrust_n\": 1926.8, \"max_thrust_n\": 2834.3, \"burn_time_s\": 6.87, \"diameter_m\": 0.098, \"length_m\": 1.046, \"loaded_mass_kg\": 12.2828, \"propellant_mass_kg\": 7.6671, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Cesaroni Technology Inc.\", \"designation\": \"13766N2500-P\", \"class\": \"N\", \"total_impulse_ns\": 13766.2, \"average_thrust_n\": 2544.5, \"max_thrust_n\": 3657.8, \"burn_time_s\": 5.41, \"diameter_m\": 0.098, \"length_m\": 1.01, \"loaded_mass_kg\": 11.668, \"propellant_mass_kg\": 6.778, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: 21062O3400-P is class O, 21,041 N*s, 3,421 N, 98 mm, 16.842 kg, delay 0 only, so it flies plugged and the dual deploy is electronic. N2000W is 13,263.4 N*s and 13766N2500-P is 13,766.2 N*s. The O has the better chance at 9,500 m. 16.842 - 11.272 = 5.57 kg left in the casing after the burn.\n3. Size: motors plus a 0.152 m fiberglass tube come to about 28 kg at liftoff. 3421 / (28 * 9.81) = 12.5. On the 1.5 m rail, (3421 - 28 * 9.81) / 28 = 112 m/s^2 and sqrt(2 * 112 * 1.5) = 18 m/s. Landing mass is near 15 kg. Drogue at 20 m/s: 2 * 15 * 9.81 / (1.225 * 0.8 * 20^2) = 0.75 m^2, and sqrt(4 * 0.75 / 3.14) = 0.98 m, so a 1.0 m drogue at apogee. Main at 5 m/s: 2 * 15 * 9.81 / (1.225 * 0.8 * 5^2) = 12 m^2, and sqrt(4 * 12 / 3.14) = 3.9 m, so a 4.0 m main opening at 250 m. Descent budget: (9500 - 250) / 20 = 460 s under the drogue, 250 / 5 = 50 s under the main, plus about 40 s of ascent, and 40 + 460 + 50 = 550 s, inside 600 s. Fin span 0.35 m is 0.35 / 0.152 = 2.3 calibers for the heavy tail.\n4. Draft: single-stage 21062O3400-P, 1.0 m drogue at apogee, 4.0 m main at 250 m, wind 3 m/s.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "O3400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.45,
+            "diameter_m": 0.152,
+            "wall_thickness_m": 0.004,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "length_m": 2.2,
+            "outer_diameter_m": 0.152,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 1.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 4.0,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.15
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.104,
+              "length_m": 1.28,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "Cesaroni Technology Inc.",
+               "designation": "21062O3400-P",
+               "delay_s": null
+              },
+              "overhang_m": 0.0,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.5,
+              "tip_chord_m": 0.18,
+              "span_m": 0.35,
+              "sweep_m": 0.32,
+              "thickness_m": 0.008,
+              "material": "Fiberglass",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 3.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 4766.0, \"time_to_apogee_s\": 27.46, \"max_velocity_ms\": 468.6, \"max_mach\": 1.4, \"rail_exit_ms\": 20.2, \"liftoff_mass_kg\": 33.2, \"thrust_to_weight\": 10.5, \"stability_rail_exit_cal\": 1.78, \"min_stability_burn_cal\": 1.78, \"flight_time_s\": 240.5, \"total_impulse_ns\": 21041.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.7, \"drift_m\": 154.0, \"recovery_deployed\": true, \"deploy_time_s\": 27.5, \"deploy_velocity_ms\": 10.0, \"flight_time_s\": 240.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (24.1 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 3.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives 4766.0 m. Against 9,500 m that is (9500 - 4766.0) / 4766.0 = 0.99, about half the altitude, outside the 5% band. Flight time is 240.5 s, inside 600 s. Landing is 5.7 m/s, under 6. Margin is 1.78 cal at the rail and through the burn. Rail exit 20.2 m/s, thrust-to-weight 10.5. The drogue opened at 27.5 s. Wind in the output is 3.0 m/s. The main's 24.1 m/s opening warning is not a failed gate.\n5. Fix: 4766.0 m is the miss, and the 0.152 m tube is the drag. Slimming the body and the nose to 0.112 m, which still clears the 0.104 m motor mount. Fins, chutes and the motor stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "O3400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.45,
+            "diameter_m": 0.112,
+            "wall_thickness_m": 0.004,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "length_m": 2.2,
+            "outer_diameter_m": 0.112,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 1.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 4.0,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.15
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.104,
+              "length_m": 1.28,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "Cesaroni Technology Inc.",
+               "designation": "21062O3400-P",
+               "delay_s": null
+              },
+              "overhang_m": 0.0,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.5,
+              "tip_chord_m": 0.18,
+              "span_m": 0.35,
+              "sweep_m": 0.32,
+              "thickness_m": 0.008,
+              "material": "Fiberglass",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 3.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 5468.8, \"time_to_apogee_s\": 29.24, \"max_velocity_ms\": 517.0, \"max_mach\": 1.54, \"rail_exit_ms\": 20.2, \"liftoff_mass_kg\": 31.3, \"thrust_to_weight\": 11.1, \"stability_rail_exit_cal\": 2.57, \"min_stability_burn_cal\": 2.57, \"flight_time_s\": 276.0, \"total_impulse_ns\": 21041.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.5, \"drift_m\": 180.0, \"recovery_deployed\": true, \"deploy_time_s\": 29.2, \"deploy_velocity_ms\": 11.1, \"flight_time_s\": 276.0, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (23.1 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 3.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives 5468.8 m. Against 9,500 m that is (9500 - 5468.8) / 5468.8 = 0.74, still far short. Flight time 276.0 s is inside 600 s, landing 5.5 m/s is under 6, and the margin is 2.57 cal, more than the airframe needs. The fins are 0.35 m of span on a 0.112 m body, so they are a lot of drag and a lot of glass. Rail exit 20.2 m/s, thrust-to-weight 11.1.\n5. Fix: 5468.8 m is the miss. Cutting the fins to root 0.40 m, tip 0.15 m, span 0.24 m and thickness 0.006 m, which keeps them near 2 calibers. Also looking up a larger O in case the motor, not the fins, is the ceiling.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "O3400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "haack",
+            "length_m": 0.45,
+            "diameter_m": 0.112,
+            "wall_thickness_m": 0.004,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.05
+           },
+           {
+            "type": "bodytube",
+            "length_m": 2.2,
+            "outer_diameter_m": 0.112,
+            "wall_thickness_m": 0.003,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 1.0,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.05
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 4.0,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250.0,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.15
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.104,
+              "length_m": 1.28,
+              "wall_thickness_m": 0.002,
+              "material": "Fiberglass",
+              "motor": {
+               "manufacturer": "Cesaroni Technology Inc.",
+               "designation": "21062O3400-P",
+               "delay_s": null
+              },
+              "overhang_m": 0.0,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 4,
+              "root_chord_m": 0.4,
+              "tip_chord_m": 0.15,
+              "span_m": 0.24,
+              "sweep_m": 0.22,
+              "thickness_m": 0.006,
+              "material": "Fiberglass",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 3.0
+       }
+      }
+     }
+    },
+    {
+     "id": "call_7",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "O6000"
+      }
+     }
+    },
+    {
+     "id": "call_8",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "O5500"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 7106.9, \"time_to_apogee_s\": 32.39, \"max_velocity_ms\": 636.4, \"max_mach\": 1.91, \"rail_exit_ms\": 21.7, \"liftoff_mass_kg\": 27.2, \"thrust_to_weight\": 12.8, \"stability_rail_exit_cal\": 2.83, \"min_stability_burn_cal\": 2.83, \"flight_time_s\": 367.4, \"total_impulse_ns\": 21041.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.9, \"drift_m\": 404.0, \"recovery_deployed\": true, \"deploy_time_s\": 32.4, \"deploy_velocity_ms\": 10.5, \"flight_time_s\": 367.4, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\", \"Recovery device deployment at high speed (20.6 m/s):  \\\"Parachute\\\"\"], \"conditions\": {\"wind_ms\": 3.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_7",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"O6000W\", \"class\": \"O\", \"total_impulse_ns\": 39687.2, \"average_thrust_n\": 5828.2, \"max_thrust_n\": 8808.3, \"burn_time_s\": 6.81, \"diameter_m\": 0.152, \"length_m\": 1.12, \"loaded_mass_kg\": 31.5246, \"propellant_mass_kg\": 21.999, \"delays_s\": [0.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_8",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"O5500X-PS\", \"class\": \"O\", \"total_impulse_ns\": 21395.5, \"average_thrust_n\": 5531.0, \"max_thrust_n\": 7724.5, \"burn_time_s\": 3.86, \"diameter_m\": 0.098, \"length_m\": 1.507, \"loaded_mass_kg\": 16.783, \"propellant_mass_kg\": 9.779, \"delays_s\": [], \"type\": \"single-use\"}"
+  }
+ ],
+ "call_counter": 8
+}

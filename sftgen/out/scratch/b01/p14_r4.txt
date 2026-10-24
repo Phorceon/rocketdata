@@ -1,0 +1,3 @@
+4. Check: The simulator gives 173.9 m, inside 166 to 184 m. Rail exit 23.3 m/s, thrust-to-weight 9.3, margin 1.56 cal at the rail and through the burn, landing 3.8 m/s, chute at 5.9 s. Mass 0.0567 kg.
+5. Fix: 173.9 m is in band and the gates pass, so the fins stay.
+6. Uncertainty: A B this light will lose metres if the chute or the altimeter is heavier than 0.0567 kg. Cd 0.8 on a 0.30 m plastic chute is optimistic, so the real landing may be a little faster than 3.8 m/s and still under 6. The motor only offers a 0 s delay, so this flight depends on the altimeter actually opening the chute at apogee.

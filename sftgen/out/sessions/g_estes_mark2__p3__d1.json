@@ -1,0 +1,571 @@
+{
+ "session_id": "g_estes_mark2__p3__d1",
+ "prompt_id": "g_estes_mark2__p3",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b02",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 6.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 222287
+ },
+ "status": "open",
+ "started_at": 1792882191.1510432,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "I'm new to rocketry. Get me past 450 m. Keep the airframe under 20 mm across. Expect about 6 m/s of wind. The rod is 1 m long. Explain what you pick, please."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: Apogee past 450 m, a floor. Airframe under 20 mm across, so the outer diameter stays below 0.020 m. Wind is about 6 m/s, passed as 6 m/s. Rail is 1 m, so that goes in every simulation. Landing is not stated, so the 6 m/s gate applies. The flyer is new. One stage.\n\n2. Feasibility: A body under 20 mm cannot hold an 18 mm motor. The mount around an 18 mm motor is already about 19 mm, and the tube wall puts the outside over 20 mm. So the motor has to be 13 mm. Drag-free speed for 450 m is sqrt(2 * 9.81 * 450) = 94 m/s, which is a lot of altitude for a 13 mm motor on a 1 m rail. Looking up the small motors that might fit.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "A10"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "A3"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C6"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"A10\", \"class\": \"A\", \"total_impulse_ns\": 1.9, \"average_thrust_n\": 1.8, \"max_thrust_n\": 9.7, \"burn_time_s\": 1.04, \"diameter_m\": 0.013, \"length_m\": 0.045, \"loaded_mass_kg\": 0.0053, \"propellant_mass_kg\": 0.0038, \"delays_s\": [0.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"A3\", \"class\": \"A\", \"total_impulse_ns\": 2.2, \"average_thrust_n\": 2.3, \"max_thrust_n\": 5.8, \"burn_time_s\": 0.97, \"diameter_m\": 0.013, \"length_m\": 0.045, \"loaded_mass_kg\": 0.0085, \"propellant_mass_kg\": 0.0033, \"delays_s\": [4.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"C6\", \"class\": \"C\", \"total_impulse_ns\": 8.8, \"average_thrust_n\": 4.8, \"max_thrust_n\": 14.1, \"burn_time_s\": 1.83, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0231, \"propellant_mass_kg\": 0.0108, \"delays_s\": [0.0, 3.0, 5.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: A10 is 1.9 N*s, 13 mm, average thrust only 1.8 N. A3 is 2.2 N*s, also 13 mm, with a 4 s delay. C6 is 8.8 N*s but 18 mm, and it will not fit inside a body under 20 mm. An A-class motor is unlikely to clear 450 m once drag is real. Looking for a 13 mm motor with more impulse before I call the diameter limit infeasible.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C3"
+      }
+     }
+    },
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D3"
+      }
+     }
+    },
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "B4"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"C3.4T\", \"class\": \"C\", \"total_impulse_ns\": 9.0, \"average_thrust_n\": 3.2, \"max_thrust_n\": 9.1, \"burn_time_s\": 2.83, \"diameter_m\": 0.018, \"length_m\": 0.072, \"loaded_mass_kg\": 0.0239, \"propellant_mass_kg\": 0.0052, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Apogee\", \"designation\": \"D3\", \"class\": \"D\", \"total_impulse_ns\": 18.4, \"average_thrust_n\": 2.9, \"max_thrust_n\": 10.5, \"burn_time_s\": 6.37, \"diameter_m\": 0.018, \"length_m\": 0.077, \"loaded_mass_kg\": 0.0249, \"propellant_mass_kg\": 0.0098, \"delays_s\": [3.0, 5.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"B4\", \"class\": \"C\", \"total_impulse_ns\": 5.1, \"average_thrust_n\": 4.9, \"max_thrust_n\": 11.4, \"burn_time_s\": 1.03, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0195, \"propellant_mass_kg\": 0.006, \"delays_s\": [], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: C3.4T, D3 and B4 all came back at 0.018 m. The short names did not find a 13 mm C or D. B4 is even labeled class C, 5.1 N*s, with no delays, and it is still 18 mm. Those will not fit. Trying a few more 13 mm-style designations before building around the A3.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_7",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D2"
+      }
+     }
+    },
+    {
+     "id": "call_8",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "C2"
+      }
+     }
+    },
+    {
+     "id": "call_9",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "A8"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_7",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"D2.3T\", \"class\": \"D\", \"total_impulse_ns\": 17.2, \"average_thrust_n\": 2.1, \"max_thrust_n\": 10.1, \"burn_time_s\": 8.05, \"diameter_m\": 0.018, \"length_m\": 0.072, \"loaded_mass_kg\": 0.0293, \"propellant_mass_kg\": 0.0107, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_8",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"WECO Feuerwerk\", \"designation\": \"C2\", \"class\": \"C\", \"total_impulse_ns\": 7.6, \"average_thrust_n\": 1.5, \"max_thrust_n\": 8.2, \"burn_time_s\": 5.04, \"diameter_m\": 0.015, \"length_m\": 0.095, \"loaded_mass_kg\": 0.024, \"propellant_mass_kg\": 0.012, \"delays_s\": [], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_9",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"A8\", \"class\": \"A\", \"total_impulse_ns\": 2.2, \"average_thrust_n\": 4.1, \"max_thrust_n\": 9.6, \"burn_time_s\": 0.53, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0139, \"propellant_mass_kg\": 0.0038, \"delays_s\": [0.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: C2 from WECO is 15 mm, 7.6 N*s, average thrust only 1.5 N, peak 8.2 N, burn 5.04 s, length 0.095 m, mass 0.024 kg, and it lists no delays. That is the only motor so far that both fits under a 20 mm skin and has more than a couple of newton-seconds. D2.3T and A8 are 18 mm. The C2 flies plugged, chute at apogee.\n\n3. Size: Body 18 mm, under 20 mm. Mount OD 0.0162 m around the 15 mm motor. Liftoff guess 0.040 kg. Thrust-to-weight on the average thrust is 1.5 / (0.040 * 9.81) = 3.8, just over 3. Weight is 0.040 * 9.81 = 0.392 N, rail acceleration (1.5 - 0.392) / 0.040 = 27.7 m/s^2, exit speed on the 1 m rail sqrt(2 * 27.7 * 1) = 7.4 m/s. That estimate is under 15 m/s. The 8.2 N peak may do better than the average, so I will fly it rather than reject it on the average. Chute for about 0.030 kg at 5 m/s: area 2 * 0.030 * 9.81 / (1.225 * 0.8 * 25) = 0.024 m^2, diameter sqrt(4 * 0.024 / pi) = 0.17 m. I will fly 0.20 m.\n\n4. Draft: 18 mm cardboard, tube 0.28 m, small ogive nose, three balsa fins, WECO C2 plugged, 0.20 m chute at apogee. Wind 6 m/s, rail 1 m.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_10",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "18 mm C2 under 20 mm",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.05,
+            "diameter_m": 0.018,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.01
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.28,
+            "outer_diameter_m": 0.018,
+            "wall_thickness_m": 0.0006,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.02
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0162,
+              "length_m": 0.1,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "WECO Feuerwerk",
+               "designation": "C2",
+               "delay_s": null
+              },
+              "cluster_count": 1,
+              "overhang_m": 0.004,
+              "centering_ring_count": 1,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.05,
+              "tip_chord_m": 0.02,
+              "span_m": 0.03,
+              "sweep_m": 0.025,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.004
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 6.0,
+        "rail_length_m": 1.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_10",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 499.6, \"time_to_apogee_s\": 10.16, \"max_velocity_ms\": 95.6, \"max_mach\": 0.29, \"rail_exit_ms\": 19.4, \"liftoff_mass_kg\": 0.0374, \"thrust_to_weight\": 4.1, \"stability_rail_exit_cal\": 0.01, \"min_stability_burn_cal\": 0.01, \"flight_time_s\": 133.6, \"total_impulse_ns\": 7.6, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.0, \"drift_m\": 608.0, \"recovery_deployed\": true, \"deploy_time_s\": 10.2, \"deploy_velocity_ms\": 7.7, \"flight_time_s\": 133.6, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 6.0, \"rail_length_m\": 1.0, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The altitude and the rail both made it. The simulator gives 499.6 m, above 450 m. Rail exit is 19.4 m/s on the 1 m rail, better than the average-thrust estimate, and thrust-to-weight is 4.1. Landing is 4.0 m/s. The outer diameter is 0.018 m, under 0.020 m. Margin is 0.01 cal, under 1.0. Wind is 6 m/s. The chute opened at 10.2 s, at apogee, at 7.7 m/s. The section reached the ground.\n\n5. Fix: The failing value is margin 0.01 cal. One change: 0.006 kg of clay at the top of the tube. There is about 50 m of room above 450 m, so I am not growing the fins. The C2, the 18 mm tube and the chute stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_11",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "18 mm C2 under 20 mm",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.05,
+            "diameter_m": 0.018,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.01
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.28,
+            "outer_diameter_m": 0.018,
+            "wall_thickness_m": 0.0006,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose clay",
+              "mass_kg": 0.006,
+              "position_from_top_m": 0.01
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.02
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0162,
+              "length_m": 0.1,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "WECO Feuerwerk",
+               "designation": "C2",
+               "delay_s": null
+              },
+              "cluster_count": 1,
+              "overhang_m": 0.004,
+              "centering_ring_count": 1,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.05,
+              "tip_chord_m": 0.02,
+              "span_m": 0.03,
+              "sweep_m": 0.025,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.004
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 6.0,
+        "rail_length_m": 1.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_11",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 434.0, \"time_to_apogee_s\": 9.99, \"max_velocity_ms\": 88.8, \"max_mach\": 0.27, \"rail_exit_ms\": 17.6, \"liftoff_mass_kg\": 0.0434, \"thrust_to_weight\": 3.5, \"stability_rail_exit_cal\": 1.25, \"min_stability_burn_cal\": 1.25, \"flight_time_s\": 106.7, \"total_impulse_ns\": 7.6, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.5, \"drift_m\": 372.0, \"recovery_deployed\": true, \"deploy_time_s\": 10.0, \"deploy_velocity_ms\": 15.3, \"flight_time_s\": 106.7, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 6.0, \"rail_length_m\": 1.0, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The clay overshot the trade. The simulator gives 434.0 m, under the 450 m floor, while the margin is now 1.25 cal. Rail exit is 17.6 m/s, thrust-to-weight 3.5, landing 4.5 m/s. The 0.006 kg was enough margin and too much mass. The no-clay flight was 499.6 m at 0.01 cal, so the altitude and the margin are trading almost one for one.\n\n5. Fix: The failing value is apogee 434.0 m. One change: clay from 0.006 kg down to 0.0035 kg. I want the margin to stay over 1.0 cal and the apogee to climb back over 450 m. Fins, motor and tube stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_12",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "18 mm C2 under 20 mm",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.05,
+            "diameter_m": 0.018,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.01
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.28,
+            "outer_diameter_m": 0.018,
+            "wall_thickness_m": 0.0006,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose clay",
+              "mass_kg": 0.0035,
+              "position_from_top_m": 0.01
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.02
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0162,
+              "length_m": 0.1,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "WECO Feuerwerk",
+               "designation": "C2",
+               "delay_s": null
+              },
+              "cluster_count": 1,
+              "overhang_m": 0.004,
+              "centering_ring_count": 1,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.05,
+              "tip_chord_m": 0.02,
+              "span_m": 0.03,
+              "sweep_m": 0.025,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.004
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 6.0,
+        "rail_length_m": 1.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_12",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 460.3, \"time_to_apogee_s\": 10.04, \"max_velocity_ms\": 91.7, \"max_mach\": 0.28, \"rail_exit_ms\": 17.9, \"liftoff_mass_kg\": 0.0409, \"thrust_to_weight\": 3.7, \"stability_rail_exit_cal\": 0.76, \"min_stability_burn_cal\": 0.76, \"flight_time_s\": 116.9, \"total_impulse_ns\": 7.6, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.3, \"drift_m\": 453.0, \"recovery_deployed\": true, \"deploy_time_s\": 10.1, \"deploy_velocity_ms\": 12.6, \"flight_time_s\": 116.9, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 6.0, \"rail_length_m\": 1.0, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: Splitting the clay landed between the two misses. The simulator gives 460.3 m, above 450 m, and margin 0.76 cal, under 1.0. Rail exit is 17.9 m/s, thrust-to-weight 3.7, landing 4.3 m/s. From the two clay flights, 0.0035 kg was 460.3 m at 0.76 cal and 0.006 kg was 434.0 m at 1.25 cal. The step between them is about 0.5 cal and 26 m. Reaching 1.0 cal looks like it costs most of the 10 m I have left.\n\n5. Fix: The failing value is margin 0.76 cal. One change: clay from 0.0035 kg to 0.0045 kg. That is the last revision. If the apogee falls under 450 m, the diameter, the 1 m rail and the 450 m floor cannot all be met with this motor.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_13",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "18 mm C2 under 20 mm",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.05,
+            "diameter_m": 0.018,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.01
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.28,
+            "outer_diameter_m": 0.018,
+            "wall_thickness_m": 0.0006,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose clay",
+              "mass_kg": 0.0045,
+              "position_from_top_m": 0.01
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.2,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.02
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.0162,
+              "length_m": 0.1,
+              "wall_thickness_m": 0.0005,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "WECO Feuerwerk",
+               "designation": "C2",
+               "delay_s": null
+              },
+              "cluster_count": 1,
+              "overhang_m": 0.004,
+              "centering_ring_count": 1,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.05,
+              "tip_chord_m": 0.02,
+              "span_m": 0.03,
+              "sweep_m": 0.025,
+              "thickness_m": 0.002,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.004
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 6.0,
+        "rail_length_m": 1.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_13",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 450.2, \"time_to_apogee_s\": 10.05, \"max_velocity_ms\": 90.5, \"max_mach\": 0.28, \"rail_exit_ms\": 18.3, \"liftoff_mass_kg\": 0.0419, \"thrust_to_weight\": 3.7, \"stability_rail_exit_cal\": 0.99, \"min_stability_burn_cal\": 0.99, \"flight_time_s\": 112.8, \"total_impulse_ns\": 7.6, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.3, \"drift_m\": 421.0, \"recovery_deployed\": true, \"deploy_time_s\": 10.0, \"deploy_velocity_ms\": 13.7, \"flight_time_s\": 112.8, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 6.0, \"rail_length_m\": 1.0, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  }
+ ],
+ "call_counter": 13
+}

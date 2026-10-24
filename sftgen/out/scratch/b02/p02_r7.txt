@@ -1,0 +1,5 @@
+4. Check: The simulator gives 842.8 m. Against roughly 650 m that is (842.8 - 650) / 650 = 30% high, still outside the 5% band. Everything else passes. Margin is 1.15 cal at rail exit and through the burn, rail exit is 34.3 m/s, thrust-to-weight is 22.5, landing is 3.3 m/s under the 4.57 m/s cap, and the motor is 29 mm. Ejection at 10.4 s is just after the 9.94 s apogee, at 4.8 m/s, with no warning. Liftoff mass is 0.276 kg.
+
+5. Fix: third revision and the altitude still misses. 842.8 m remains above the band, so I am stopping rather than adding another guess. The design is otherwise inside the gates.
+
+6. Uncertainty: This one stayed subsonic (Mach 0.76), so the drag model is less wild than the H128 flights, but apogee still moves a lot with fin area and with whether the coast is transonic. The 0.276 kg liftoff mass is a model value; a heavier build would come down toward 650 m, and a lighter one would go higher. Chute Cd is assumed 0.8. The 8 s delay only just matches apogee, so a slower build could open early.

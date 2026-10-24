@@ -1,0 +1,357 @@
+{
+ "session_id": "g_astra_v1__p3__d1",
+ "prompt_id": "g_astra_v1__p3",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b01",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.78,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 787044
+ },
+ "status": "final",
+ "started_at": 1792881873.4712262,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "I'm pretty new at this. It must stay under 850 m. I'm not high-power certified, so G or smaller. Plan for 10 km/h wind."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: Stay under 850 m. That is a ceiling. Not high-power certified, so G or smaller. Wind is 10 km/h: 10 * 1000 / 3600 = 2.78 m/s, and that goes on every run. Rail, site, and landing are not stated: 1.5 m, sea level, 6 m/s.\n2. Feasibility: A G on a small tube can sit near this ceiling, so I want a G that clears the rail in 2.78 m/s of wind and still lands under 850 m. An H is out. I will look up two G motors and one F.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "G40"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "G80"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "F32"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"G40W\", \"class\": \"G\", \"total_impulse_ns\": 99.0, \"average_thrust_n\": 46.3, \"max_thrust_n\": 74.3, \"burn_time_s\": 2.13, \"diameter_m\": 0.029, \"length_m\": 0.124, \"loaded_mass_kg\": 0.123, \"propellant_mass_kg\": 0.0538, \"delays_s\": [4.0, 7.0, 10.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"G80T\", \"class\": \"G\", \"total_impulse_ns\": 135.6, \"average_thrust_n\": 80.6, \"max_thrust_n\": 107.0, \"burn_time_s\": 1.68, \"diameter_m\": 0.029, \"length_m\": 0.124, \"loaded_mass_kg\": 0.129, \"propellant_mass_kg\": 0.069, \"delays_s\": [4.0, 7.0, 10.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"F32T\", \"class\": \"F\", \"total_impulse_ns\": 56.7, \"average_thrust_n\": 34.2, \"max_thrust_n\": 58.4, \"burn_time_s\": 1.65, \"diameter_m\": 0.024, \"length_m\": 0.095, \"loaded_mass_kg\": 0.064, \"propellant_mass_kg\": 0.0258, \"delays_s\": [4.0, 6.0, 8.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: G40W is class G, 99.0 N*s, 46.3 N, 2.13 s, 29 mm by 0.124 m, 0.123 kg, delays 4, 7, and 10 s. G80T is 135.6 N*s, more likely to bust 850 m. F32T is 56.7 N*s and would sit well under, but a G is still legal and is the motor a new flyer would actually buy for this. On a guessed 0.25 kg rocket, thrust-to-weight is 46.3 / (0.25 * 9.81) = 18.9. A 10 s delay ejects at 2.13 + 10 = 12.1 s.\n3. Size: For 0.28 kg at 4.5 m/s the chute is 2 * 0.28 * 9.81 / (1.225 * 0.8 * 4.5^2) = 0.28 m^2, diameter sqrt(4 * 0.28 / 3.1416) = 0.60 m. I will use 0.65 m. Tube 0.041 m, mount 0.032 m, clear of the 0.029 m case. Fins a bit large so 2.78 m/s of wind does not weathercock a marginal rocket.\n4. Draft: Cardboard ogive 0.14 m on a 0.55 m cardboard tube, outer diameter 0.041 m, wall 1 mm. G40W with a 10 s delay, chute at ejection. Three birch fins, root 0.10 m, tip 0.045 m, span 0.07 m, sweep 0.045 m, 3 mm. Wind 2.78 m/s.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "G40 under 850",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.14,
+            "diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard"
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.55,
+            "outer_diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.65,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.032,
+              "length_m": 0.14,
+              "wall_thickness_m": 0.001,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "G40W",
+               "delay_s": 10.0
+              },
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.1,
+              "tip_chord_m": 0.045,
+              "span_m": 0.07,
+              "sweep_m": 0.045,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.008
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.78
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 878.6, \"time_to_apogee_s\": 10.41, \"max_velocity_ms\": 242.5, \"max_mach\": 0.71, \"rail_exit_ms\": 28.3, \"liftoff_mass_kg\": 0.248, \"thrust_to_weight\": 19.0, \"stability_rail_exit_cal\": 0.35, \"min_stability_burn_cal\": 0.35, \"flight_time_s\": 259.8, \"total_impulse_ns\": 99.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 3.4, \"drift_m\": 660.0, \"recovery_deployed\": true, \"deploy_time_s\": 12.3, \"deploy_velocity_ms\": 11.2, \"flight_time_s\": 259.8, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.78, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The simulator gives 878.6 m, over the 850 m ceiling, and the rail margin is 0.35 cal, with the burn minimum also 0.35 cal. It is over the cap because it is not flying straight, and the fins are too small. Rail exit 28.3 m/s, thrust-to-weight 19.0, and landing 3.4 m/s pass. Chute at 12.3 s, after the 10.41 s apogee, and it reached the ground. Mass 0.248 kg.\n5. Fix: 878.6 m and 0.35 cal are the misses. Fins grow to root 0.14 m, tip 0.06 m, span 0.11 m, sweep 0.06 m. That pulls CP back and adds drag, which is what both failures want. Motor, tube, and the 2.78 m/s wind stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "G40 under 850",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.14,
+            "diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard"
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.55,
+            "outer_diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.65,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.032,
+              "length_m": 0.14,
+              "wall_thickness_m": 0.001,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "G40W",
+               "delay_s": 10.0
+              },
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.14,
+              "tip_chord_m": 0.06,
+              "span_m": 0.11,
+              "sweep_m": 0.06,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.008
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.78
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 773.5, \"time_to_apogee_s\": 9.97, \"max_velocity_ms\": 215.1, \"max_mach\": 0.63, \"rail_exit_ms\": 27.2, \"liftoff_mass_kg\": 0.282, \"thrust_to_weight\": 16.8, \"stability_rail_exit_cal\": 0.47, \"min_stability_burn_cal\": 0.47, \"flight_time_s\": 212.0, \"total_impulse_ns\": 99.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 3.7, \"drift_m\": 526.0, \"recovery_deployed\": true, \"deploy_time_s\": 12.3, \"deploy_velocity_ms\": 15.9, \"flight_time_s\": 212.0, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.78, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: Altitude is fixed. The simulator gives 773.5 m, under 850 m. The rail margin is still 0.47 cal, and the burn minimum is 0.47 cal. Bigger fins added drag and barely moved CP. Rail exit 27.2 m/s, thrust-to-weight 16.8, landing 3.7 m/s, and it reached the ground. Mass 0.282 kg. Chute at 12.3 s, after the 9.97 s apogee.\n5. Fix: 0.47 cal is the remaining failure. I am adding 0.025 kg at 0.04 m from the top of the tube so the CG comes forward. Fins stay. Another fin growth would mostly buy drag. Wind stays 2.78 m/s.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "G40 under 850",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.14,
+            "diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard"
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.55,
+            "outer_diameter_m": 0.041,
+            "wall_thickness_m": 0.001,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.025,
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.65,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.08
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.032,
+              "length_m": 0.14,
+              "wall_thickness_m": 0.001,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "G40W",
+               "delay_s": 10.0
+              },
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.14,
+              "tip_chord_m": 0.06,
+              "span_m": 0.11,
+              "sweep_m": 0.06,
+              "thickness_m": 0.003,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.008
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "wind_ms": 2.78
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 781.4, \"time_to_apogee_s\": 10.29, \"max_velocity_ms\": 207.3, \"max_mach\": 0.61, \"rail_exit_ms\": 25.6, \"liftoff_mass_kg\": 0.307, \"thrust_to_weight\": 15.4, \"stability_rail_exit_cal\": 1.15, \"min_stability_burn_cal\": 1.15, \"flight_time_s\": 204.8, \"total_impulse_ns\": 99.0, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 3.9, \"drift_m\": 478.0, \"recovery_deployed\": true, \"deploy_time_s\": 12.3, \"deploy_velocity_ms\": 15.3, \"flight_time_s\": 204.8, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.78, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The simulator gives 781.4 m, under 850 m, and the margin is 1.15 cal at the rail and through the burn. Rail exit 25.6 m/s, thrust-to-weight 15.4, landing 3.9 m/s, chute at 12.3 s, and it reached the ground. Mass 0.307 kg. Flying straight brought the peak up a little from the last pass and it is still under the cap.\n5. Fix: 781.4 m and 1.15 cal both clear, so I am leaving the nose weight in.\n6. Uncertainty: 781.4 m is about 70 m under the ceiling, and 2.78 m/s of wind will move that if the nose weight is not where it was drawn. The 10 s delay opens at 12.3 s, after the 10.29 s apogee. Cd 0.8 is what makes 3.9 m/s. A real G40 in a heavier paint job still stays under 850 m; a lighter one might not.",
+   "content": "AeroTech G40W-10 in a 41 mm cardboard airframe, wind 2.78 m/s.\nApogee is 781.4 m, under the 850 m ceiling.\nMargin 1.15 cal, landing 3.9 m/s, and it reached the ground.\n<design>{\"name\": \"G40 under 850\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.14, \"diameter_m\": 0.041, \"wall_thickness_m\": 0.001, \"material\": \"Cardboard\"}, {\"type\": \"bodytube\", \"length_m\": 0.55, \"outer_diameter_m\": 0.041, \"wall_thickness_m\": 0.001, \"material\": \"Cardboard\", \"contents\": [{\"type\": \"mass\", \"name\": \"nose weight\", \"mass_kg\": 0.025, \"position_from_top_m\": 0.04}, {\"type\": \"parachute\", \"diameter_m\": 0.65, \"cd\": 0.8, \"deploy_event\": \"ejection\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.08}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.032, \"length_m\": 0.14, \"wall_thickness_m\": 0.001, \"material\": \"Kraft phenolic\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"G40W\", \"delay_s\": 10.0}, \"overhang_m\": 0.005, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.14, \"tip_chord_m\": 0.06, \"span_m\": 0.11, \"sweep_m\": 0.06, \"thickness_m\": 0.003, \"material\": \"Plywood (birch)\", \"offset_from_aft_m\": 0.008}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 6,
+ "finished_at": 1792881930.6473842
+}

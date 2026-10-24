@@ -1,0 +1,5 @@
+4. Check: The last clay step put the rocket on both edges. The simulator gives 450.2 m, just past 450 m. Margin is 0.99 cal, still under 1.0. Rail exit is 18.3 m/s on the 1 m rail. Thrust-to-weight is 3.7. Landing is 4.3 m/s. The outer diameter is 0.018 m, under 0.020 m. Wind is 6 m/s. The chute opened at 10.0 s, at apogee, at 13.7 m/s. The section reached the ground.
+
+5. Fix: the margin still fails at 0.99 cal. This was the third revision. The two clay flights on either side were 460.3 m at 0.76 cal and 434.0 m at 1.25 cal. Closing the last 0.01 cal looks like it drops the apogee under 450 m. I am stopping.
+
+6. Uncertainty: Liftoff mass is 0.0419 kg. The C2 average thrust is 1.5 N, and the rail only cleared 15 m/s because the peak is 8.2 N. A heavier fin or another 0.001 kg of clay is the whole remaining trade, and I do not have a measurement of that last step. Chute Cd is 0.8. Motors at 18 mm did not fit the 20 mm skin.

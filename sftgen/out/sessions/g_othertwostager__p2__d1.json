@@ -1,0 +1,503 @@
+{
+ "session_id": "g_othertwostager__p2__d1",
+ "prompt_id": "g_othertwostager__p2",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b05",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 666957
+ },
+ "status": "final",
+ "started_at": 1792881866.924939,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Project brief: Target is about 2,400 m. Total flight under 200 s because the range gives us short windows. We want dual deploy on this one. Provide the design and expected performance."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee is about 2,400 m, so the band is 2400 * 0.95 = 2280 m to 2400 * 1.05 = 2520 m. Total flight time has to be under 200 s. Dual deploy is required: a drogue at apogee and a main lower down. Landing speed is not stated, so I assume 6 m/s on the main. Rail and wind are not stated. I assume a 1.5 m rail, 2 m/s wind, vertical, sea level, one stage.\n2. Feasibility: 2,400 m with no drag is sqrt(2 * 9.81 * 2400) = 217 m/s. A single chute at 5 m/s from that height takes 2400 / 5 = 480 s, which blows the 200 s window, so the drogue has to do most of the descent. A K motor on a 54 mm rocket is the class to check.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K400",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K550",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "K360",
+       "manufacturer": "AeroTech"
+      }
+     }
+    },
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "J350",
+       "manufacturer": "AeroTech"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K400C\", \"class\": \"K\", \"total_impulse_ns\": 1307.3, \"average_thrust_n\": 409.5, \"max_thrust_n\": 548.5, \"burn_time_s\": 3.19, \"diameter_m\": 0.054, \"length_m\": 0.359, \"loaded_mass_kg\": 1.194, \"propellant_mass_kg\": 0.493, \"delays_s\": [14.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"K550W\", \"class\": \"K\", \"total_impulse_ns\": 1624.9, \"average_thrust_n\": 536.2, \"max_thrust_n\": 797.9, \"burn_time_s\": 3.02, \"diameter_m\": 0.054, \"length_m\": 0.41, \"loaded_mass_kg\": 1.4874, \"propellant_mass_kg\": 0.9197, \"delays_s\": [0.0], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": false, \"error\": \"unknown motor 'AeroTech K360'\", \"suggestions\": [\"Cesaroni Technology Inc. 1281K360-13A\"]}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"J350W\", \"class\": \"J\", \"total_impulse_ns\": 669.2, \"average_thrust_n\": 445.4, \"max_thrust_n\": 841.4, \"burn_time_s\": 1.49, \"diameter_m\": 0.038, \"length_m\": 0.337, \"loaded_mass_kg\": 0.651, \"propellant_mass_kg\": 0.361, \"delays_s\": [], \"type\": \"reloadable\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: J350W is only 669 N*s, too small. K550W is 1,625 N*s and would sit high of 2,400 m on a 60 mm rocket. K400C is 1,307 N*s, 410 N, 54 mm, 0.359 m long, 1.19 kg, propellant 0.493 kg, with a 14 s delay. I'll plug it. The drogue opens at apogee and the main at 250 m, so the long descent is fast and the landing is still slow.\n3. Size: guessed liftoff mass 1.8 kg, descent mass about 1.8 - 0.49 = 1.3 kg. Thrust-to-weight is 410 / (1.8 * 9.81) = 23. A drogue near 18 m/s needs 2 * 1.3 * 9.81 / (1.225 * 0.8 * 18^2) = 0.080 m^2, diameter sqrt(4 * 0.080 / 3.1416) = 0.32 m. I'll fit a 0.35 m drogue. The main, aimed at 5 m/s, needs 2 * 1.3 * 9.81 / (1.225 * 0.8 * 5^2) = 1.04 m^2, diameter sqrt(4 * 1.04 / 3.1416) = 1.15 m. I'll fit a 1.2 m main. From 2,400 m the drogue covers most of the 200 s budget and the main only has 250 m left.\n4. Draft: 60 mm fiberglass body, 0.95 m long, ogive nose, three plywood fins, 54 mm mount, AeroTech K400C. Defaults: 1.5 m rail, 2 m/s wind.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "K400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.22,
+            "diameter_m": 0.06,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.95,
+            "outer_diameter_m": 0.06,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.35,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.06
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.056,
+              "length_m": 0.4,
+              "wall_thickness_m": 0.0008,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "K400C",
+               "delay_s": null
+              },
+              "overhang_m": 0.008,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.16,
+              "tip_chord_m": 0.08,
+              "span_m": 0.11,
+              "sweep_m": 0.09,
+              "thickness_m": 0.004,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.015
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2684.9, \"time_to_apogee_s\": 18.93, \"max_velocity_ms\": 436.4, \"max_mach\": 1.29, \"rail_exit_ms\": 28.1, \"liftoff_mass_kg\": 2.04, \"thrust_to_weight\": 20.4, \"stability_rail_exit_cal\": 1.67, \"min_stability_burn_cal\": 1.67, \"flight_time_s\": 195.2, \"total_impulse_ns\": 1307.3, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.0, \"drift_m\": 229.0, \"recovery_deployed\": true, \"deploy_time_s\": 18.9, \"deploy_velocity_ms\": 2.7, \"flight_time_s\": 195.2, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 2684.9 m. The band top is 2,520 m, and 2684.9 - 2520 = 165 m over it. Flight time is 195.2 s, under 200. Landing is 5.0 m/s, the section reached the ground, and the chute opened. Rail exit is 28.1 m/s, thrust-to-weight is 20.4, and margin is 1.67 cal. The only miss is altitude. There is a supersonic warning.\n5. Fix: add 0.20 kg at the front of the tube. The time window and the landing already pass, so the drogue and the main stay. The extra mass should pull the apogee down into the band.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_6",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "K400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.22,
+            "diameter_m": 0.06,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.95,
+            "outer_diameter_m": 0.06,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.2,
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.35,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.06
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.056,
+              "length_m": 0.4,
+              "wall_thickness_m": 0.0008,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "K400C",
+               "delay_s": null
+              },
+              "overhang_m": 0.008,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.16,
+              "tip_chord_m": 0.08,
+              "span_m": 0.11,
+              "sweep_m": 0.09,
+              "thickness_m": 0.004,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.015
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_6",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2701.4, \"time_to_apogee_s\": 19.49, \"max_velocity_ms\": 413.9, \"max_mach\": 1.23, \"rail_exit_ms\": 26.3, \"liftoff_mass_kg\": 2.24, \"thrust_to_weight\": 18.6, \"stability_rail_exit_cal\": 2.51, \"min_stability_burn_cal\": 2.51, \"flight_time_s\": 186.5, \"total_impulse_ns\": 1307.3, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.3, \"drift_m\": 191.0, \"recovery_deployed\": true, \"deploy_time_s\": 19.5, \"deploy_velocity_ms\": 3.5, \"flight_time_s\": 186.5, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 2701.4 m, still over the 2,520 m band top, and 2701.4 - 2684.9 = 16.5 m higher than the unweighted flight. The 0.20 kg pulled the center of gravity forward, margin went from 1.67 to 2.51 cal, and the straighter flight cancelled the mass. Flight time is 186.5 s, under 200. Landing is 5.3 m/s and the section reached the ground. Rail exit is 26.3 m/s.\n5. Fix: widen the airframe from 60 mm to 66 mm so drag does the work the nose mass did not. The 0.20 kg stays. Nose diameter matches the tube. Motor, chutes, and fins stay.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_7",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "K400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.22,
+            "diameter_m": 0.066,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.95,
+            "outer_diameter_m": 0.066,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.2,
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.35,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.06
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.056,
+              "length_m": 0.4,
+              "wall_thickness_m": 0.0008,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "K400C",
+               "delay_s": null
+              },
+              "overhang_m": 0.008,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.16,
+              "tip_chord_m": 0.08,
+              "span_m": 0.11,
+              "sweep_m": 0.09,
+              "thickness_m": 0.004,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.015
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_7",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2554.0, \"time_to_apogee_s\": 18.99, \"max_velocity_ms\": 395.5, \"max_mach\": 1.17, \"rail_exit_ms\": 25.8, \"liftoff_mass_kg\": 2.31, \"thrust_to_weight\": 18.1, \"stability_rail_exit_cal\": 2.13, \"min_stability_burn_cal\": 2.13, \"flight_time_s\": 176.1, \"total_impulse_ns\": 1307.3, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.4, \"drift_m\": 178.0, \"recovery_deployed\": true, \"deploy_time_s\": 19.0, \"deploy_velocity_ms\": 3.3, \"flight_time_s\": 176.1, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 2554 m. The band top is 2,520 m, and 2554 - 2520 = 34 m still over it. Flight time is 176.1 s, under 200. Landing is 5.4 m/s and the section reached the ground. Rail exit is 25.8 m/s, thrust-to-weight is 18.1, and margin is 2.13 cal. Widening helped: 2701.4 - 2554 = 147 m. It needs one more step of drag.\n5. Fix: widen the airframe from 66 mm to 69 mm. Nose diameter matches. Everything else stays, including the 0.20 kg and both chutes.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_8",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "K400 dual deploy",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.22,
+            "diameter_m": 0.069,
+            "wall_thickness_m": 0.002,
+            "material": "Fiberglass",
+            "shoulder_length_m": 0.03
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.95,
+            "outer_diameter_m": 0.069,
+            "wall_thickness_m": 0.0015,
+            "material": "Fiberglass",
+            "contents": [
+             {
+              "type": "mass",
+              "name": "nose weight",
+              "mass_kg": 0.2,
+              "position_from_top_m": 0.04
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 0.35,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.06
+             },
+             {
+              "type": "parachute",
+              "diameter_m": 1.2,
+              "cd": 0.8,
+              "deploy_event": "altitude",
+              "deploy_altitude_m": 250,
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.12
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.056,
+              "length_m": 0.4,
+              "wall_thickness_m": 0.0008,
+              "material": "Kraft phenolic",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "K400C",
+               "delay_s": null
+              },
+              "overhang_m": 0.008,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Plywood (birch)"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.16,
+              "tip_chord_m": 0.08,
+              "span_m": 0.11,
+              "sweep_m": 0.09,
+              "thickness_m": 0.004,
+              "material": "Plywood (birch)",
+              "offset_from_aft_m": 0.015
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_8",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 2487.2, \"time_to_apogee_s\": 18.74, \"max_velocity_ms\": 387.1, \"max_mach\": 1.15, \"rail_exit_ms\": 25.5, \"liftoff_mass_kg\": 2.34, \"thrust_to_weight\": 17.8, \"stability_rail_exit_cal\": 1.95, \"min_stability_burn_cal\": 1.95, \"flight_time_s\": 171.1, \"total_impulse_ns\": 1307.3, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 5.5, \"drift_m\": 171.0, \"recovery_deployed\": true, \"deploy_time_s\": 18.8, \"deploy_velocity_ms\": 3.2, \"flight_time_s\": 171.1, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: the simulator gives apogee 2487.2 m. That is 2487.2 - 2400 = 87 m over the target, and the 5% band is 0.05 * 2400 = 120 m, so it is inside. Flight time is 171.1 s, under 200. Landing is 5.5 m/s and the section reached the ground. Rail exit is 25.5 m/s, thrust-to-weight is 17.8, and margin is 1.95 cal. The drogue opened at apogee and the main at 250 m. There is a supersonic warning. Every check passes.\n5. Fix: no further change; the altitude band, the time window, and the landing all pass.\n6. Uncertainty: 87 m over 2,400 m is inside the band, but a slimmer tube than 69 mm climbs back out of it. The flight is supersonic, Mach 1.15, and the drag model warns that it is less sure there. Flight time at 171.1 s has 200 - 171.1 = 29 s of spare, so a slower drogue would threaten the window. Chute Cd is a model 0.8. Wind was assumed at 2 m/s.",
+   "content": "AeroTech K400C in a 69 mm fiberglass rocket, 1.17 m long, with 0.20 kg in the nose, a 0.35 m drogue at apogee, and a 1.2 m main at 250 m.\nApogee is 2487.2 m, inside the band around 2,400 m. Flight time is 171.1 s and the landing is 5.5 m/s.\nRail exit is 25.5 m/s at 1.95 cal. Assumptions were a 1.5 m rail and 2 m/s wind.\n<design>{\"name\": \"K400 dual deploy\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.22, \"diameter_m\": 0.069, \"wall_thickness_m\": 0.002, \"material\": \"Fiberglass\", \"shoulder_length_m\": 0.03}, {\"type\": \"bodytube\", \"length_m\": 0.95, \"outer_diameter_m\": 0.069, \"wall_thickness_m\": 0.0015, \"material\": \"Fiberglass\", \"contents\": [{\"type\": \"mass\", \"name\": \"nose weight\", \"mass_kg\": 0.2, \"position_from_top_m\": 0.04}, {\"type\": \"parachute\", \"diameter_m\": 0.35, \"cd\": 0.8, \"deploy_event\": \"apogee\", \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.06}, {\"type\": \"parachute\", \"diameter_m\": 1.2, \"cd\": 0.8, \"deploy_event\": \"altitude\", \"deploy_altitude_m\": 250, \"material\": \"Ripstop nylon\", \"position_from_top_m\": 0.12}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.056, \"length_m\": 0.4, \"wall_thickness_m\": 0.0008, \"material\": \"Kraft phenolic\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"K400C\", \"delay_s\": null}, \"overhang_m\": 0.008, \"centering_ring_count\": 2, \"centering_ring_material\": \"Plywood (birch)\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.16, \"tip_chord_m\": 0.08, \"span_m\": 0.11, \"sweep_m\": 0.09, \"thickness_m\": 0.004, \"material\": \"Plywood (birch)\", \"offset_from_aft_m\": 0.015}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 8,
+ "finished_at": 1792881979.8343208
+}

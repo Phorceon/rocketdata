@@ -1,0 +1,3 @@
+4. Check: The simulator gives 1630.3 m, within 5% of 1,700 m. Margin 1.91 cal at the rail and through the burn. Rail exit 39.8 m/s, thrust-to-weight 35.5, landing 3.6 m/s, chute at 13.7 s, and it reached the ground. Mass 0.541 kg.
+5. Fix: 1630.3 m is in band and the gates pass, so the fins stay.
+6. Uncertainty: Mach 1.35 is inside the supersonic drag warning, so 1630.3 m can slide out of the 5% band. The motor only offers a 0 s delay, and this flight depends on the altimeter at 13.7 s. Cd 0.8 is what makes 3.6 m/s. A slightly larger fin would still be stable and might drop under the band.

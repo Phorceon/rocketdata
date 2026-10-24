@@ -1,0 +1,2 @@
+1. Understand: Stay under 850 m. That is a ceiling. Not high-power certified, so G or smaller. Wind is 10 km/h: 10 * 1000 / 3600 = 2.78 m/s, and that goes on every run. Rail, site, and landing are not stated: 1.5 m, sea level, 6 m/s.
+2. Feasibility: A G on a small tube can sit near this ceiling, so I want a G that clears the rail in 2.78 m/s of wind and still lands under 850 m. An H is out. I will look up two G motors and one F.

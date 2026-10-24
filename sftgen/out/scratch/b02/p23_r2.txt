@@ -1,0 +1,1 @@
+2. Feasibility: A10 is 1.9 N*s, 13 mm, average thrust only 1.8 N. A3 is 2.2 N*s, also 13 mm, with a 4 s delay. C6 is 8.8 N*s but 18 mm, and it will not fit inside a body under 20 mm. An A-class motor is unlikely to clear 450 m once drag is real. Looking for a 13 mm motor with more impulse before I call the diameter limit infeasible.

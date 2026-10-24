@@ -1,0 +1,3 @@
+4. Check: The C6 cluster overshot, and the heavier motors pulled the margin back under the gate. The simulator gives 364.4 m, (364.4 - 229) / 229 = 59% above about 229 m. Margin is 0.76 cal at rail exit and through the burn, under 1.0. Landing 5.1 m/s, rail exit 23.0 m/s and thrust-to-weight 7.9 still pass. Impulse is 35.2 N*s, four C motors, still under a D.
+
+5. Fix: Failing values are apogee 364.4 m and margin 0.76 cal. Both come from fins that are too small for a heavier aft cluster: not enough CP, and not enough drag. One change: span to 0.12 m and root to 0.15 m. Motors stay four C6-5s, because four B6s could not reach 229 m even with smaller fins. Tube and chute stay.

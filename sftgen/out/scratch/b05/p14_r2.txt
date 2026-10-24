@@ -1,0 +1,3 @@
+2. Feasibility: A8 is 2.2 N*s, about half of what 175 m wants on a normal tube. B6 is 4.3 N*s, 5.2 N average, 12.1 N peak, 18 mm, 0.016 kg, and the only delay is 0 s. I'll plug it and open the one chute at apogee, which is what was asked.
+3. Size: guessed mass 0.045 kg. Thrust-to-weight is 5.2 / (0.045 * 9.81) = 12. Descent mass is about 0.045 - 0.006 = 0.039 kg. A 4.5 m/s landing, under the 6 m/s limit, needs 2 * 0.039 * 9.81 / (1.225 * 0.8 * 4.5^2) = 0.039 m^2, diameter sqrt(4 * 0.039 / 3.1416) = 0.22 m. Recovery is the priority, so I'll fit a 0.28 m chute and land slower than that.
+4. Draft: 24.8 mm cardboard body, 0.36 m long, short ogive nose, three balsa fins, 18 mm mount, Estes B6. Defaults: 1.5 m rail, 2 m/s wind.

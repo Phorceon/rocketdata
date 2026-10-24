@@ -1,0 +1,2 @@
+4. Check: The simulator gives 8984.3 m. That is past the top of the band: about 8,000 m means up to 8,400 m, and this is 12% high. Gates still pass. Rail exit 23.8 m/s, thrust-to-weight 14.5, margin 2.4 cal at the rail and 2.03 cal in the burn, landing 4.5 m/s. Mass 24.1 kg. Still aloft at 1199.8 s. Cutting the fins was too much drag relief.
+5. Fix: 8984.3 m is the failing number. I am putting the fins back partway: span 0.24 m, root 0.34 m, tip 0.13 m, sweep 0.16 m, between the 0.28 m set that flew to 7490.8 m and the 0.20 m set that flew to 8984.3 m. Tube and chute stay.

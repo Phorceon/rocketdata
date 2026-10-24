@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 190.2 m. The band top is 175 * 1.05 = 184 m, and 190.2 - 184 = 6 m over it. Landing is 4.2 m/s, under 6. Rail exit is 26.7 m/s, thrust-to-weight is 11.8, and margin is 3.16 cal. The body is 24.8 mm, under 1 inch, and the motor is a B6. Wind in the run was 4 m/s. The only miss is altitude.
+5. Fix: raise the nose mass from 0.008 kg to 0.012 kg. Six metres is a small miss, so a small mass change. Chute, fins, motor, and the 4 m/s wind stay.

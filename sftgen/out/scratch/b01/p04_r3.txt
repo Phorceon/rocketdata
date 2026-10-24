@@ -1,0 +1,5 @@
+2. Feasibility: P8000 and P4500 are also missing, with no suggestions. N5800 is a legal N at 20367.7 N*s. The useful hit is Cesaroni 40960O8000-P: the database classes it as P, 41125.3 N*s, 7980 N average, 161 mm by 0.957 m, 32.672 kg. 41125.3 - 40960 = 165 N*s over the amateur cap. A P flight is not feasible. The constraint that fails is total impulse. The 30,500 m altitude never gets a design, because the motor class is already outside the rules. The nearest legal motor I actually found is the O3400 at 21041 N*s, and that is an O, not a P.
+3. Size: Nothing to size inside the rules. A rocket on 41125.3 N*s would be illegal before the first fin is drawn.
+4. Check: No simulation. An illegal motor does not become legal by flying it in the tool.
+5. Fix: No change stays inside both "P motor" and "at most 40,960 N*s". Dropping to an O would give up the motor class the request names.
+6. Uncertainty: Class boundaries are sharp, and this particular reload is only 165 N*s over the line, but "over" is still over. A different P would be further over, not under. Drag at 30 km is a separate argument and does not pull the impulse back under the cap.

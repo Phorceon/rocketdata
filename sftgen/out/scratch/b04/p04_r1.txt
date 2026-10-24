@@ -1,0 +1,2 @@
+1. Understand: landing speed is a maximum of 4.5 m/s. Motor class is a maximum of J. Apogee is a maximum of 1,200 m, the waiver. No altitude floor, no wind, no rail and no stage count are given, so I assume one stage, a 1.5 m rail, 2 m/s wind, vertical, sea level, and one parachute.
+2. Feasibility: 1,200 m with no drag needs sqrt(2 * 9.81 * 1200) = 153 m/s. A full J on a light rocket will clear that and break the waiver, so an I-class 38 mm motor in a wider airframe is the safer way to stay legal. Looking up a few I motors under the J cap.

@@ -1,0 +1,5 @@
+4. Check: The simulator gives 482.7 m, above the 250 m minimum, and it is the high side of what a D can do in this diameter, which is what "go higher if you can" asked for. Impulse is 19.6 N*s, under 20 N*s. Landing is 3.7 m/s, under 6 m/s. Rail exit on the 1 m rod is 32.8 m/s, thrust-to-weight is 39.7, margin is 1.54 cal. The chute opens at 7.9 s, just after the 7.36 s apogee, at 5.5 m/s. No warnings. Liftoff mass is 0.057 kg.
+
+5. Fix: no change needed; the altitude floor, the impulse cap and the gates all pass.
+
+6. Uncertainty: 482.7 m will move if the build is heavier than 0.057 kg or if the fins are thicker than the 3 mm balsa in the model. The 7 s delay is matched to this mass; more weight and it ejects early. Impulse at 19.6 N*s has little room under the 20 N*s cap if someone swaps in a hotter D. Chute Cd is 0.8. A 1 m rail exit of 32.8 m/s has plenty of margin, unlike the stability, which at 1.54 cal is fine but not generous.

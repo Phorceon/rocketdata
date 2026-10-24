@@ -1,0 +1,2 @@
+4. Check: the simulator gives apogee 2701.4 m, still over the 2,520 m band top, and 2701.4 - 2684.9 = 16.5 m higher than the unweighted flight. The 0.20 kg pulled the center of gravity forward, margin went from 1.67 to 2.51 cal, and the straighter flight cancelled the mass. Flight time is 186.5 s, under 200. Landing is 5.3 m/s and the section reached the ground. Rail exit is 26.3 m/s.
+5. Fix: widen the airframe from 60 mm to 66 mm so drag does the work the nose mass did not. The 0.20 kg stays. Nose diameter matches the tube. Motor, chutes, and fins stay.

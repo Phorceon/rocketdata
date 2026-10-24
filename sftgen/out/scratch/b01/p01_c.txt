@@ -1,0 +1,3 @@
+Infeasible: an Estes E16 will not fit a body no wider than 25 mm. The motor case is 29 mm across, already 4 mm past that limit before any tube wall.
+The 4.5 m/s landing speed never comes into play, because the motor cannot enter the airframe.
+A tube of about 32 mm could hold this motor, but that gives up the diameter cap.

@@ -1,0 +1,2 @@
+4. Check: the simulate call failed before any flight numbers. The mount inner diameter is 0.0248 - 2 * 0.0005 = 0.0238 m, which is 23.8 mm, and the motor is 24 mm. Nothing else can be scored until the motor fits.
+5. Fix: the failing fit is 23.8 mm against 24 mm. I'll raise the mount outer diameter from 0.0248 m to 0.0254 m and leave the 0.0005 m wall, so the inner diameter becomes 0.0254 - 2 * 0.0005 = 0.0244 m (24.4 mm). The body inner diameter is still larger than 0.0254 m, so the mount still fits the tube. Same airframe, same chute, same motor.

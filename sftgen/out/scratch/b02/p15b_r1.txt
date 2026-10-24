@@ -1,0 +1,3 @@
+1. Understand: Apogee at least 3,500 m. Wind is 4 m/s and the rocket has to land inside 2,000 m of the pad, so drift is capped. Dual deploy: drogue at apogee, main at a lower altitude. Rail, angle and site are not stated, so 1.5 m vertical rail and sea level. Landing speed is not stated, so the 6 m/s gate applies.
+
+2. Feasibility: A single chute from 3,500 m at 6 m/s takes 3,500 / 6 = 580 s. At 4 m/s of wind that descent walks past a 2,000 m pad limit, which is why the team asked for dual deploy. Drag-free speed at 3,500 m is sqrt(2 * 9.81 * 3,500) = 262 m/s, and a real rocket with a recovery bay will need an L-class motor rather than a small K. Looking up a 54 mm L.

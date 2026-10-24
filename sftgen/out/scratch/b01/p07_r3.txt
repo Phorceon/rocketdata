@@ -1,0 +1,3 @@
+4. Check: The simulator gives 277.6 m. (277.6 - 275) / 275 = 0.95% high, inside the band. Flight time is 69.1 s, under the 90 s window, with margin. Landing is 4.4 m/s, rail exit 23.9 m/s, thrust-to-weight 8.2, margin 1.87 cal. One chute, out at 6.9 s right at apogee. Mass 0.0594 kg.
+5. Fix: No fix needed.
+6. Uncertainty: Both the altitude and the clock have spare room, but a heavier build slows the descent and stretches the flight. The 69 s result assumes the 0.25 m chute actually opens. If it sticks, the 90 s window is irrelevant because the landing speed will not be 4.4 m/s. Drag on a 32 mm tube is the other sensitive piece; a smoother finish flies higher.

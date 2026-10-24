@@ -1,0 +1,3 @@
+1. Understand: Apogee about 375 m, within 5%, so 356 to 394 m. No high-power motor, and class G or smaller. Rail is 2 m, so that goes in every simulation. Wind, angle and site are not stated: 2 m/s, vertical, sea level. Landing is not stated, so the 6 m/s gate applies.
+
+2. Feasibility: 375 m is a mid model-rocket altitude. Drag-free speed is sqrt(2 * 9.81 * 375) = 86 m/s. A G would be far too much. An E in a skinny tube has been in the 400 to 600 m range in similar sizes, so a D, or an E in a fatter tube, is the band. Checking three motors at or under G.

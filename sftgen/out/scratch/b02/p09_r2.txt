@@ -1,0 +1,5 @@
+2. Feasibility: The O3400 is 21,041 N*s, 3,421 N average, 6.14 s, 98 mm, 1.24 m long, loaded mass 16.8 kg. The M2045 is 7,328 N*s, 2,084 N average, 3.51 s, 75 mm, 0.89 m long, loaded mass 6.07 kg. Both are plugged (only a 0 s delay), so each stage needs an apogee chute rather than motor ejection. Total impulse is 21041 + 7328 = 28,369 N*s, under the 40,960 N*s ceiling. On a guessed 30 kg liftoff only the booster is lit, so thrust-to-weight is 3421 / (30 * 9.81) = 11.6. Weight is 30 * 9.81 = 294 N, rail acceleration (3421 - 294) / 30 = 104 m/s^2, exit speed sqrt(2 * 104 * 1.5) = 17.7 m/s. The 4,700 N spike makes the 1.5 m rail comfortable.
+
+3. Size: Sustainer is the 75 mm stage, booster the 98 mm stage, with a short transition between them. Booster separates at burnout and the M lights then. For landings under 5 m/s I will use a 2.6 m sustainer chute and a 4.0 m booster chute, both at apogee, Cd 0.8. The booster is the heavy piece after it drops the 11 kg of propellant.
+
+4. Draft: Fiberglass airframe, four fiberglass fins on each stage, O3400 in the booster, M2045 in the sustainer, both plugged. Checking it in 2 m/s wind on the 1.5 m rail.

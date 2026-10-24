@@ -1,0 +1,3 @@
+4. Check: Altitude landed in the band. The simulator gives 377.6 m, and (377.6 - 375) / 375 = 0.7%, inside 5%. The fins barely moved the margin: 0.69 cal, still under 1.0. Landing is 4.1 m/s. Rail exit is 26.3 m/s, thrust-to-weight 8.2. Ejection at 8.4 s is after apogee at 7.67 s, opening at 6.1 m/s. The landing speed still passes.
+
+5. Fix: The failing value is margin 0.69 cal. More fin area did not move it, same tail-mass problem as before. One change: 0.018 kg of clay at the top of the tube. The E12, the 48 mm tube and the chute stay. Altitude has about 20 m of room down to 356 m, and a small nose mass on a subsonic rocket should not spend all of it.

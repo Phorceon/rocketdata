@@ -1,0 +1,3 @@
+4. Check: Lightening the tubes cleared the rail and the thrust ratio, and the open-tube warning went away. The simulator gives rail exit 15.3 m/s, thrust-to-weight 3.3, sustainer landing 3.5 m/s and booster landing 3.2 m/s. Two misses remain. Apogee is 253.8 m, and (253.8 - 229) / 229 = 11% over the 5% band. Margin is 0.98 cal, still under 1.0. The burn minimum is 0.92 cal.
+
+5. Fix: Failing values are apogee 253.8 m and margin 0.98 cal. Fourth try, because both misses move with fin span and the rail only just cleared at 15.3 m/s, so I will not add mass. Sustainer span goes from 0.08 m to 0.09 m and booster span from 0.10 m to 0.115 m. A bit more area should put the CP past 1.0 cal and spend a few metres of altitude. Diameter, walls and motors stay.

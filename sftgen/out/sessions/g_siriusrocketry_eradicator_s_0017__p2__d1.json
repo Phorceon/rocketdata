@@ -1,0 +1,140 @@
+{
+ "session_id": "g_siriusrocketry_eradicator_s_0017__p2__d1",
+ "prompt_id": "g_siriusrocketry_eradicator_s_0017__p2",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b03",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1.5,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 60462
+ },
+ "status": "abandoned",
+ "started_at": 1792881081.427252,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "65,000 ft on one I205, single stage."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: apogee of 65,000 ft, which is 65000 * 0.3048 = 19,812 m (the wording is a target, so I treat it as about 19,800 m, within 5%). Motor is one I205 (fixed). Single stage (fixed). Landing speed, wind, rail and site are not stated, so 6 m/s, 2 m/s wind, a 1.5 m rail and sea level.\n2. Feasibility: no-drag speed for 19,812 m is sqrt(2*9.81*19812) = 624 m/s, and a real rocket needs more impulse than that once drag is included. An I motor is only a few hundred newton-seconds. I need the I205's impulse and mass before I call the altitude impossible, but it already looks far out of reach for one I in a single stage.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "I205"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"HP-I205W\", \"class\": \"I\", \"total_impulse_ns\": 346.4, \"average_thrust_n\": 204.4, \"max_thrust_n\": 377.3, \"burn_time_s\": 1.68, \"diameter_m\": 0.029, \"length_m\": 0.305, \"loaded_mass_kg\": 0.315, \"propellant_mass_kg\": 0.188, \"delays_s\": [14.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: the lookup returns the AeroTech HP-I205W, class I, only 346.4 N*s at 204.4 N average. The case is 29 mm, 0.305 m long, 0.315 kg, with a single 14 s delay. Even if the whole 346.4 N*s went into a 0.40 kg rocket with no drag, burnout speed would be about 346.4 / 0.40 = 866 m/s and the vacuum height 866^2 / (2*9.81) = 38,200 m. Drag at that speed on a real tube will take most of that away. 19,800 m is not plausible, but I will fly the lightest single-stage airframe I can so the shortfall is a measured one.\n3. Size: guessed liftoff mass 0.45 kg. Thrust-to-weight = 204.4 / (0.45 * 9.81) = 46.3. Pad weight 0.45 * 9.81 = 4.41 N, rail acceleration (204.4 - 4.41) / 0.45 = 444 m/s^2, exit speed sqrt(2 * 444 * 1.5) = 36.5 m/s. Descent mass 0.45 - 0.188 = 0.26 kg. A 5 m/s chute needs 2 * 0.26 * 9.81 / (1.225 * 0.8 * 5^2) = 0.208 m^2, diameter sqrt(4 * 0.208 / 3.1416) = 0.51 m. I will use 0.55 m and open it at apogee, with the motor plugged, so a 14 s ejection does not cut the coast short.\n4. Draft: 0.10 m polystyrene ogive on a 0.48 m cardboard tube, outer diameter 0.038 m, wall 0.8 mm. Mount 0.033 m outside, 0.32 m long, HP-I205W plugged. Three balsa fins, root 0.10 m, tip 0.040 m, span 0.055 m, sweep 0.050 m, 3 mm thick. Chute 0.55 m at apogee. Site defaults for wind and rail.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "38 mm I205 altitude",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.1,
+            "diameter_m": 0.038,
+            "wall_thickness_m": 0.001,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.02
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.48,
+            "outer_diameter_m": 0.038,
+            "wall_thickness_m": 0.0008,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.55,
+              "cd": 0.8,
+              "deploy_event": "apogee",
+              "material": "Ripstop nylon",
+              "position_from_top_m": 0.03
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.033,
+              "length_m": 0.32,
+              "wall_thickness_m": 0.0008,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "HP-I205W",
+               "delay_s": null
+              },
+              "overhang_m": 0.005,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.1,
+              "tip_chord_m": 0.04,
+              "span_m": 0.055,
+              "sweep_m": 0.05,
+              "thickness_m": 0.003,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.0
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 1664.1, \"time_to_apogee_s\": 12.31, \"max_velocity_ms\": 606.4, \"max_mach\": 1.79, \"rail_exit_ms\": 43.6, \"liftoff_mass_kg\": 0.4, \"thrust_to_weight\": 52.0, \"stability_rail_exit_cal\": 1.3, \"min_stability_burn_cal\": 1.3, \"flight_time_s\": 390.7, \"total_impulse_ns\": 346.4, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 4.2, \"drift_m\": 713.0, \"recovery_deployed\": true, \"deploy_time_s\": 12.3, \"deploy_velocity_ms\": 0.4, \"flight_time_s\": 390.7, \"reached_ground\": true}], \"warnings\": [\"Body calculations may not be entirely accurate at supersonic speeds.\"], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.5, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  }
+ ],
+ "call_counter": 2,
+ "abandon_reason": "must precision: 19812 has 5 sig figs in the first turn"
+}

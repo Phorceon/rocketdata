@@ -1,0 +1,196 @@
+{
+ "session_id": "g_3d_printable_nose_cone_and_fins__p1__d1",
+ "prompt_id": "g_3d_printable_nose_cone_and_fins__p1",
+ "draft": 1,
+ "generator": {
+  "name": "grok47-b02",
+  "prompt_version": "prompts_v1",
+  "contract": "sft-v2.1"
+ },
+ "sim_conditions": {
+  "rail_length_m": 1,
+  "launch_angle_deg": 0.0,
+  "wind_ms": 2.0,
+  "wind_turbulence": 0.1,
+  "site_altitude_m": 0.0,
+  "time_step_s": 0.05,
+  "seed": 562624
+ },
+ "status": "final",
+ "started_at": 1792880968.234287,
+ "messages": [
+  {
+   "role": "system",
+   "content": "You design amateur rockets that fly on certified commercial motors. Work through the design, check it with the tools, and give the final design as JSON inside <design> tags. Only report results the tools returned."
+  },
+  {
+   "role": "user",
+   "content": "Team project: The bar is 250 m; go higher if you can. No more than 20 N·s total impulse. We've got a 1 m rod to work with. We'd like the full design."
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "1. Understand: Apogee at least 250 m, and higher is better if it still fits the other rules (minimum, with a preference to exceed it). Total impulse no more than 20 N*s (maximum). Rail is 1 m (fixed). Landing speed is not stated, so the usual 6 m/s maximum applies. Wind not stated: 2 m/s. Vertical, sea level, single stage.\n\n2. Feasibility: 20 N*s is a D, not an E. Drag-free speed for 250 m is sqrt(2 * 9.81 * 250) = 70 m/s, so the impulse can clear the floor if the rocket is light. The 1 m rod is the hard part: average acceleration has to be high or the exit speed falls under 15 m/s. I want the D closest to 20 N*s that still has a sharp thrust curve.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_1",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D21T"
+      }
+     }
+    },
+    {
+     "id": "call_2",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D12"
+      }
+     }
+    },
+    {
+     "id": "call_3",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D20W"
+      }
+     }
+    },
+    {
+     "id": "call_4",
+     "type": "function",
+     "function": {
+      "name": "motor_lookup",
+      "arguments": {
+       "designation": "D16"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_1",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"AeroTech\", \"designation\": \"D21T\", \"class\": \"D\", \"total_impulse_ns\": 19.6, \"average_thrust_n\": 22.2, \"max_thrust_n\": 32.1, \"burn_time_s\": 0.88, \"diameter_m\": 0.018, \"length_m\": 0.07, \"loaded_mass_kg\": 0.025, \"propellant_mass_kg\": 0.0096, \"delays_s\": [4.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_2",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Estes\", \"designation\": \"D12\", \"class\": \"D\", \"total_impulse_ns\": 16.8, \"average_thrust_n\": 10.4, \"max_thrust_n\": 29.7, \"burn_time_s\": 1.61, \"diameter_m\": 0.024, \"length_m\": 0.07, \"loaded_mass_kg\": 0.0426, \"propellant_mass_kg\": 0.0211, \"delays_s\": [0.0, 3.0, 5.0, 7.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_3",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Quest\", \"designation\": \"D20W\", \"class\": \"D\", \"total_impulse_ns\": 13.5, \"average_thrust_n\": 17.8, \"max_thrust_n\": 24.7, \"burn_time_s\": 0.76, \"diameter_m\": 0.018, \"length_m\": 0.081, \"loaded_mass_kg\": 0.0241, \"propellant_mass_kg\": 0.0087, \"delays_s\": [4.0, 6.0, 8.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_4",
+   "name": "motor_lookup",
+   "content": "{\"ok\": true, \"manufacturer\": \"Quest\", \"designation\": \"D16\", \"class\": \"D\", \"total_impulse_ns\": 12.5, \"average_thrust_n\": 16.0, \"max_thrust_n\": 22.3, \"burn_time_s\": 0.78, \"diameter_m\": 0.018, \"length_m\": 0.0797, \"loaded_mass_kg\": 0.0257, \"propellant_mass_kg\": 0.0125, \"delays_s\": [4.0, 6.0, 8.0], \"type\": \"single-use\"}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "2. Feasibility: D21T is 19.6 N*s, the closest of the set to the 20 N*s cap, at 22.2 N average and 32.1 N peak, 18 mm, mass 0.025 kg, delays 4 and 7 s. D12 is 16.8 N*s but only 10.4 N, weak on a 1 m rod and it leaves altitude on the table. D20W and D16 are 13.5 and 12.5 N*s. For a minimum of 250 m with a request to go higher, the D21T is the motor.\n\n3. Size: Keep the airframe narrow so the 19.6 N*s goes into altitude. Liftoff guess 0.055 kg. Thrust-to-weight is 22.2 / (0.055 * 9.81) = 41.1. Weight is 0.055 * 9.81 = 0.540 N, rail acceleration (22.2 - 0.54) / 0.055 = 394 m/s^2, exit speed sqrt(2 * 394 * 1) = 28.1 m/s. Burnout mass is about 0.045 kg. A 0.30 m chute lands that well under 6 m/s. Delay 7 s, because burnout is under a second and the coast on a light D should run several seconds past that.\n\n4. Draft: 28 mm cardboard tube, 0.32 m long, small ogive, three balsa fins, 18 mm mount, D21T-7, 0.30 m chute. Simulated on the 1 m rail.",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "call_5",
+     "type": "function",
+     "function": {
+      "name": "simulate",
+      "arguments": {
+       "design": {
+        "name": "28 mm D21 altitude rocket",
+        "stages": [
+         {
+          "name": "Sustainer",
+          "components": [
+           {
+            "type": "nosecone",
+            "shape": "ogive",
+            "length_m": 0.07,
+            "diameter_m": 0.028,
+            "wall_thickness_m": 0.002,
+            "material": "Polystyrene",
+            "shoulder_length_m": 0.015
+           },
+           {
+            "type": "bodytube",
+            "length_m": 0.32,
+            "outer_diameter_m": 0.028,
+            "wall_thickness_m": 0.0007,
+            "material": "Cardboard",
+            "contents": [
+             {
+              "type": "parachute",
+              "diameter_m": 0.3,
+              "cd": 0.8,
+              "deploy_event": "ejection",
+              "material": "Polyethylene (thin)",
+              "position_from_top_m": 0.02
+             },
+             {
+              "type": "motor_mount",
+              "outer_diameter_m": 0.02,
+              "length_m": 0.075,
+              "wall_thickness_m": 0.0006,
+              "material": "Cardboard",
+              "motor": {
+               "manufacturer": "AeroTech",
+               "designation": "D21T",
+               "delay_s": 7.0
+              },
+              "overhang_m": 0.004,
+              "centering_ring_count": 2,
+              "centering_ring_material": "Cardboard"
+             },
+             {
+              "type": "trapezoidal_fins",
+              "count": 3,
+              "root_chord_m": 0.06,
+              "tip_chord_m": 0.025,
+              "span_m": 0.04,
+              "sweep_m": 0.03,
+              "thickness_m": 0.003,
+              "material": "Balsa",
+              "offset_from_aft_m": 0.004
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "conditions": {
+        "rail_length_m": 1.0
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "call_5",
+   "name": "simulate",
+   "content": "{\"ok\": true, \"apogee_m\": 482.7, \"time_to_apogee_s\": 7.36, \"max_velocity_ms\": 234.4, \"max_mach\": 0.69, \"rail_exit_ms\": 32.8, \"liftoff_mass_kg\": 0.057, \"thrust_to_weight\": 39.7, \"stability_rail_exit_cal\": 1.54, \"min_stability_burn_cal\": 1.54, \"flight_time_s\": 137.8, \"total_impulse_ns\": 19.6, \"sections\": [{\"name\": \"Sustainer\", \"landing_ms\": 3.7, \"drift_m\": 247.0, \"recovery_deployed\": true, \"deploy_time_s\": 7.9, \"deploy_velocity_ms\": 5.5, \"flight_time_s\": 137.8, \"reached_ground\": true}], \"warnings\": [], \"conditions\": {\"wind_ms\": 2.0, \"rail_length_m\": 1.0, \"launch_angle_deg\": 0.0, \"site_altitude_m\": 0.0}}"
+  },
+  {
+   "role": "assistant",
+   "reasoning_content": "4. Check: The simulator gives 482.7 m, above the 250 m minimum, and it is the high side of what a D can do in this diameter, which is what \"go higher if you can\" asked for. Impulse is 19.6 N*s, under 20 N*s. Landing is 3.7 m/s, under 6 m/s. Rail exit on the 1 m rod is 32.8 m/s, thrust-to-weight is 39.7, margin is 1.54 cal. The chute opens at 7.9 s, just after the 7.36 s apogee, at 5.5 m/s. No warnings. Liftoff mass is 0.057 kg.\n\n5. Fix: no change needed; the altitude floor, the impulse cap and the gates all pass.\n\n6. Uncertainty: 482.7 m will move if the build is heavier than 0.057 kg or if the fins are thicker than the 3 mm balsa in the model. The 7 s delay is matched to this mass; more weight and it ejects early. Impulse at 19.6 N*s has little room under the 20 N*s cap if someone swaps in a hotter D. Chute Cd is 0.8. A 1 m rail exit of 32.8 m/s has plenty of margin, unlike the stability, which at 1.54 cal is fine but not generous.",
+   "content": "D21T-7 in a 28 mm cardboard rocket, three balsa fins, 0.30 m chute.\nThe simulator gives 482.7 m on a 1 m rail, above the 250 m bar, with 19.6 N*s under the 20 N*s cap.\nLanding 3.7 m/s, margin 1.54 cal, rail exit 32.8 m/s.\n<design>{\"name\": \"28 mm D21 altitude rocket\", \"stages\": [{\"name\": \"Sustainer\", \"components\": [{\"type\": \"nosecone\", \"shape\": \"ogive\", \"length_m\": 0.07, \"diameter_m\": 0.028, \"wall_thickness_m\": 0.002, \"material\": \"Polystyrene\", \"shoulder_length_m\": 0.015}, {\"type\": \"bodytube\", \"length_m\": 0.32, \"outer_diameter_m\": 0.028, \"wall_thickness_m\": 0.0007, \"material\": \"Cardboard\", \"contents\": [{\"type\": \"parachute\", \"diameter_m\": 0.3, \"cd\": 0.8, \"deploy_event\": \"ejection\", \"material\": \"Polyethylene (thin)\", \"position_from_top_m\": 0.02}, {\"type\": \"motor_mount\", \"outer_diameter_m\": 0.02, \"length_m\": 0.075, \"wall_thickness_m\": 0.0006, \"material\": \"Cardboard\", \"motor\": {\"manufacturer\": \"AeroTech\", \"designation\": \"D21T\", \"delay_s\": 7.0}, \"overhang_m\": 0.004, \"centering_ring_count\": 2, \"centering_ring_material\": \"Cardboard\"}, {\"type\": \"trapezoidal_fins\", \"count\": 3, \"root_chord_m\": 0.06, \"tip_chord_m\": 0.025, \"span_m\": 0.04, \"sweep_m\": 0.03, \"thickness_m\": 0.003, \"material\": \"Balsa\", \"offset_from_aft_m\": 0.004}]}]}]}</design>"
+  }
+ ],
+ "call_counter": 5,
+ "finished_at": 1792881002.881247
+}
