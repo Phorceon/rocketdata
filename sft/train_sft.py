@@ -1,13 +1,14 @@
-"""Supervised fine-tuning of InternScience/Agents-A1-4B on the rocketdata SFT split with Unsloth.
+"""Supervised fine-tuning of Qwen/Qwen3.5-4B (or another Qwen3.5-family model) on the rocketdata designs with Unsloth.
 
-16-bit LoRA (Unsloth advises against 4-bit QLoRA for the Qwen3.5 family this model is built on).
-Trains on data/sft_v0.jsonl and logs the loss on data/sft_test.jsonl after every epoch. The final
-adapter is the last epoch (the test set is not used to pick an epoch, so its scores stay unbiased);
-every epoch's checkpoint is kept in <out>/checkpoints. Loss is computed on the assistant answer only.
+16-bit LoRA (Unsloth advises against 4-bit QLoRA for the Qwen3.5 family). Trains on
+new_results/sft_v2.jsonl, minus every design with --max-parts components or more, and logs the loss on
+new_results/sft_test_v2.jsonl after every epoch. The final adapter is the last epoch (the test set is not
+used to pick an epoch, so its scores stay unbiased); every epoch's checkpoint is kept in <out>/checkpoints.
+Loss is computed on the assistant answer only.
 
-By default the <thought>...</thought> block of each answer is moved into the model's native
-<think> reasoning slot, so the default chat prompt (thinking on) matches training. The
-<design>{json}</design> block is unchanged. Pass --keep-thought to train on the data verbatim.
+By default each answer is trained verbatim (<thought>...</thought><design>{json}</design>), so chat with
+thinking off. --move-thought instead moves the <thought> text into the model's native <think> slot
+(thinking on), as in the 2026-10-19 Agents-A1-4B run.
 
 Run with Unsloth Studio's Python (it already has every dependency):
     %USERPROFILE%\\.unsloth\\studio\\unsloth_studio\\Scripts\\python.exe sft\\train_sft.py --smoke 3
@@ -28,19 +29,28 @@ os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data"
+NEW_RESULTS = REPO / "new_results"
 THOUGHT_RE = re.compile(r"^\s*<thought>\s*(.*?)\s*</thought>\s*(<design>.*</design>)\s*$", re.S)
 INSTRUCTION_PART = "<|im_start|>user\n"
 RESPONSE_PART = "<|im_start|>assistant\n"
 
 
-def load_messages(path, keep_thought):
-    """Return one message list per JSONL row, optionally moving <thought> into reasoning_content."""
-    out = []
+def load_messages(path, keep_thought, max_parts=0):
+    """Return one message list per JSONL row, optionally moving <thought> into reasoning_content.
+
+    With max_parts > 0, rows whose design has that many components or more are skipped (see filter_data.py).
+    """
+    from filter_data import part_count
+
+    out, skipped = [], 0
     with open(path, encoding="utf-8") as f:
         for line in f:
             if not line.strip():
                 continue
             row = json.loads(line)
+            if max_parts and part_count(row) >= max_parts:
+                skipped += 1
+                continue
             msgs = [dict(m) for m in row["messages"]]
             if not keep_thought:
                 m = THOUGHT_RE.match(msgs[-1]["content"])
@@ -49,28 +59,38 @@ def load_messages(path, keep_thought):
                 msgs[-1]["reasoning_content"] = m.group(1)
                 msgs[-1]["content"] = m.group(2)
             out.append(msgs)
+    if skipped:
+        print(f"[data] {path}: skipped {skipped} rows with {max_parts}+ design components", flush=True)
     return out
 
 
 def parse_args():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="InternScience/Agents-A1-4B")
-    ap.add_argument("--out", default=r"C:\ft\agents-a1-rocket", help="keep this path short on Windows")
-    ap.add_argument("--train", default=str(DATA / "sft_v0.jsonl"))
-    ap.add_argument("--test", default=str(DATA / "sft_test.jsonl"))
+    ap.add_argument("--model", default="Qwen/Qwen3.5-4B")
+    ap.add_argument("--out", default=r"C:\ft\qwen35-rocket", help="keep this path short on Windows")
+    ap.add_argument("--train", default=str(NEW_RESULTS / "sft_v2.jsonl"))
+    ap.add_argument("--test", default=str(NEW_RESULTS / "sft_test_v2.jsonl"))
+    ap.add_argument("--max-parts", type=int, default=60,
+                    help="skip training rows whose design has this many components or more (0 keeps all)")
     ap.add_argument("--epochs", type=float, default=3)
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--rank", type=int, default=16)
     ap.add_argument("--alpha", type=int, default=16)
     ap.add_argument("--batch", type=int, default=1)
     ap.add_argument("--accum", type=int, default=8)
-    ap.add_argument("--max-len", type=int, default=2048)
+    ap.add_argument("--max-len", type=int, default=6400, help="sft_v2 has answers up to ~6,300 tokens")
     ap.add_argument("--seed", type=int, default=42, help="LoRA init and data order (42 = the shipped model)")
-    ap.add_argument("--keep-thought", action="store_true", help="train on <thought> verbatim (then chat with thinking off)")
+    ap.add_argument("--keep-thought", dest="keep_thought", action="store_true", default=True,
+                    help="train on <thought> verbatim, then chat with thinking off (the default)")
+    ap.add_argument("--move-thought", dest="keep_thought", action="store_false",
+                    help="move <thought> into the <think> slot instead (thinking-on training)")
     ap.add_argument("--smoke", type=int, default=0, help="run only N optimizer steps, then stop (no saving)")
     ap.add_argument("--no-export", action="store_true", help="save the LoRA adapter only")
     ap.add_argument("--export-only", action="store_true", help="skip training; export from <out>/lora")
-    ap.add_argument("--gguf", default="q4_k_m", help="llama.cpp quantization for the GGUF export")
+    ap.add_argument("--gguf", default="q8_0",
+                    help="llama.cpp quantization for the GGUF export (q4_k_m breaks far more of the JSON)")
+    ap.add_argument("--name", help="GGUF file name stem (default: <model name>-rocketdata); "
+                                   "with --export-only pass the same --model or --name as the training run")
     return ap.parse_args()
 
 
@@ -109,8 +129,8 @@ def check_masking(trainer, tokenizer):
         raise RuntimeError("prompt tokens are not masked out")
 
 
-def export_gguf(model, processor, out, quant, name="Agents-A1-4B-rocketdata"):
-    """Write <out>/gguf/<name>.*.gguf (model + mmproj).
+def export_gguf(model, processor, out, quant, name, base):
+    """Write <out>/gguf/<name>.*.gguf (model + mmproj); files Unsloth names after the base model get renamed.
 
     Unsloth merges into a scratch folder, takes the GGUF's display name from that folder's name and
     writes the files to "<scratch>_gguf". The new files are staged in <out>/gguf.new and swapped in for
@@ -119,6 +139,8 @@ def export_gguf(model, processor, out, quant, name="Agents-A1-4B-rocketdata"):
     """
     scratch, built = out / name, out / f"{name}_gguf"
     dest, staged, old = out / "gguf", out / "gguf.new", out / "gguf.old"
+    if scratch in (dest, staged, old):
+        raise ValueError(f"--name {name!r} collides with an output folder")
     try:
         model.save_pretrained_gguf(str(scratch), processor, quantization_method=quant)
         files = sorted(built.glob("*.gguf"))
@@ -128,7 +150,7 @@ def export_gguf(model, processor, out, quant, name="Agents-A1-4B-rocketdata"):
         shutil.rmtree(old, ignore_errors=True)
         staged.mkdir()
         for f in files:
-            os.replace(f, staged / f.name.replace("Agents-A1-4B.", f"{name}.", 1))
+            os.replace(f, staged / f.name.replace(f"{base}.", f"{name}.", 1))
         if dest.exists():
             dest.rename(old)  # raises, changing nothing, if a file inside is open
         staged.rename(dest)
@@ -136,26 +158,29 @@ def export_gguf(model, processor, out, quant, name="Agents-A1-4B-rocketdata"):
     finally:
         shutil.rmtree(scratch, ignore_errors=True)
         shutil.rmtree(built, ignore_errors=True)
-    print(f"[export] GGUF files: {sorted(p.name for p in dest.glob('*.gguf'))}", flush=True)
+    final = sorted(p.name for p in dest.glob("*.gguf"))
+    print(f"[export] GGUF files: {final}", flush=True)
+    if not any("mmproj" not in f for f in final):
+        raise RuntimeError(f"no model GGUF in {dest} after export")
 
 
-def export(model, processor, out, quant):
+def export(model, processor, out, quant, name, base):
     """Save merged 16-bit weights and a GGUF. Each step runs even if the other fails; returns the failed ones."""
     # Chat turns end with <|im_end|>, but the base config's eos is <|endoftext|>; stop on either.
     tok = getattr(processor, "tokenizer", processor)
     model.generation_config.eos_token_id = [tok.convert_tokens_to_ids(t) for t in ("<|im_end|>", "<|endoftext|>")]
     failed = []
-    for name, fn in [
+    for step, fn in [
         ("merged_16bit", lambda: model.save_pretrained_merged(str(out / "merged_16bit"), processor, save_method="merged_16bit")),
-        ("gguf", lambda: export_gguf(model, processor, out, quant)),
+        ("gguf", lambda: export_gguf(model, processor, out, quant, name, base)),
     ]:
         t = time.time()
         try:
             fn()
-            print(f"[export] {name} done in {time.time() - t:.0f}s", flush=True)
+            print(f"[export] {step} done in {time.time() - t:.0f}s", flush=True)
         except Exception:
-            failed.append(name)
-            print(f"[export] {name} FAILED:", flush=True)
+            failed.append(step)
+            print(f"[export] {step} FAILED:", flush=True)
             traceback.print_exc()
     return failed
 
@@ -164,6 +189,8 @@ def main():
     args = parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
+    base = args.model.rstrip("/\\").replace("\\", "/").split("/")[-1]
+    name = args.name or f"{base}-rocketdata"
     # Unsloth writes generated kernels to ./unsloth_compiled_cache by default; keep them out of the repo.
     os.environ.setdefault("UNSLOTH_COMPILE_LOCATION", str(out / "unsloth_compiled_cache"))
 
@@ -178,7 +205,7 @@ def main():
 
     if args.export_only:
         model, processor = FastModel.from_pretrained(model_name=str(out / "lora"), **load_kw)
-        return 1 if export(model, processor, out, args.gguf) else 0
+        return 1 if export(model, processor, out, args.gguf, name, base) else 0
 
     t0 = time.time()
     model, processor = FastModel.from_pretrained(model_name=args.model, **load_kw)
@@ -206,7 +233,7 @@ def main():
     def render(msgs):
         return tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=False)
 
-    train_text = [render(m) for m in load_messages(args.train, args.keep_thought)]
+    train_text = [render(m) for m in load_messages(args.train, args.keep_thought, args.max_parts)]
     test_text = [render(m) for m in load_messages(args.test, args.keep_thought)]
     lengths = [len(tokenizer(t, add_special_tokens=False)["input_ids"]) for t in train_text + test_text]
     print(f"[data] train {len(train_text)}, test {len(test_text)}; tokens per example max {max(lengths)}")
@@ -274,7 +301,7 @@ def main():
     print(f"[save] LoRA adapter (last epoch) -> {out / 'lora'}", flush=True)
     if args.no_export:
         return 0
-    return 1 if export(model, processor, out, args.gguf) else 0
+    return 1 if export(model, processor, out, args.gguf, name, base) else 0
 
 
 if __name__ == "__main__":
