@@ -8,7 +8,7 @@ transformers 5.5.0, TRL 0.23.1, torch 2.13 + CUDA 13.0).
 > **Summary (2026-10-28)**
 > - **It beats the earlier Agents-A1-4B fine-tune on the 105 RL prompts:** valid design JSON 103 vs 103, uses this
 >   project's schema 101 vs 90, uses the motor the prompt asked for 28/29 vs 28/29.
-> - **It copies far less:** the most common motor is in 18% of its answers, across 37 different motors. The Agents
+> - **It copies far less:** the most common motor is in 17% of its designs, across 42 different motors. The Agents
 >   model put GragasMAY24 (the Raketa design's motor) in about 74%.
 > - **How it has to be run:** the 8-bit GGUF, thinking off, temperature 0.7, and the output grammar
 >   `sft/design.gbnf`. Without the grammar the same file scores 93 valid / 90 schema.
@@ -143,7 +143,7 @@ Outputs go to `C:\ft\qwen35-rocket\` (short path on purpose; Windows has a 260-c
   attention with full attention every 4th layer), so the scripts needed no model-specific changes.
 - **The data:** `new_results/sft_v2.jsonl`, the team's re-simulation of `sft_v1` with OpenRocket 24.12 (163 rows,
   79 rockets, at most 5 rows per rocket). It replaces `data/sft_v0.jsonl`, where 92 of 174 rows were one rocket.
-- **Dropping the 12 largest designs:** 12 rows model every small part of a kit, with 71 to 133 parts each (67
+- **Dropping the 12 largest designs:** 12 rows model every small part of a kit, with 71 to 133 parts each (68
   centering rings in the Estes Rubicon, 92 inner tubes in Nemesis 150). The median design has 14. Trained on
   them, the model learned that a part list can go on and on, and it got stuck repeating one part ("Centering
   ring" 209 times) until it ran out of tokens. 151 rows from 73 rockets remain.
@@ -169,7 +169,7 @@ Outputs go to `C:\ft\qwen35-rocket\` (short path on purpose; Windows has a 260-c
 
 | Epoch | 1 | 2 | 3 (saved) |
 |---|---|---|---|
-| Test loss | 0.499 | 0.453 | 0.450 |
+| Test loss | 0.499 | 0.452 | 0.450 |
 
 Test loss didn't show any of the problems below: every variant ended between 0.438 and 0.454.
 
@@ -226,8 +226,8 @@ These aren't directly comparable with the Agents-A1 test table further down: tha
   stage uses. SFT teaches those landing speeds as correct.
 - **One rocket dominates the test set:** 21 of the 38 test rows are `OpenRocket-Design__Rocket_Model.ork`, so the
   test scores mostly measure that rocket. The RL prompts (105, from 8 rockets) are the better comparison.
-- **The RL prompts don't always agree with their targets:** 14 of the 105 ask for an apogee more than 10% away
-  from their own `requirements.target_apogee_m`, and 54 give no apogee at all.
+- **The RL prompts don't always agree with their targets:** 17 of the 105 ask for an apogee more than 10% away
+  from their own `requirements.target_apogee_m` (U-280 asks for 9,080 m against 3,479 m), and 41 give no apogee.
 
 ## Earlier run: Agents-A1-4B on `sft_v0` (2026-10-19)
 

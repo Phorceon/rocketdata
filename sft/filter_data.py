@@ -1,6 +1,6 @@
 """Write a training copy of an SFT JSONL without the very large designs; the source file is not changed.
 
-A few rows of new_results/sft_v2.jsonl model every small part of a kit (67 centering rings, 92 inner tubes),
+A few rows of new_results/sft_v2.jsonl model every small part of a kit (68 centering rings, 92 inner tubes),
 so their <design> lists run past 100 components. Training on them taught the model to keep listing parts
 until it ran out of tokens. This drops every row whose design has --max-parts components or more.
 
