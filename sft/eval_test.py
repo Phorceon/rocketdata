@@ -1,6 +1,9 @@
-"""Score a GGUF model on the held-out SFT test prompts (data/sft_test.jsonl) with llama-server.
+"""Score a GGUF model on held-out prompts with llama-server (default: the 38 prompts in new_results/sft_test_v2.jsonl).
 
-Checks format only: the repo has no simulator, so "does the rocket fly" is not tested. Per answer
+Defaults match the shipped Qwen3.5-4B model: thinking off, sft/design.gbnf as the output grammar, temperature 0.7.
+--think (which also drops the grammar) and --no-grammar give the raw model, as used for the Agents-A1-4B run.
+
+Checks format only: designs aren't simulated, so "does the rocket fly" is not tested. Per answer
 (the <design> block is looked for in the final answer only, not in the reasoning):
   design_found   <design>...</design> present        json_ok      the design JSON parses
   schema_ok      flight.motor + components, every component type is one seen in the data,
@@ -12,8 +15,9 @@ Checks format only: the repo has no simulator, so "does the rocket fly" is not t
   truncated      hit --max-tokens before finishing        error       the request itself failed
 
 Usage (Unsloth Studio's Python; llama-server ships with Studio):
-    python sft\\eval_test.py --gguf C:\\ft\\agents-a1-rocket\\gguf\\<file>.gguf --label finetuned
-    python sft\\eval_test.py --rescore C:\\ft\\agents-a1-rocket\\eval\\results_finetuned.json   (no GPU)
+    python sft\\eval_test.py --gguf C:\\ft\\qwen35-rocket\\gguf\\Qwen3.5-4B-rocketdata.Q4_K_M.gguf --label test
+    python sft\\eval_test.py --gguf ... --label rl --test data\\splits\\rl_heldout.jsonl
+    python sft\\eval_test.py --rescore C:\\ft\\qwen35-rocket\\eval\\results_test.json   (no GPU)
 """
 import argparse
 import importlib.util
@@ -32,6 +36,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 DATA = REPO / "data"
+NEW_RESULTS = REPO / "new_results"
+DEFAULT_GRAMMAR = REPO / "sft" / "design.gbnf"
 DEFAULT_SERVER = Path.home() / ".unsloth" / "llama.cpp" / "build" / "bin" / "Release" / "llama-server.exe"
 NUM = r"([\d][\d,]*(?:\.\d+)?)"
 KEYS = ["design_found", "json_ok", "schema_ok", "recovery", "motor_known", "motor_match", "claim_vs_ask",
@@ -55,8 +61,11 @@ def walk(components):
 def reference_vocab():
     """Component types and motor names that appear in the SFT data, plus the motor catalog."""
     types, motors = set(), set()
-    for name in ("sft_v0.jsonl", "sft_test.jsonl"):
-        for line in open(DATA / name, encoding="utf-8"):
+    for path in (DATA / "sft_v0.jsonl", DATA / "sft_test.jsonl", REPO / "new_results" / "sft_v1.jsonl",
+                 REPO / "new_results" / "sft_v2.jsonl", REPO / "new_results" / "sft_test_v2.jsonl"):
+        if not path.exists():
+            continue
+        for line in open(path, encoding="utf-8"):
             ans = json.loads(line)["messages"][-1]["content"]
             d = json.loads(ans.split("<design>")[1].split("</design>")[0])
             m = d["flight"]["motor"]
@@ -179,6 +188,8 @@ def ask_model(port, row, args):
         "max_tokens": args.max_tokens, "seed": 3407,
         "chat_template_kwargs": {"enable_thinking": not args.no_think},
     }
+    if args.grammar_text:
+        body["grammar"] = args.grammar_text
     req = urllib.request.Request(f"http://127.0.0.1:{port}/v1/chat/completions",
                                  data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
     t = time.time()
@@ -223,7 +234,7 @@ def rescore(path, test_path):
                  reasoning=reasoning, content=content)
         results.append(r)
     meta = {k: v for k, v in saved["summary"].items()
-            if k in ("label", "gguf", "wall_minutes", "temperature", "presence_penalty", "thinking")}
+            if k in ("label", "gguf", "wall_minutes", "temperature", "presence_penalty", "thinking", "grammar")}
     summary = summarize(results, meta)
     Path(path).write_text(json.dumps({"summary": summary, "results": results}, indent=1), encoding="utf-8")
     print(json.dumps(summary, indent=1))
@@ -234,18 +245,28 @@ def main():
     ap.add_argument("--gguf")
     ap.add_argument("--label")
     ap.add_argument("--rescore", metavar="RESULTS_JSON", help="re-score a saved results file instead of generating")
-    ap.add_argument("--test", default=str(DATA / "sft_test.jsonl"))
-    ap.add_argument("--out-dir", default=r"C:\ft\agents-a1-rocket\eval")
+    ap.add_argument("--test", default=str(NEW_RESULTS / "sft_test_v2.jsonl"))
+    ap.add_argument("--out-dir", default=r"C:\ft\qwen35-rocket\eval")
     ap.add_argument("--server", default=str(DEFAULT_SERVER))
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--parallel", type=int, default=4)
     ap.add_argument("--max-tokens", type=int, default=4096)
-    ap.add_argument("--temperature", type=float, default=0.3)
-    ap.add_argument("--presence-penalty", type=float, default=0.0, help="the model card recommends 1.1")
-    ap.add_argument("--no-think", action="store_true", help="prompt with thinking off (for --keep-thought models)")
+    ap.add_argument("--temperature", type=float, default=0.7, help="0.3 makes the Qwen model loop")
+    ap.add_argument("--presence-penalty", type=float, default=0.0, help="keep 0: any penalty breaks the JSON")
+    ap.add_argument("--no-think", dest="no_think", action="store_true", default=True,
+                    help="prompt with thinking off (the default; for models trained verbatim)")
+    ap.add_argument("--think", dest="no_think", action="store_false",
+                    help="prompt with thinking on (for --move-thought models); also turns the grammar off")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--overwrite", action="store_true", help="replace an existing results_<label>.json")
+    ap.add_argument("--grammar", default=str(DEFAULT_GRAMMAR),
+                    help="GBNF file that constrains every answer (default sft\\design.gbnf)")
+    ap.add_argument("--no-grammar", dest="grammar", action="store_const", const=None,
+                    help="score the raw model, with no output grammar")
     args = ap.parse_args()
+    if not args.no_think:
+        args.grammar = None  # the grammar starts at <thought>, so it can't cover a <think> block
+    args.grammar_text = Path(args.grammar).read_text(encoding="utf-8") if args.grammar else None
 
     if args.rescore:
         return rescore(args.rescore, args.test)
@@ -291,7 +312,7 @@ def main():
         results.append(r)
     meta = {"label": args.label, "gguf": args.gguf, "wall_minutes": round(wall / 60, 1),
             "temperature": args.temperature, "presence_penalty": args.presence_penalty,
-            "thinking": not args.no_think}
+            "thinking": not args.no_think, "grammar": args.grammar}
     summary = summarize(results, meta)
     res_path.write_text(json.dumps({"summary": summary, "results": results}, indent=1), encoding="utf-8")
     print(json.dumps(summary, indent=1))

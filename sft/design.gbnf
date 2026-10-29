@@ -1,0 +1,14 @@
+# llama.cpp grammar for the answer format of models trained with `train_sft.py --keep-thought`:
+#   <thought>…</thought>\n<design>\n{json}\n</design>
+# It forces balanced JSON and the closing tag, and ends generation after </design>.
+# Use: llama-server request field "grammar", or `eval_test.py --grammar sft\design.gbnf`.
+
+root     ::= "<thought>" thought "</thought>" [ \n]* "<design>" [ \n]* object [ \n]* "</design>"
+thought  ::= ( [^<] | "<" [^/] )*
+
+value    ::= object | array | string | number | "true" | "false" | "null"
+object   ::= "{" ws ( string ws ":" ws value ws ( "," ws string ws ":" ws value ws )* )? "}"
+array    ::= "[" ws ( value ws ( "," ws value ws )* )? "]"
+string   ::= "\"" ( [^"\\\x00-\x1F] | "\\" ( ["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] ) )* "\""
+number   ::= "-"? ( "0" | [1-9] [0-9]* ) ( "." [0-9]+ )? ( [eE] [-+]? [0-9]+ )?
+ws       ::= [ \t\n]*
