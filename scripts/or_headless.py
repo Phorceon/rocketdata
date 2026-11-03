@@ -33,6 +33,41 @@ UUID_SEED = 42
 JVM_STARTED = False
 BOOTED = False
 _WARM = set()
+_INSTANCE = None
+_HELPER = None
+
+
+def _helper(log_level: str = "ERROR"):
+    """Process-wide orhelper.Helper for callers written against the orhelper API
+    (sftgen/tools.py, sftgen/motors.py, sftgen/convert_old.py).
+
+    If no JVM is running yet it is started through orhelper.OpenRocketInstance,
+    which also wires the Guice injector and the motor/preset databases. If the
+    JVM is already up via _boot_or() (JPype cannot start a second one), the
+    Helper is bound to the running VM instead.
+    """
+    global _INSTANCE, _HELPER
+    if _HELPER is not None:
+        return _HELPER
+    if not _jar().exists():
+        raise FileNotFoundError(f"OpenRocket JAR not found at {_jar()}")
+    import orhelper
+
+    if jpype.isJVMStarted():
+        _boot_or()
+        from orhelper._orhelper import _get_openrocket_packages
+
+        inst = orhelper.OpenRocketInstance.__new__(orhelper.OpenRocketInstance)
+        inst.started = True
+        inst.openrocket_core, inst.openrocket_swing = _get_openrocket_packages()
+    else:
+        inst = orhelper.OpenRocketInstance(
+            jar=str(_jar()), jvm=_libjvm(), jvm_args=JVM_ARGS, log_level=log_level
+        )
+        inst.__enter__()
+    _INSTANCE = inst
+    _HELPER = orhelper.Helper(inst)
+    return _HELPER
 
 
 def _java_home() -> Path:
@@ -113,6 +148,33 @@ def _boot_or():
     except Exception:
         pass
     BOOTED = True
+
+
+class _OrhShim:
+    """orhelper-style facade over the jpype-booted JVM.
+
+    sftgen.tools / sftgen.motors call `_helper()` expecting an object with a
+    `load_doc(path)` method (the orhelper.Helper API from the original version
+    of this module). Loading goes through OrBatch.seedUUID so component UUIDs
+    stay deterministic, exactly as simulate() below.
+    """
+
+    def load_doc(self, path):
+        _boot_or()
+        OrBatch = jpype.JClass("OrBatch")
+        GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
+        File = jpype.JClass("java.io.File")
+        OrBatch.seedUUID(UUID_SEED)
+        return GeneralRocketLoader(File(str(path))).load()
+
+
+_HELPER = _OrhShim()
+
+
+def _helper(log_level: str = "ERROR"):
+    """Boot the JVM + OpenRocket once and return a load-capable helper."""
+    _boot_or()
+    return _HELPER
 
 
 def _get_sim(doc, sim_name):
@@ -220,6 +282,31 @@ def simulate(ork_path, sim_name=None, seed=42):
         "runtime_ms": sim_ms,
     }
     return result
+
+
+_HELPER = None
+
+
+def _helper(log_level: str = "ERROR"):
+    """Boot OpenRocket once and return a shim matching orhelper.Helper's load_doc API.
+
+    sftgen (tools.py / motors.py) still calls this name; it only needs the JVM up
+    (with the deterministic OrBatch provider installed) plus load_doc()."""
+    global _HELPER
+    if _HELPER is not None:
+        return _HELPER
+    _boot_or()
+    OrBatch = jpype.JClass("OrBatch")
+    GeneralRocketLoader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
+    File = jpype.JClass("java.io.File")
+
+    class _Helper:
+        def load_doc(self, or_filename):
+            OrBatch.seedUUID(UUID_SEED)
+            return GeneralRocketLoader(File(os.fspath(or_filename))).load()
+
+    _HELPER = _Helper()
+    return _HELPER
 
 
 if __name__ == "__main__":
