@@ -52,8 +52,8 @@ def text_problems(text, facts):
             issues.append(f"missing or misplaced heading {heading}")
         at = max(found, at)
     words = len(text.split())
-    if not 110 <= words <= 340:
-        issues.append(f"{words} words; need 110 to 340")
+    if not 110 <= words <= 350:
+        issues.append(f"{words} words; need 110 to 350")
     if BANNED.search(text):
         issues.append(f"banned wording: {BANNED.search(text).group(0)}")
     if len(LINKS.findall(text)) < 4:

@@ -132,3 +132,5 @@ The owner removed 7 rockets with fit overlap of 5 mm or more from `sft_v5.jsonl`
 - `original:rocket_9_1.ork`: lands at 8.28 m/s in current OpenRocket, above the 8 m/s limit
 - `original:rocketryworks_payloader_24-56.ork`: lands at 8.04 m/s in current OpenRocket, above the 8 m/s limit
 - `original:simulation_1.ork`: no thrust curve for the motor, so it cannot leave the ground
+
+A text review on 2026-11-03 applied 186 fixes to the `sft_v5.jsonl` reasoning. Designs, prompts and flight numbers did not change.
