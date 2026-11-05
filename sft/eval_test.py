@@ -4,7 +4,8 @@ Defaults match the shipped Qwen3.5-4B model: thinking off, sft/design.gbnf as th
 --think (which also drops the grammar) and --no-grammar give the raw model, as used for the Agents-A1-4B run.
 
 Checks format only: designs aren't simulated, so "does the rocket fly" is not tested. Per answer
-(the <design> block is looked for in the final answer only, not in the reasoning):
+(the <design> block is looked for in the final answer only, not in the reasoning), for the old
+{"flight", "components"} designs (sft_v0 to sft_v2):
   design_found   <design>...</design> present        json_ok      the design JSON parses
   schema_ok      flight.motor + components, every component type is one seen in the data,
                  at least one nosecone and one bodytube        recovery     a parachute or streamer
@@ -14,12 +15,28 @@ Checks format only: designs aren't simulated, so "does the rocket fly" is not te
                  10% of it. This is the model's own claim, not a simulation.
   truncated      hit --max-tokens before finishing        error       the request itself failed
 
+For sft_v5 designs (an OpenRocket XML tree as JSON; pass --motor-lookup with new_results/sft_v4_motor_lookup.json
+from branch sft-v5-data):
+  tree_ok        every node is {tag: {attrs?, value?, children?}} under one "openrocket" root
+  schema_ok      tree_ok, and the parts sit where OpenRocket puts them: a stage under rocket/subcomponents,
+                 a nosecone, bodytube and fin set inside it, a motor inside a motormount of a body or inner tube
+  recovery       a parachute or streamer inside the stage
+  motor_known    every motor_id is a motor file in the lookup
+                 (a second top-level key next to "openrocket" fails tree_ok and schema_ok, but the parts and
+                 motors in it still count for recovery, motor_known and motor_match)
+  motor_match    every motor the prompt names ("motor K550W", "motors G71R and H225BL") is in the design, by its
+                 designation text or its motor_id (the reference answers sometimes pair a motor_id with a sibling
+                 designation, so either one counts)
+
 Usage (Unsloth Studio's Python; llama-server ships with Studio):
     python sft\\eval_test.py --gguf C:\\ft\\qwen35-rocket\\gguf\\Qwen3.5-4B-rocketdata.Q4_K_M.gguf --label test
     python sft\\eval_test.py --gguf ... --label rl --test data\\splits\\rl_heldout.jsonl
     python sft\\eval_test.py --rescore C:\\ft\\qwen35-rocket\\eval\\results_test.json   (no GPU)
+    python sft\\eval_test.py --gguf ... --label val --test <sft_v5 val.jsonl> --max-tokens 16384 ^
+        --motor-lookup <new_results\\sft_v4_motor_lookup.json from branch sft-v5-data>
 """
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -40,8 +57,16 @@ NEW_RESULTS = REPO / "new_results"
 DEFAULT_GRAMMAR = REPO / "sft" / "design.gbnf"
 DEFAULT_SERVER = Path.home() / ".unsloth" / "llama.cpp" / "build" / "bin" / "Release" / "llama-server.exe"
 NUM = r"([\d][\d,]*(?:\.\d+)?)"
-KEYS = ["design_found", "json_ok", "schema_ok", "recovery", "motor_known", "motor_match", "claim_vs_ask",
-        "truncated", "error"]
+KEYS = ["design_found", "json_ok", "tree_ok", "schema_ok", "recovery", "motor_known", "motor_match",
+        "claim_vs_ask", "truncated", "error"]
+# sft_v5 designs are an OpenRocket XML tree written as JSON: {"openrocket": {"attrs", "children": [...]}}
+V5_NODE_KEYS = {"attrs", "value", "children"}
+V5_REQUIRED = {"rocket", "stage", "nosecone", "bodytube", "motormount", "motor"}
+V5_FINSETS = {"trapezoidfinset", "ellipticalfinset", "freeformfinset", "tubefinset"}
+V5_IN_STAGE = {"nosecone", "bodytube", "parachute", "streamer"} | V5_FINSETS
+MOTOR_RE = r"[0-9/]*[A-O][0-9]{1,4}[A-Z]{0,4}(?:-[0-9A-Z]+)?"
+# motor names as sft_v5 prompts write them, e.g. K550W, HP-H195NT, G79W/L, I216-CL(I), 3147L935-P
+V5_MOTOR_RE = r"(?:HP-)?[0-9/]*[A-O][0-9]{1,4}[A-Z]{0,4}(?:/[A-Z]{1,2})?(?:-[0-9A-Z]+)?(?:\([A-Z]\))?"
 
 
 def num(s):
@@ -77,14 +102,92 @@ def reference_vocab():
 
 
 def load_rows(path):
-    """SFT rows carry "messages"; RL rows (data/splits/rl_heldout.jsonl) carry "prompt" with no answer."""
+    """SFT rows carry "messages"; RL rows (data/splits/rl_heldout.jsonl) carry "prompt" with no answer.
+
+    Rows without an "id" (sft_v5 keeps only "messages") get one from their line number and prompt, so
+    --rescore against the wrong --test file fails instead of pairing answers with other prompts.
+    """
     rows = []
     for line in open(path, encoding="utf-8"):
         if line.strip():
             row = json.loads(line)
             row.setdefault("messages", row.get("prompt"))
+            digest = hashlib.sha1(json.dumps(row["messages"][:2], sort_keys=True).encode("utf-8")).hexdigest()
+            row.setdefault("id", f"row-{len(rows) + 1:03d}-{digest[:8]}")
             rows.append(row)
     return rows
+
+
+def v5_tree(design):
+    """(tree_ok, placed, motors) for an sft_v5 design.
+
+    placed: the part tags found where OpenRocket puts them (rocket under openrocket, a stage component under
+    rocket/subcomponents, parts inside that stage, a motormount on a body or inner tube, a motor in a motormount).
+    motors: [(motor_id, designation)] per <motor> node, None for a missing or non-string value.
+    """
+    placed, motors, ok = set(), [], True
+    stack = [(design, None, None, False)]  # node, parent tag, grandparent tag, inside a stage component
+    while stack:
+        node, parent, grand, in_stage = stack.pop()
+        if not (isinstance(node, dict) and node):
+            ok = False
+            continue
+        if len(node) > 1:  # e.g. "simulations" next to "openrocket": malformed, but still walk each part
+            ok = False
+            stack.extend(({k: v}, parent, grand, in_stage) for k, v in node.items())
+            continue
+        (tag, body), = node.items()
+        if not isinstance(body, dict):
+            ok = False
+            continue
+        if not set(body) <= V5_NODE_KEYS:
+            ok = False  # keep walking, so one stray key doesn't hide the parts below it
+        kids = body.get("children", [])
+        if not isinstance(kids, list):
+            ok, kids = False, []
+        if tag == "rocket" and parent == "openrocket":
+            placed.add(tag)
+        elif tag == "stage" and parent == "subcomponents" and grand == "rocket":
+            placed.add(tag)
+            in_stage = True
+        elif in_stage and (tag in V5_IN_STAGE or tag == "motormount" and parent in ("bodytube", "innertube")
+                           or tag == "motor" and parent == "motormount"):
+            placed.add(tag)
+        if tag == "motor":
+            fields = {k: b.get("value") for c in kids if isinstance(c, dict) and len(c) == 1
+                      for k, b in c.items() if isinstance(b, dict)}
+            motors.append(tuple(v if isinstance(v, str) else None
+                                for v in (fields.get("motor_id"), fields.get("designation"))))
+        stack.extend((kid, tag, parent, in_stage) for kid in kids)
+    return ok, placed, motors
+
+
+def asked_motors(prompt):
+    """Motors an sft_v5 prompt asks for: "motor K550W", "Motor F50T", "motors G71R and H225BL", "the M1297W motor"."""
+    m = re.search(r"\b[Mm]otors?(?: is)?\s*[:=]?\s*(" + V5_MOTOR_RE + r"(?:\s*(?:,|and|&|\+)\s*" + V5_MOTOR_RE
+                  + r")*)", prompt)
+    if m:
+        return re.findall(V5_MOTOR_RE, m.group(1))
+    m = re.search(r"\b(" + V5_MOTOR_RE + r") [Mm]otors?\b", prompt)
+    return [m.group(1)] if m else []
+
+
+def score_v5(r, design, prompt, lookup):
+    """Fill r with the sft_v5 checks: a well-formed OpenRocket tree with the parts a flyable rocket needs."""
+    tree_ok, placed, motors = v5_tree(design)
+    r["tree_ok"] = tree_ok and "openrocket" in design
+    r["schema_ok"] = r["tree_ok"] and V5_REQUIRED <= placed and bool(placed & V5_FINSETS)
+    r["recovery"] = bool(placed & {"parachute", "streamer"})
+    r["motors"] = [m[0] or m[1] for m in motors]
+    # A real motor file; the reference answers themselves sometimes pair a motor_id with a sibling designation
+    # (AeroTech-J90 written as J90W), so the designation is not checked here.
+    r["motor_known"] = bool(motors) and all(mid in lookup for mid, des in motors)
+    wants = asked_motors(prompt)
+    r["asked_motor"] = " + ".join(wants) or None
+    if wants:
+        r["motor_match"] = all(any(w in (des, lookup.get(mid, {}).get("designation")) or (mid or "").endswith("-" + w)
+                                   for mid, des in motors) for w in wants)
+    r["claim_vs_ask"] = None  # v5 reasoning cites stored reference flights, not a "Simulated apogee" line
 
 
 def last_design(content):
@@ -94,7 +197,7 @@ def last_design(content):
     return content[i + len("<design>"):j].strip() if j != -1 else None
 
 
-def score(row, reasoning, content, finish, types, motors):
+def score(row, reasoning, content, finish, types, motors, lookup=None):
     prompt = row["messages"][1]["content"]
     r = {"id": row["id"], "truncated": finish == "length", "error": finish == "error"}
     body = last_design(content)
@@ -103,10 +206,24 @@ def score(row, reasoning, content, finish, types, motors):
     if body is not None:
         try:
             design = json.loads(body)
-        except json.JSONDecodeError:
+        except (ValueError, RecursionError):  # bad JSON, a 4,300+ digit number, or very deep nesting
             pass
     r["json_ok"] = isinstance(design, dict)
+    r["tree_ok"] = None
     r["schema_ok"] = r["recovery"] = r["motor_known"] = False
+    if r["json_ok"] and "openrocket" in design or lookup is not None:
+        r["tree_ok"] = False
+        r["motor_match"] = None
+        if r["json_ok"]:
+            score_v5(r, design, prompt, lookup or {})
+            if lookup is None:
+                r["motor_known"] = None  # can't tell without --motor-lookup; the summary shows 0/0, not 0/N
+        else:
+            wants = asked_motors(prompt)
+            r["asked_motor"] = " + ".join(wants) or None
+            r["motor_match"] = False if wants else None
+            r["claim_vs_ask"] = None
+        return r
     asked = re.search(r"\bon (?:a|an|two|three) (.+?) motors?\b", prompt)
     r["asked_motor"] = asked.group(1) if asked else None
     r["motor_match"] = False if asked else None
@@ -220,7 +337,12 @@ def split_output(saved):
     return "", text
 
 
-def rescore(path, test_path):
+def load_lookup(path):
+    """motor_id -> motor info for sft_v5 scoring (new_results/sft_v4_motor_lookup.json, branch sft-v5-data), or None."""
+    return json.loads(Path(path).read_text(encoding="utf-8")) if path else None
+
+
+def rescore(path, test_path, lookup=None, lookup_path=None):
     """Re-score a saved results file in place with the current scoring rules (no GPU needed)."""
     saved = json.loads(Path(path).read_text(encoding="utf-8"))
     rows = {row["id"]: row for row in load_rows(test_path)}
@@ -228,13 +350,14 @@ def rescore(path, test_path):
     results = []
     for old in saved["results"]:
         reasoning, content = split_output(old)
-        finish = "error" if old.get("error") else ("length" if old.get("truncated") else "stop")
-        r = score(rows[old["id"]], reasoning, content, finish, types, motors)
+        finish = old.get("finish") or ("error" if old.get("error") else ("length" if old.get("truncated") else "stop"))
+        r = score(rows[old["id"]], reasoning, content, finish, types, motors, lookup)
         r.update(completion_tokens=old.get("completion_tokens"), seconds=old.get("seconds"),
                  reasoning=reasoning, content=content)
         results.append(r)
     meta = {k: v for k, v in saved["summary"].items()
             if k in ("label", "gguf", "wall_minutes", "temperature", "presence_penalty", "thinking", "grammar")}
+    meta.update(test=str(test_path), motor_lookup=lookup_path)
     summary = summarize(results, meta)
     Path(path).write_text(json.dumps({"summary": summary, "results": results}, indent=1), encoding="utf-8")
     print(json.dumps(summary, indent=1))
@@ -263,13 +386,19 @@ def main():
                     help="GBNF file that constrains every answer (default sft\\design.gbnf)")
     ap.add_argument("--no-grammar", dest="grammar", action="store_const", const=None,
                     help="score the raw model, with no output grammar")
+    ap.add_argument("--motor-lookup",
+                    help="sft_v5 scoring: motor_id lookup JSON (new_results/sft_v4_motor_lookup.json on branch sft-v5-data)")
     args = ap.parse_args()
     if not args.no_think:
         args.grammar = None  # the grammar starts at <thought>, so it can't cover a <think> block
     args.grammar_text = Path(args.grammar).read_text(encoding="utf-8") if args.grammar else None
+    lookup = load_lookup(args.motor_lookup)
+    if lookup is None and any('{"openrocket"' in str(row["messages"][-1].get("content", ""))
+                              for row in load_rows(args.test)):
+        ap.error("this --test file has sft_v5 (OpenRocket tree) answers; pass --motor-lookup")
 
     if args.rescore:
-        return rescore(args.rescore, args.test)
+        return rescore(args.rescore, args.test, lookup, args.motor_lookup)
     if not (args.gguf and args.label):
         ap.error("--gguf and --label are required unless --rescore is given")
 
@@ -305,14 +434,18 @@ def main():
             proc.terminate()
             proc.wait(timeout=60)
 
-    results = []
-    for row, a in zip(rows, answers):
-        r = score(row, a["reasoning"], a["content"], a["finish"], types, motors)
-        r.update({k: v for k, v in a.items() if k != "finish"})
-        results.append(r)
     meta = {"label": args.label, "gguf": args.gguf, "wall_minutes": round(wall / 60, 1),
             "temperature": args.temperature, "presence_penalty": args.presence_penalty,
-            "thinking": not args.no_think, "grammar": args.grammar}
+            "thinking": not args.no_think, "grammar": args.grammar, "test": args.test,
+            "motor_lookup": args.motor_lookup}
+    # save the raw answers first, so a scoring error can't lose the generation (fix the scorer, then --rescore)
+    raw = [dict(a, id=row["id"]) for row, a in zip(rows, answers)]
+    res_path.write_text(json.dumps({"summary": meta, "results": raw}, indent=1), encoding="utf-8")
+    results = []
+    for row, a in zip(rows, answers):
+        r = score(row, a["reasoning"], a["content"], a["finish"], types, motors, lookup)
+        r.update({k: v for k, v in a.items() if k != "finish"})
+        results.append(r)
     summary = summarize(results, meta)
     res_path.write_text(json.dumps({"summary": summary, "results": results}, indent=1), encoding="utf-8")
     print(json.dumps(summary, indent=1))
