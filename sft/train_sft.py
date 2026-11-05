@@ -85,13 +85,22 @@ def parse_args():
     ap.add_argument("--move-thought", dest="keep_thought", action="store_false",
                     help="move <thought> into the <think> slot instead (thinking-on training)")
     ap.add_argument("--smoke", type=int, default=0, help="run only N optimizer steps, then stop (no saving)")
+    ap.add_argument("--max-vram-gb", type=float, default=0,
+                    help="cap PyTorch's GPU memory in GiB (e.g. 14 on a 16 GB card; also sets PYTORCH_CUDA_ALLOC_CONF="
+                         "garbage_collection_threshold:0.8 unless set): on Windows its cache otherwise grows past the "
+                         "card into system RAM, and steps run several times slower")
+    ap.add_argument("--resume", metavar="CHECKPOINT",
+                    help="continue an interrupted run from <out>/checkpoints/checkpoint-N (same settings otherwise)")
     ap.add_argument("--no-export", action="store_true", help="save the LoRA adapter only")
     ap.add_argument("--export-only", action="store_true", help="skip training; export from <out>/lora")
     ap.add_argument("--gguf", default="q8_0",
                     help="llama.cpp quantization for the GGUF export (q4_k_m breaks far more of the JSON)")
     ap.add_argument("--name", help="GGUF file name stem (default: <model name>-rocketdata); "
                                    "with --export-only pass the same --model or --name as the training run")
-    return ap.parse_args()
+    args = ap.parse_args()
+    if args.resume and (args.smoke or args.export_only):
+        ap.error("--resume can't be combined with --smoke or --export-only")
+    return args
 
 
 def vram(tag):
@@ -193,12 +202,19 @@ def main():
     name = args.name or f"{base}-rocketdata"
     # Unsloth writes generated kernels to ./unsloth_compiled_cache by default; keep them out of the repo.
     os.environ.setdefault("UNSLOTH_COMPILE_LOCATION", str(out / "unsloth_compiled_cache"))
+    if args.max_vram_gb:  # must be set before torch starts CUDA; frees cached blocks as usage nears the cap
+        os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "garbage_collection_threshold:0.8")
 
     from unsloth import FastModel  # import unsloth before trl/transformers so its patches apply
     from unsloth.chat_templates import train_on_responses_only
     import torch
     from datasets import Dataset
     from trl import SFTConfig, SFTTrainer
+
+    if args.max_vram_gb:
+        fraction = args.max_vram_gb * 2**30 / torch.cuda.get_device_properties(0).total_memory
+        if fraction < 1:
+            torch.cuda.set_per_process_memory_fraction(fraction)
 
     load_kw = dict(max_seq_length=args.max_len, dtype=None, load_in_4bit=False, load_in_16bit=True,
                    full_finetuning=False, use_gradient_checkpointing="unsloth")
@@ -278,10 +294,17 @@ def main():
     trainer = train_on_responses_only(trainer, instruction_part=INSTRUCTION_PART, response_part=RESPONSE_PART)
     check_masking(trainer, tokenizer)
 
+    start = 0
+    if args.resume:
+        start = json.loads((Path(args.resume) / "trainer_state.json").read_text(encoding="utf-8"))["global_step"]
     t0 = time.time()
-    stats = trainer.train()
-    print(f"[train] {stats.global_step} steps in {(time.time() - t0) / 60:.1f} min, "
-          f"final train loss {stats.training_loss:.4f}", flush=True)
+    stats = trainer.train(resume_from_checkpoint=args.resume)
+    # stats.training_loss is wrong after a resume (transformers divides this session's loss by every step), so
+    # average the logged per-step losses instead; the log history is restored from the checkpoint
+    losses = [h["loss"] for h in trainer.state.log_history if "loss" in h]
+    print(f"[train] {stats.global_step - start} steps in {(time.time() - t0) / 60:.1f} min"
+          f"{f' (resumed at step {start})' if start else ''}, mean train loss {sum(losses) / len(losses):.4f} "
+          f"over {len(losses)} steps", flush=True)
     vram("after training")
     if smoke:
         return 0
@@ -291,6 +314,7 @@ def main():
           f"lowest at {trainer.state.best_model_checkpoint}; saving the last epoch", flush=True)
     (out / "train_log.json").write_text(json.dumps({
         "args": vars(args),
+        "resumed_at_step": start,
         "lowest_test_loss_checkpoint": trainer.state.best_model_checkpoint,
         "lowest_test_loss": trainer.state.best_metric,
         "log_history": trainer.state.log_history,

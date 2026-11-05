@@ -16,6 +16,9 @@ transformers 5.5.0, TRL 0.23.1, torch 2.13 + CUDA 13.0).
 >   10–11 of 11, over 3 runs.
 > - **Still weak:** it makes up motor names (H121W, F67T, ...) in about a third of its designs, a few answers still
 >   loop (2 of 105 here, 14 for another training seed), and no design has been simulated.
+>
+> **sft_v5 (2026-11-04):** the first seed trained on the OpenRocket-tree data is in [sft_v5](#sft_v5-2026-11-04-first-of-two-seeds).
+> It finishes 46 of 48 validation answers, but it sometimes closes the root too early and often makes up motor files.
 
 ## Files
 
@@ -54,6 +57,8 @@ Writes everything to `--out` (default `C:\ft\qwen35-rocket\`).
 | `--max-len` | Longest example in tokens (default 6400, enough for all of `sft_v2`; the longest kept example is 2,542) |
 | `--move-thought` | Moves `<thought>` into the model's `<think>` slot (thinking-on training, as in the Agents-A1 run) |
 | `--gguf`, `--name` | GGUF quantization (default `q8_0`) and file name (default `<model>-rocketdata`) |
+| `--max-vram-gb 14` | Caps PyTorch's GPU memory (in GiB) and turns on its cache cleanup. On Windows the cache otherwise grows past a 16 GB card into system RAM, and steps run several times slower (see sft_v5) |
+| `--resume <checkpoint>` | Continues an interrupted run from `<out>\checkpoints\checkpoint-N`, with the same settings otherwise |
 
 ### `eval_test.py`: tests a trained model
 
@@ -71,10 +76,17 @@ What it does, in order:
    - **Motor:** is the motor a real one (in `data/catalog.sqlite` or the SFT data)? When the prompt names a
      motor, did it use that one?
    - **Loops:** did it get stuck repeating itself until it hit the token limit?
-4. Writes `results_<label>.json`, with the summary and every answer, and prints the summary.
+   - **sft_v5 answers** (the OpenRocket tree as JSON; needs `--motor-lookup`) get their own checks:
+     - Is every node `{tag: {attrs?, value?, children?}}` under one `openrocket` root?
+     - Do the stage, nose cone, body tube, fin set and motor mount sit where OpenRocket puts them?
+     - Is every `motor_id` a real motor file?
+     - Is every motor the prompt names in the design?
+4. Saves the raw answers first, then writes `results_<label>.json` with the summary and every scored answer,
+   and prints the summary.
 
-It checks the format only. The `<design>` format records no part positions, so a design can't be simulated
-faithfully; the team's newer `sftgen` format is the one built for simulation.
+It checks the format only. The old `{flight, components}` `<design>` format (up to `sft_v2`) records no part
+positions, so a design can't be simulated faithfully. The sft_v5 OpenRocket tree can be, but no simulation is
+wired in yet.
 
 | Option | What it changes |
 |---|---|
@@ -84,6 +96,8 @@ faithfully; the team's newer `sftgen` format is the one built for simulation.
 | `--think` | Prompts with thinking on, for `--move-thought` models (also turns the grammar off) |
 | `--temperature`, `--presence-penalty` | Sampling (defaults 0.7 and 0; 0.3 makes this model loop, and any presence penalty breaks the JSON) |
 | `--rescore <results file>` | Re-scores saved answers without the GPU, for example after changing a check |
+| `--motor-lookup <json>` | Scores sft_v5 answers against `new_results/sft_v4_motor_lookup.json` (on branch `sft-v5-data`); required whenever the model writes sft_v5 designs |
+| `--max-tokens`, `--parallel` | Longest answer (default 4096; sft_v5 needs 16384) and how many answers are generated at once (default 4) |
 | `--out-dir`, `--port`, `--overwrite` | Where results go, which port the server uses, and whether to replace an old results file |
 
 ### `design.gbnf`: keeps the answer format valid
@@ -160,6 +174,51 @@ Outputs go to `C:\ft\qwen35-rocket\` (short path on purpose; Windows has a 260-c
 - **Unchanged from the Agents-A1 run:** 16-bit LoRA, rank 16, alpha 16, on every text projection; learning rate
   2e-4, batch 1 × gradient accumulation 8, 3 epochs, last epoch saved; loss on the answer only.
 
+## sft_v5 (2026-11-04, first of two seeds)
+
+**Data**
+- The data is `new_results/sft_v5.jsonl` from the unmerged branch `sft-v5-data`: 582 rows, the OpenRocket XML tree as JSON in `<design>`, and a new system prompt.
+- The final file keeps only `messages`, so the split came from commit `c94ffa5` of that branch, whose rows still have a `split` field. Rows were matched by their messages.
+- The split is 471 train, 48 validation and 63 test rows, from 154, 16 and 21 rocket groups (the team's `group_id`; the 154 train groups hold 157 `.ork` files). No group is in two splits.
+- The split files are local copies in `C:\ft\data_qwen\sft_v5\`, with two extras:
+  - `motor_lookup.json`, which is `new_results/sft_v4_motor_lookup.json`.
+  - `val_loss.jsonl`, which is validation minus the 3 rows over 12,800 tokens and is used only for the per-epoch loss.
+
+```bat
+python sft\train_sft.py --train C:\ft\data_qwen\sft_v5\train.jsonl --test C:\ft\data_qwen\sft_v5\val_loss.jsonl --max-parts 0 --max-len 11264 --max-vram-gb 14 --out C:\ft\qwen35-v5-s42 --name Qwen3.5-4B-rocketdata-v5
+python sft\eval_test.py --gguf C:\ft\qwen35-v5-s42\gguf\Qwen3.5-4B-rocketdata-v5.Q8_0.gguf --label val --test C:\ft\data_qwen\sft_v5\val.jsonl --motor-lookup C:\ft\data_qwen\sft_v5\motor_lookup.json --max-tokens 16384 --parallel 8 --out-dir C:\ft\qwen35-v5-s42\eval
+```
+
+**GPU memory on Windows**
+- The longest training row is 10,912 tokens, and PyTorch's peak allocation was 11.3 GiB.
+- Without a cap, its cache grew past the card: Windows showed 14.7–15.2 GB on the GPU plus 2.6–4 GB in system RAM. Steps went from about 17 s to usually 40–80 s, with some over 3 minutes (one took 7.5 minutes).
+- Epochs 1–2 ran uncapped. Epoch 3 was resumed from `checkpoint-118` with `--max-vram-gb 14`: it peaked at 12.1 GiB reserved and took 17 minutes for 59 steps.
+
+**Seed 42 on the 48 validation prompts** (grammar, thinking off, temperature 0.7; 10 minutes at 8 answers at a time):
+
+| Check | Seed 42 | Reference answers |
+|---|---|---|
+| Finished (no loop) | 46 | 48 |
+| Design JSON parses | 46 | 48 |
+| Well-formed OpenRocket tree | 35 | 48 |
+| Parts where OpenRocket puts them | 32 | 48 |
+| Parachute or streamer | 45 | 48 |
+| Only real motor files | 8 | 48 |
+| Uses every motor the prompt names (15 prompts name at least one) | 12 | 15 |
+
+Validation loss by epoch was 0.184, 0.150 and 0.145. The model is on the private Hugging Face repo `RocketData/Qwen3.5-4B-rocketdata-v5`.
+
+**Why the scores are low**
+- **`simulations` outside the root (8 answers).** The training answers keep `simulations` inside `openrocket`. These close `openrocket` early and add `simulations` as a second top-level key. That fails the tree and parts checks, though counting only the `openrocket` part, 45 trees are well-formed and 41 have every part in place.
+- **Made-up motors.** The training answers use 124 of the 1,421 motor files.
+  - Only 3 of the 17 motors in the validation answers appear in training (12 of 23 for test).
+  - Of the 56 motors the model wrote, 13 are real files and 15 are real motors with a wrong `motor_id` (10 under the wrong manufacturer, 5 with a missing or wrong `-vN`). 28 don't exist.
+
+**Next**
+- Seed 3407.
+- A v5 grammar that allows one `openrocket` root and only real `motor_id` values.
+- Then the 63 test prompts for the better model.
+
 ## Results (2026-10-28)
 
 **Training** (the shipped model, `--seed 42`):
@@ -228,6 +287,15 @@ These aren't directly comparable with the Agents-A1 test table further down: tha
   test scores mostly measure that rocket. The RL prompts (105, from 8 rockets) are the better comparison.
 - **The RL prompts don't always agree with their targets:** 17 of the 105 ask for an apogee more than 10% away
   from their own `requirements.target_apogee_m` (U-280 asks for 9,080 m against 3,479 m), and 41 give no apogee.
+- **sft_v5 splits by group, not by kit:** sibling files of one kit can have different `group_id`s and land in
+  different splits, for example PML AMRAAM 4 with a 29 mm mount in train and with a 38 mm mount in test.
+  Depending on how kits are matched, roughly a quarter to a third of the validation rows and about half of the
+  test rows have such a sibling in training.
+- **sft_v5 motors:** some reference answers pair a `motor_id` with a sibling designation (`AeroTech-J90` written
+  as J90W), and 6 training rows have motors without a `motor_id`. For the asked-for motor check, the scorer
+  accepts either the designation or the `motor_id`. The real-motor check needs a `motor_id` in the lookup.
+- **RL prompts vs sft_v5:** 35 of the 105 prompts in `data/splits/rl_heldout.jsonl` are on rockets in the sft_v5
+  train or validation split, so they no longer measure unseen rockets for a v5 model.
 
 ## Earlier run: Agents-A1-4B on `sft_v0` (2026-10-19)
 
