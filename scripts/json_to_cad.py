@@ -213,9 +213,9 @@ def _or_component(c):
             for p in fp.findall("point"):
                 try:
                     if p.attrs.get("x") is not None and p.attrs.get("y") is not None:
-                        pts.append([float(p.attrs["x"]), float(p.attrs["y"])])   # v5 design JSON: {"point": {"attrs": {"x": .., "y": ..}}}
+                        pts.append([float(p.attrs["x"]), float(p.attrs["y"])])   # v5 design JSON and .ork XML: {"point": {"attrs": {x, y}}}
                     elif p.text:
-                        x, y = [float(v) for v in p.text.split(",")]             # .ork XML: <point>x,y</point>
+                        x, y = [float(v) for v in p.text.split(",")]             # legacy/hand-written files: <point>x,y</point>
                         pts.append([x, y])
                 except Exception: pass
         d = {"type": "freeformfinset", "fin_count": c.num("fincount", 3), "thickness_m": c.num("thickness", 0.002), "name": name}
@@ -441,15 +441,20 @@ class Builder:
 
     def inner_tube(self, k, zb, Lmax, rid, depth=0):
         """Draw an inner tube plus anything mounted inside it: nested inner tubes,
-        engine blocks, motor mounts. v5 JSON carries no positions, so nested parts
-        are aft-aligned inside their parent's bore. Returns (zb, kl, ro, tw) --
-        the centering-ring layout depends on the outermost tube's tuple."""
+        engine blocks, motor mounts. The converter does not read positions from
+        the design JSON, so nested parts are aft-aligned inside their parent's
+        bore. Returns (zb, kl, ro, tw) -- the centering-ring layout depends on
+        the outermost tube's tuple; None means the tube was skipped."""
         ro = 500 * (k.get("outer_d_m") or 0.019)
         if 1000 * (k.get("length_m") or 0.07) < 1.0 or ro < 2.0:
             self.warn.append(f"skipped degenerate inner tube '{k.get('name')}' (length < 1 mm or diameter < 4 mm)")
             return None
-        ro = min(ro, rid - 0.2)
-        if ro < 1.0: return None
+        if ro > rid - 0.2:
+            self.warn.append(f"inner tube '{k.get('name', 'Inner tube')}' outer diameter larger than the parent bore, clamped to {2 * (rid - 0.2):.1f} mm")
+            ro = rid - 0.2
+        if ro < 1.0:
+            self.warn.append(f"inner tube '{k.get('name', 'Inner tube')}' does not fit the parent bore ({2 * rid:.1f} mm), skipped")
+            return None
         tw = min(max(1000 * (k.get("wall_thickness_m") or 0.0005), 0.3), ro * 0.9)
         kl = min(1000 * (k.get("length_m") or 0.07), Lmax)
         self.emit(k.get("name", "Inner tube"), "inner", tube(zb, kl, ro, ro - tw))
@@ -463,8 +468,9 @@ class Builder:
                     self.warn.append("inner tube nesting deeper than 8 levels skipped")
                     continue
                 with self.guard(kk.get("name", "Inner tube")):
-                    self.inner_tube(kk, zb, kl, bore, depth + 1)
-                self.warn.append(f"inner tube '{kk.get('name', 'Inner tube')}' nested inside another inner tube: aft-aligned (JSON has no positions)")
+                    drawn = self.inner_tube(kk, zb, kl, bore, depth + 1)
+                if drawn:
+                    self.warn.append(f"inner tube '{kk.get('name', 'Inner tube')}' nested inside another inner tube: aft-aligned (the converter does not read positions)")
         if k.get("motors"): self.motor(k, zb, kl, bore)
         return (zb, kl, ro, tw)
 
