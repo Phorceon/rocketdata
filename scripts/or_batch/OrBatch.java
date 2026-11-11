@@ -9,7 +9,9 @@ import com.google.inject.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
-/** Batch runner: stdin lines "path\tsimName\tseed\treps"; stdout one JSON line per run. */
+/** Batch runner: stdin lines "path\tsimName\tseed\treps"; stdout one JSON line per run.
+ *  Events carry their data payload (e.g. SIM_ABORT reason strings) as "data";
+ *  .ork load warnings (missing motors, unknown elements) as "load_warnings". */
 public class OrBatch {
   public static void boot() throws Exception {
     installDet();
@@ -69,7 +71,8 @@ public class OrBatch {
         StringBuilder sb = new StringBuilder("{\"file\":"+q(path)+",\"sim\":"+q(name)+",\"seed\":"+seed+",\"rep\":"+r+",\"uuid_seed\":"+useed);
         try {
           seedUUID(useed);
-          OpenRocketDocument doc = new GeneralRocketLoader(new File(path)).load();
+          GeneralRocketLoader loader = new GeneralRocketLoader(new File(path));
+          OpenRocketDocument doc = loader.load();
           Simulation sim=null; List<String> names=new ArrayList<>();
           for (Simulation s: doc.getSimulations()) { names.add(s.getName()); if (s.getName().equals(name)) sim=s; }
           if (sim==null) throw new RuntimeException("simulation not found; available: "+names);
@@ -81,11 +84,19 @@ public class OrBatch {
             +",\"time_to_apogee_s\":"+num(d.getTimeToApogee())+",\"flight_time_s\":"+num(d.getFlightTime())
             +",\"ground_hit_ms\":"+num(d.getGroundHitVelocity())+",\"deployment_velocity_ms\":"+num(d.getDeploymentVelocity())
             +",\"wind_ms\":"+num(sim.getOptions().getWindSpeedAverage()));
+          if (!loader.getWarnings().isEmpty()) {
+            StringBuilder wl=new StringBuilder(); boolean wfirst=true;
+            for (Object w : loader.getWarnings()) { if(!wfirst) wl.append(","); wfirst=false; wl.append(q(String.valueOf(w))); }
+            sb.append(",\"load_warnings\":["+wl+"]");
+          }
           sb.append(",\"events\":[");
           boolean first=true;
           for (int b=0;b<d.getBranchCount();b++) for (FlightEvent e: d.getBranch(b).getEvents()) {
             if(!first) sb.append(","); first=false;
-            sb.append("{\"branch\":"+b+",\"type\":"+q(e.getType().name())+",\"t\":"+num(e.getTime())+"}");
+            sb.append("{\"branch\":"+b+",\"type\":"+q(e.getType().name())+",\"t\":"+num(e.getTime()));
+            Object edata = e.getData();
+            if (edata != null) sb.append(",\"data\":"+q(String.valueOf(edata)));
+            sb.append("}");
           }
           sb.append("]}");
         } catch (Throwable t) {

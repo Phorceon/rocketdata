@@ -9,11 +9,15 @@ For every model answer (v5 format: an OpenRocket tree written as JSON):
   2. .ork: the same tree is written back out as an OpenRocket .ork file (XML). If the model
            gave no <simulations> block, a default launch (1 m rail, 2 m/s wind) is added
   3. fly:  scripts/or_batch/OrBatch.java flies the .ork in OpenRocket 24.12 with the same
-           fixed seeds as the rest of the project (seed 42, UUID seed 42, one warm-up run)
+           fixed seeds as the rest of the project (seed 42, UUID seed 42, one warm-up run).
+           If OpenRocket aborts (no motor, never ignites, ...) the reason string is shown in
+           the table and summary.json; .ork load warnings (e.g. "no motor with designation
+           found") are saved as sim["load_warnings"]
 
 Writes model_out/chain/<id>.ork, model_out/chain/<id>/ (CAD files) and
 model_out/chain/summary.json, and prints one line per design plus totals.
-Needs: CadQuery in .venv, a JDK (javac/java on PATH) and lib/OpenRocket.jar.
+Needs: CadQuery in .venv, a JDK (javac/java on PATH) and lib/OpenRocket.jar
+(gitignored - created by scripts/fetch_openrocket.sh).
 """
 import argparse
 import collections
@@ -75,11 +79,26 @@ def tree_to_xml(tag, body):
     return el
 
 
+# v5 IR bookkeeping tags that OpenRocket's .ork format does not know. tree_to_xml would write
+# them and OpenRocket logs "Unknown text in element ..." for every one on every load.
+ORK_ONLY_DROP = {"motor_id"}
+
+
+def _drop_ir_only_tags(parent):
+    for child in list(parent):
+        if child.tag in ORK_ONLY_DROP:
+            parent.remove(child)
+        else:
+            _drop_ir_only_tags(child)
+
+
 def design_to_ork(raw, path):
     """Write the model's v5 tree as an .ork file with exactly one simulation called SIM_NAME.
+    v5-only tags that the .ork format does not know (ORK_ONLY_DROP) are dropped.
     Returns a list of notes (e.g. 'no simulations block, default launch added')."""
     notes = []
     root = tree_to_xml("openrocket", raw["openrocket"])
+    _drop_ir_only_tags(root)
     root.set("version", root.get("version") or "1.8")
     root.set("creator", "rocketdata chain_design.py")
     rocket = root.find("rocket")
@@ -190,16 +209,21 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("answers", help="results_<label>.json from sft/eval_test.py, or one answer .txt")
     ap.add_argument("--out", default="model_out/chain")
-    ap.add_argument("--jar", default=os.path.join(REPO, "lib", "OpenRocket.jar"))
+    ap.add_argument("--jar", default=os.path.join(REPO, "lib", "OpenRocket.jar"),
+                    help="OpenRocket jar (default lib/OpenRocket.jar, gitignored - scripts/fetch_openrocket.sh)")
     ap.add_argument("--no-cad", action="store_true", help="skip CadQuery (OpenRocket half only)")
     ap.add_argument("--limit", type=int, default=0)
     a = ap.parse_args()
+    if not os.path.isfile(a.jar):
+        ap.error(f"--jar not found: {a.jar}  (pass --jar or run scripts/fetch_openrocket.sh)")
 
     answers = load_answers(a.answers)
     if a.limit:
         answers = answers[:a.limit]
     out = os.path.abspath(a.out)
-    shutil.rmtree(out, ignore_errors=True)
+    if os.path.isdir(out):
+        print(f"removing existing out dir {out}")
+        shutil.rmtree(out)
     os.makedirs(out)
 
     rows, orks = [], []
@@ -238,11 +262,18 @@ def main():
         elif "error" in f:
             row["sim"] = {"error": f["error"]}
         else:
-            ev = [e["type"] for e in f.get("events", []) if e["branch"] == 0]
+            ev = [e for e in f.get("events", []) if e["branch"] == 0]
+            types = [e["type"] for e in ev]
+            abort = next((e["data"] for e in f.get("events", [])
+                          if e["type"] == "SIM_ABORT" and e.get("data")), None)
             row["sim"] = {k: f.get(k) for k in ("apogee_m", "max_velocity_ms", "time_to_apogee_s",
                                                 "flight_time_s", "ground_hit_ms", "deployment_velocity_ms")}
-            row["sim"]["recovery_deployed"] = "RECOVERY_DEVICE_DEPLOYMENT" in ev
-            row["sim"]["ground_hit"] = "GROUND_HIT" in ev
+            if abort:
+                row["sim"]["abort"] = abort
+            if f.get("load_warnings"):
+                row["sim"]["load_warnings"] = f["load_warnings"]
+            row["sim"]["recovery_deployed"] = "RECOVERY_DEVICE_DEPLOYMENT" in types
+            row["sim"]["ground_hit"] = "GROUND_HIT" in types
             for k in ("stability_launch_cal", "stability_min_burn_cal"):
                 if k in f:
                     row["sim"][k] = f[k]
@@ -275,6 +306,9 @@ def main():
                 sim_s = (f"apogee {fin(s['apogee_m'], 0)} m, lands {fin(s['ground_hit_ms'])} m/s, "
                          f"{fin(s['flight_time_s'], 0)} s" + ("" if s["recovery_deployed"] else ", NO CHUTE"))
                 tally["sim ok"] += 1
+                if s.get("abort"):
+                    sim_s += f"  ABORT: {s['abort'][:60]}"
+                    tally["sim: aborted"] += 1
                 if not s["recovery_deployed"]:
                     tally["sim: recovery never deployed"] += 1
                 if isinstance(s.get("ground_hit_ms"), (int, float)) and s["ground_hit_ms"] > 6:
