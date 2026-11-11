@@ -1,5 +1,0 @@
-4. Check: The I clears the floor. The simulator gives 1432.2 m, above 1,250 m. Margin is 2.04 cal at rail exit and through the burn. Landing is 4.9 m/s, under 6 m/s. Rail exit is 40.9 m/s, thrust-to-weight 37.1. The chute opened at 12.6 s, at apogee, at 1.0 m/s. The section reached the ground. Peak Mach is 1.31, with the supersonic body-calc warning.
-
-5. Fix: nothing left that fails.
-
-6. Uncertainty: Liftoff mass is 0.518 kg. The H128W flight was 1029.2 m and opened late, which is why the motor changed. Chute Cd is 0.8. The I200W has no useful delay, so the chute is on an altimeter at apogee rather than a motor charge.

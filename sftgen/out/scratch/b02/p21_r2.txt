@@ -1,5 +1,0 @@
-2. Feasibility: E12 is an Estes E, 27.1 N*s and 11.2 N, 24 mm, delays 4, 6 and 8 s. F24W is an AeroTech F, 47.3 N*s and 24.0 N, also 24 mm, delays 4 and 7 s. Both fit the hardware and the class ceiling. The E's 11.2 N is thin on a 1.5 m rail once the rocket is much over 0.12 kg, so I will use the F24W. Class F is the ceiling, not over it.
-
-3. Size: 29 mm cardboard so a 26 mm mount fits around the 24 mm motor. Liftoff guess 0.15 kg. Thrust-to-weight is 24.0 / (0.15 * 9.81) = 16.3. Weight is 0.15 * 9.81 = 1.47 N, rail acceleration (24.0 - 1.47) / 0.15 = 150 m/s^2, exit speed sqrt(2 * 150 * 1.5) = 21.2 m/s. Chute for about 0.12 kg at 5 m/s: area 2 * 0.12 * 9.81 / (1.225 * 0.8 * 25) = 0.096 m^2, diameter sqrt(4 * 0.096 / pi) = 0.35 m. I will fly 0.40 m. Delay 7 s. Wind 6 m/s.
-
-4. Draft: 29 mm tube 0.32 m, ogive nose, three balsa fins, AeroTech F24W with a 7 s delay, 0.40 m chute. Wind 6 m/s, 1.5 m rail.

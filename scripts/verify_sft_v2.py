@@ -213,7 +213,7 @@ def main():
     if tr & te or tr & rl or te & rl:
         fail(f"file overlap train/test/rl: {sorted(tr & te)} {sorted(tr & rl)} {sorted(te & rl)}")
     from ork_family import build_all
-    allork = sorted("ork/" + f for f in os.listdir(B.p("ork")) if f.lower().endswith(".ork"))
+    allork = sorted("meta/ork/" + f for f in os.listdir(B.p("meta/ork")) if f.lower().endswith(".ork"))
     fam, _ = build_all(allork)
     ftr = {fam[x] for x in tr}
     fho = {fam[x] for x in te | rl if x in fam}

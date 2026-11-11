@@ -1,3 +1,0 @@
-1. Understand: Apogee around 1,500 ft. 1500 * 0.3048 = 457 m, approximate, within 5%. Total flight time between 115 and 125 s (a range, not a one-sided cap). No motor, diameter, wind or landing speed is given. I assume a 1.5 m vertical rail, 2 m/s wind, sea level, and the usual 6 m/s landing limit. Single stage.
-
-2. Feasibility: Drag-free speed for 457 m is sqrt(2 * 9.81 * 457) = 95 m/s. A C in a light rocket often stalls below that, and an E will usually go well past it, so a D is the class to check. Flight time near 120 s from this altitude means a sink rate around 457 / 112 = 4.1 m/s once the few seconds to apogee are set aside, which a chute can do. Looking up the D and near-D motors.

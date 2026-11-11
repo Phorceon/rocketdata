@@ -1,2 +1,0 @@
-4. Check: the simulator gives a margin of 0.51 cal, still under 1.0, and 0.51 - 0.47 = 0.04 cal is all the larger fins bought. Apogee fell to 250.6 m, which is (305 - 250.6) / 305 = 17.8% under 305 m. Rail exit 17.5 m/s, thrust-to-weight 15.0 and landing 5.0 m/s still pass. The fins are the wrong lever: they sit in the tail and their extra mass stays with the motors.
-5. Fix: nose weight is the change that moves the CG, but I need the CG and CP of this draft before I pick a mass. Reading static stability of the same design, then I will add weight in one step.

@@ -1,5 +1,0 @@
-4. Check: The simulator gives 583.6 m, well above the 250 m minimum. Total impulse is 33.6 N*s, under 40 N*s. Landing is 3.6 m/s, softer than 4.5 m/s. Rail exit on the 1 m rod is 30.3 m/s, thrust-to-weight is 35.6, and margin is 1.03 cal at rail exit and through the burn. The chute opens at 8.0 s, just before the 8.21 s apogee, at 2.8 m/s. No warnings. Liftoff mass is 0.1 kg, close to the 0.09 kg guess.
-
-5. Fix: no change needed; the minimum altitude, the impulse cap and the gates all pass.
-
-6. Uncertainty: Margin is only 1.03 cal, so a heavier nose or a fin that comes out smaller will go unstable before the altitude becomes a problem. 583.6 m is far above 250 m, and that extra height is sensitive to drag and to the real mass around 0.1 kg. The 7 s delay is matched to this light build; a heavier one will still be climbing at ejection. Chute Cd is 0.8. Landing at 3.6 m/s has some room under 4.5 m/s, but not if the canopy is smaller than 0.40 m.

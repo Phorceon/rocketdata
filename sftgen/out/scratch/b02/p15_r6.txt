@@ -1,3 +1,0 @@
-4. Check: HP-L1000W is an AeroTech L: 2702 N*s, 991 N average, burn 2.72 s, diameter 0.054 m, length 0.635 m, mass 2.19 kg. The only delay is 18 s, so it still flies plugged. Impulse is 2702 / 2008 = 1.35 times the K1200. The motor is longer than the current mount.
-
-5. Fix: The failing value is apogee 3177.2 m. One change: AeroTech HP-L1000W instead of the K1200. The mount grows to 0.66 m and the tube to 1.20 m so the 0.635 m motor fits. That length is the fit, not a second idea. Diameter, fins and both chutes stay. A heavier guess of 3.4 kg still has thrust-to-weight 991 / (3.4 * 9.81) = 29.7. Weight is 3.4 * 9.81 = 33.4 N, rail acceleration (991 - 33.4) / 3.4 = 282 m/s^2, exit speed sqrt(2 * 282 * 1.5) = 29.1 m/s. Wind stays 4 m/s.

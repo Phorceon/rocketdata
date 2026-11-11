@@ -1,3 +1,0 @@
-4. Check: The simulator gives 1005.2 m, well over the 457 m floor. Margin 1.58 cal at the rail and through the burn. Rail exit 36.8 m/s, thrust-to-weight 42.0, landing 3.8 m/s, chute at 15.3 s, and it reached the ground. Mass 0.37 kg. The 14 s delay opens after the 10.91 s apogee.
-5. Fix: 1005.2 m clears the floor and the gates pass, so this is the rocket.
-6. Uncertainty: 1005.2 m is far enough over 457 m that a heavier paint job still clears. Peak Mach is 1.04, just over sonic, and this run did not attach a drag warning, so I would not lean on the last 50 m. Cd 0.8 is what makes 3.8 m/s. The chute opens at 15.3 s already on the way down.

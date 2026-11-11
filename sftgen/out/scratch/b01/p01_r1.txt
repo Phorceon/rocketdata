@@ -1,2 +1,0 @@
-1. Understand: The motor is fixed as an Estes E16. Body outer diameter is at most 25 mm, which is 0.025 m. Touchdown speed is a maximum of 4.5 m/s. Apogee, flight time, rail length, wind, and launch angle are not given, so I assume one stage, the usual 1.5 m rail, 2 m/s wind, a vertical launch, and sea level.
-2. Feasibility: A 25 mm tube is barely wider than a 24 mm motor case, so the E16's diameter decides whether it fits at all. I need its impulse, thrust, length, mass, and delays before sizing the airframe or the chute.

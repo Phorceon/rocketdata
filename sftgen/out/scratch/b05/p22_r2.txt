@@ -1,3 +1,0 @@
-2. Feasibility: HP-L1000W is 2,702 N*s in a 54 mm case. L850W is 3,695 N*s, 868 N, 75 mm, 0.531 m long, 3.67 kg, propellant 2.07 kg, and it has no delay. The extra impulse is what 3,750 m needs. I'll plug it and open one chute at apogee.
-3. Size: guessed liftoff mass 5.5 kg. Thrust-to-weight is 868 / (5.5 * 9.81) = 16. Descent mass is about 5.5 - 2.07 = 3.4 kg. A 5 m/s landing, under the assumed 6 m/s, needs 2 * 3.4 * 9.81 / (1.225 * 0.8 * 5^2) = 2.7 m^2, diameter sqrt(4 * 2.7 / 3.1416) = 1.9 m. I'll fit a 2.0 m chute. From 3,750 m at that sink rate the flight is about 3750 / 5 = 750 s, so it reaches the ground.
-4. Draft: 90 mm fiberglass body, 1.00 m long, ogive nose, four plywood fins, 75 mm mount, AeroTech L850W. Defaults: 1.5 m rail, 2 m/s wind.

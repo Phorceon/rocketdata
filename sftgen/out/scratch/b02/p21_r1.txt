@@ -1,3 +1,0 @@
-1. Understand: Apogee at least 200 m. Motor class F at most. Only 24 mm hardware, so the motor diameter stays at or under 0.024 m. Wind is 6 m/s, so that goes in every simulation. Rail and site are not stated: 1.5 m vertical rail, sea level. Landing is not stated, so the 6 m/s gate applies.
-
-2. Feasibility: 200 m is a small target for an E or even a D. Drag-free speed is sqrt(2 * 9.81 * 200) = 62.6 m/s. An F is allowed but not required. A 24 mm E in a modest tube clears 200 m with room and stays inside both limits. Wind 6 m/s is under the 8.94 m/s gate. Looking up a 24 mm E and a 24 mm F.

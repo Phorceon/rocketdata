@@ -1,3 +1,0 @@
-4. Check: the simulator gives rail exit 20.2 m/s, over 15, thrust-to-weight 6.4, and landing 2.9 m/s, under 5.5. Margin is 4.16 cal. The section reached the ground and the chute opened. This rocket carries 0.02 kg, not 0.50 kg.
-5. Fix: no further change on this lighter rocket. The gates pass. They do not pass with the requested payload.
-6. Uncertainty: a 500 g payload is infeasible on an Estes C6. The payload alone weighs 0.50 * 9.81 = 4.9 N, and the motor averages 4.8 N, so thrust-to-weight stays under 1 before the airframe is even counted. The 0.08 kg try left the rail at 12.4 m/s, so 0.02 kg is what still flies. Chute Cd is a model 0.8. Wind was assumed at 2 m/s. Margin is 4.16 cal, so a stronger wind will weathercock it.

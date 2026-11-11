@@ -1,5 +1,0 @@
-4. Check: Margin is fixed. The simulator gives 1.07 cal at rail exit, and 0.99 cal is the low point during the burn, still above 0. Rail exit is 15.1 m/s, thrust-to-weight is 3.3, sustainer landing is 3.5 m/s and booster landing is 3.2 m/s. Apogee did not quite come back into the band. 246.6 m against about 229 m is (246.6 - 229) / 229 = 7.7% high. The top of the 5% band is 229 * 1.05 = 240 m, and 246.6 m is still above it. No warnings.
-
-5. Fix: the altitude still exceeds the band, at 246.6 m. I am stopping. Another fin change would be a fifth pass, and the rail is only 15.1 m/s, so there is no mass left to trade.
-
-6. Uncertainty: 15.1 m/s and thrust-to-weight 3.3 are close to their floors, and liftoff mass is 0.15 kg. A slightly heavier build misses the rail before it helps the altitude. The 5.36 m/s wind will weathercock a 1.07 cal rocket, which is already in this apogee. Chute Cd is 0.8. The booster separates at burnout with an open front end in the model; the warning cleared on this last flight, but a real interstage gap can change the drag.

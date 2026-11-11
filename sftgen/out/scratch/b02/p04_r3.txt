@@ -1,5 +1,0 @@
-4. Check: The simulator gives 2619.1 m. Against about 2,740 m that is (2740 - 2619.1) / 2740 = 4.4% low, inside the 5% band. Margin is 2.02 cal at rail exit and through the burn. Rail exit is 19.2 m/s, thrust-to-weight is 9.3, landing is 4.8 m/s under 6 m/s, and the chute opens at 19.3 s right at apogee. Liftoff mass is 2.13 kg, a bit over my 1.9 kg guess, which explains sitting low in the band. Peak Mach is 0.97, with no warning.
-
-5. Fix: no change needed; altitude and the gates all pass.
-
-6. Uncertainty: 2619.1 m is near the bottom of the 5% band, and the rocket came out heavier than I guessed. A lighter build will fly higher, a heavier one will drop out of the band. Rail exit is only 19.2 - 15 = 4.2 m/s above the gate, so the same extra mass would miss the rail before it missed the altitude by much. Chute Cd is 0.8 in the model. Drift is 812 m in a 2 m/s wind over a 531.9 s flight; nothing in the request limits that, but the recovery walk is long.

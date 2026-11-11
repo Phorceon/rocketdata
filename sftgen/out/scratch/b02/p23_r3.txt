@@ -1,1 +1,0 @@
-2. Feasibility: C3.4T, D3 and B4 all came back at 0.018 m. The short names did not find a 13 mm C or D. B4 is even labeled class C, 5.1 N*s, with no delays, and it is still 18 mm. Those will not fit. Trying a few more 13 mm-style designations before building around the A3.

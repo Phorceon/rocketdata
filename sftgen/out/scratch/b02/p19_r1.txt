@@ -1,3 +1,0 @@
-1. Understand: Apogee at least 750 m. Motor class H at most. Rail is 2 m, so that goes in every simulation. Wind and site are not stated: 2 m/s, vertical, sea level. Landing is not stated, so the 6 m/s gate applies. One stage.
-
-2. Feasibility: 750 m is a modest H flight, or a light G. Drag-free speed is sqrt(2 * 9.81 * 750) = 121 m/s. I will use an H near minimum diameter so the floor is cleared with room, and stay at or under class H. Looking up the H128W.

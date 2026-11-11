@@ -1,5 +1,0 @@
-2. Feasibility: I200W is an AeroTech I, 327 N*s, 188 N average, burn 1.73 s, diameter 0.029 m, length 0.333 m, mass 0.358 kg. The only delay is 0 s, so it flies plugged and the chute opens at apogee. J350W is 669 N*s, about twice the impulse, and would sail past 1,750 m in a small tube. I will use the I. The simulation wind is 8.9 m/s, under the 8.94 m/s gate. The requested 12.5 m/s is not used, because that flight cannot pass.
-
-3. Size: 34 mm fiberglass, just over the motor. Liftoff guess 0.51 kg. Thrust-to-weight is 188 / (0.51 * 9.81) = 37.6. Weight is 0.51 * 9.81 = 5.00 N, rail acceleration (188 - 5.00) / 0.51 = 359 m/s^2, exit speed sqrt(2 * 359 * 1.5) = 32.8 m/s. Chute for about 0.35 kg at 5 m/s: area 2 * 0.35 * 9.81 / (1.225 * 0.8 * 25) = 0.280 m^2, diameter sqrt(4 * 0.280 / pi) = 0.60 m. I will fly 0.70 m. Wind this high will drift a long way. The prompt did not cap drift.
-
-4. Draft: 34 mm tube 0.65 m, ogive nose, four fiberglass fins, AeroTech I200W plugged, 0.70 m chute at apogee. Wind 8.9 m/s, 1.5 m rail. This is the closest legal wind, not the 45 km/h the team asked for.

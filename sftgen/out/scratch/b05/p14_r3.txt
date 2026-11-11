@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 201.2 m. The top of the band is 175 * 1.05 = 184 m, and 201.2 - 184 = 17 m over it. Landing is 3.2 m/s, under 6, and the single chute opened at apogee. Rail exit is 27.8 m/s, thrust-to-weight is 14.1, and margin is 2.3 cal. The only miss is altitude.
-5. Fix: add 0.006 kg at the front of the tube. The rocket is 15% high, and a little nose mass brings the apogee down without touching the chute. Motor and fins stay.

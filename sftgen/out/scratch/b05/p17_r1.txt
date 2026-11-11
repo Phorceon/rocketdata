@@ -1,2 +1,0 @@
-1. Understand: apogee is about 260 m, so the band is 260 * 0.95 = 247 m to 260 * 1.05 = 273 m. The motor has to be an 18 mm case. Wind is 3 m/s and goes in every flight call. Landing speed and rail are not stated. I assume 6 m/s and a 1.5 m rail. Single stage, vertical, sea level.
-2. Feasibility: 260 m with no drag is sqrt(2 * 9.81 * 260) = 71 m/s. On an 18 mm motor that is a C, not a B. Looking up B6 and C6.

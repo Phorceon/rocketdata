@@ -1,2 +1,0 @@
-1. Understand: the only number is 3,500 m, so that is the apogee target. I will treat it as about 3,500 m, a band of 3500 * 0.95 = 3330 m to 3500 * 1.05 = 3680 m. Nothing else is stated. I assume a single stage, a 1.5 m rail, 2 m/s wind, vertical, sea level, and a 6 m/s landing.
-2. Feasibility: 3,500 m with no drag is sqrt(2 * 9.81 * 3500) = 262 m/s. That is past a small K on a sport airframe. An L-class motor on a 54 or 75 mm rocket is the range to check. Looking up a few L motors.

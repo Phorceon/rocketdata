@@ -1,2 +1,0 @@
-1. Understand: The motor is fixed: an Estes E12. The goal is as much altitude as that motor will give, while staying stable and landing under 18 ft/s. 18 * 0.3048 = 5.49 m/s. Wind is 10 mph: 10 * 0.44704 = 4.47 m/s, and that goes on every run. Rail and site are not stated: 1.5 m and sea level.
-2. Feasibility: Max altitude on a fixed E means a light, slim tube, fins just big enough for 1 cal in 4.47 m/s of wind, and a chute just big enough for 5.49 m/s. A short wide body would throw altitude away. I need the E12 card before I size the mount.

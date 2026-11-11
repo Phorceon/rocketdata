@@ -1,3 +1,0 @@
-4. Check: Altitude and the clock both pass. The simulator gives 3306.1 m, above 3,048 m, and flight time 240.9 s, inside 300 s. Landing is 4.1 m/s. Margin is 0.77 cal at rail exit and through the burn, under 1.0. Rail exit is 38.7 m/s, thrust-to-weight 44.7. The drogue opened at 19.8 s, at apogee, at 1.7 m/s. Wind is 5.36 m/s. Drift is 1017 m, and the prompt capped time rather than drift. Peak Mach is 2.06.
-
-5. Fix: The failing value is margin 0.77 cal. One change: larger fins, span 0.13 m and root 0.20 m. There is about 250 m of room above 3,048 m, and the flight is 241 s against a 300 s clock, so some extra fin drag is affordable. Motor, both chutes and the tube stay.

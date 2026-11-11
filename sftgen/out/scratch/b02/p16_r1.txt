@@ -1,3 +1,0 @@
-1. Understand: Apogee above 1,250 m. Nothing else is stated. No motor, no diameter, no wind, no rail, no landing speed. Defaults: 1.5 m vertical rail, 2 m/s wind, sea level, landing under 6 m/s. One stage is enough. The prompt does not ask for two stages.
-
-2. Feasibility: 1,250 m is past a typical G in a mid-size tube and comfortable for an H in a minimum-diameter airframe. Drag-free speed is sqrt(2 * 9.81 * 1,250) = 157 m/s. Looking up an H and an I so I can pick the smaller one that still clears the floor.

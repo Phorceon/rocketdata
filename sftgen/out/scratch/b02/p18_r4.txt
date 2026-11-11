@@ -1,5 +1,0 @@
-4. Check: Clay fixed the margin and the altitude stayed in the band. The simulator gives 833.6 m. (833.6 - 800) / 800 = 4.2%, inside 5%. Margin is 1.3 cal at rail exit and through the burn. Landing is 4.3 m/s, under 6 m/s. Rail exit is 33.3 m/s, thrust-to-weight 21.7. Impulse is 118 N*s, class G. Ejection is still at 12.4 s, after apogee at 9.95 s, opening at 12.1 m/s. The landing speed passes. The section reached the ground.
-
-5. Fix: nothing left that fails.
-
-6. Uncertainty: Liftoff mass is 0.286 kg. Adding 0.015 kg in the nose raised the apogee slightly, from 821.3 m to 833.6 m, which I did not expect. Mach dropped from 0.76 to 0.74, so it may have stepped off a drag rise. Chute Cd is 0.8. A shorter delay would open closer to apogee. I left the 10 s delay because nothing in the request fails.

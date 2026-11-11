@@ -1,5 +1,0 @@
-4. Check: The simulator gives 3886.3 m, above the 3,500 m floor. Drift is 895 m, inside 2,000 m. Landing is 3.9 m/s, under 6 m/s, so the main is the canopy at touchdown. Margin is 2.53 cal at rail exit and through the burn. Rail exit is 35.2 m/s, thrust-to-weight 30.5. The drogue opened at 21.2 s, at apogee, at 5.5 m/s. Wind is 4 m/s. The section reached the ground in 320 s. Peak Mach is 2.07, with the supersonic body-calc warning.
-
-5. Fix: nothing left that fails.
-
-6. Uncertainty: Liftoff mass is 3.32 kg, close to the 3.4 kg guess. The output shows one deploy time, the apogee drogue, and not a separate main-opening time. The landing speed is what tells me the main opened. Chute Cd is 0.8 on both. The motor's 18 s delay was not used.

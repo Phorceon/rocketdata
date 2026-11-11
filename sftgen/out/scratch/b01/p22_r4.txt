@@ -1,2 +1,0 @@
-4. Check: Bigger fins barely moved it. The simulator gives margin 0.49 cal at the rail and through the burn. Apogee is 3962.2 m, still over 2,000 m, landing 4.4 m/s, and it reached the ground. Rail exit 27.6 m/s, thrust-to-weight 12.7. Mass 12.5 kg. The fin area is buying drag, not CP. The CG is the problem.
-5. Fix: 0.49 cal is the failure. I am adding 1.5 kg at 0.10 m from the top of the tube. Fins stay. Altitude can come down and still clear 2,000 m. Wind 2 m/s, rail 3 m.

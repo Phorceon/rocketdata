@@ -1,2 +1,0 @@
-1. Understand: the motor is fixed, an Estes C6, and it has to carry a 500 g payload, which is 0.50 kg. Landing has to be under 18 ft/s. 18 * 0.3048 = 5.5 m/s. Rail and wind are not stated. I assume a 1.5 m rail, 2 m/s wind, vertical, sea level, one stage.
-2. Feasibility: 500 g is a lot for a C. I need the C6 thrust before I decide whether it can lift that mass at all.

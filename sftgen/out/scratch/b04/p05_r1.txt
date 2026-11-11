@@ -1,2 +1,0 @@
-1. Understand: motor is fixed, a Cesaroni I216. Apogee is a minimum of 800 m. Rail length is fixed at 2.5 m, and I will pass that on every flight. Landing limit is not stated, so I use 6 m/s. Wind and site are not stated, so 2 m/s and sea level, launched vertical. Single stage. This is a Level 1 rocket, so it should be stable and leave the rail cleanly.
-2. Feasibility: 800 m with no drag needs sqrt(2 * 9.81 * 800) = 125 m/s. An I motor has at least 320 N*s, which is enough for 800 m if the rocket is not huge. I need the I216's real impulse, diameter and delays.

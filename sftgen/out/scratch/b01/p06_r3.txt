@@ -1,3 +1,0 @@
-4. Check: The simulator gives 311.7 m. (311.7 - 310) / 310 = 0.55% high, inside the 5% band. Rail exit 26.1 m/s, thrust-to-weight 9.4, and margin 1.81 cal all pass. Landing is 3.4 m/s with the chute out at 6.9 s, essentially at apogee. Mass is 0.0521 kg, a little under my 0.060 kg guess, which is why the average-thrust rail estimate of 14.5 m/s became 26.1 m/s once the ignition spike was included.
-5. Fix: No fix needed.
-6. Uncertainty: It sits near the middle of the band, but OpenRocket's drag and the real cardboard weight can move a C-powered rocket by more than 5%. If the finished bird is lighter than 0.0521 kg it will fly high. Margin is 1.8 cal, comfortable in a 2 m/s wind, and a tail-heavy paint job would be the thing that eats it.

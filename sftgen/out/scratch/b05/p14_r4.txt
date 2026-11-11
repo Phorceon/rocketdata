@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 191.2 m. The band top is 184 m, and 191.2 - 184 = 7 m still over it. Landing is 3.5 m/s. Margin rose to 3.31 cal. Rail exit is 26.3 m/s. The 0.006 kg only pulled the apogee down by 201.2 - 191.2 = 10 m.
-5. Fix: raise the nose mass from 0.006 kg to 0.016 kg. The chute, motor, and fins stay. Another 0.010 kg should walk the apogee into the band without giving up the slow landing.

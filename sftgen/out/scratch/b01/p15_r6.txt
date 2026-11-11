@@ -1,3 +1,0 @@
-4. Check: The simulator gives 1220.9 m, which clears 1,200 m and sits inside 1,140 to 1,260 m. Margin 1.57 cal at the rail and through the burn, rail exit 40.7 m/s, thrust-to-weight 51.1, landing 3.5 m/s, chute at 11.7 s. Mass 0.396 kg.
-5. Fix: 1220.9 m is on the number and the gates pass, so I am leaving it.
-6. Uncertainty: Mach 1.33 is inside the supersonic drag warning, so 1220.9 m can move. The H180's only listed delay is 6 s, and this flight uses an altimeter instead, because 6 s would be before the 11.68 s apogee. Cd 0.8 on the 0.75 m chute is what makes 3.5 m/s.
