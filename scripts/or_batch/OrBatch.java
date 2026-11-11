@@ -9,7 +9,9 @@ import com.google.inject.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
-/** Batch runner: stdin lines "path\tsimName\tseed\treps"; stdout one JSON line per run. */
+/** Batch runner: stdin lines "path\tsimName\tseed\treps"; stdout one JSON line per run.
+ *  Events carry their data payload (e.g. SIM_ABORT reason strings) as "data";
+ *  .ork load warnings (missing motors, unknown elements) as "load_warnings". */
 public class OrBatch {
   public static void boot() throws Exception {
     installDet();
@@ -53,7 +55,27 @@ public class OrBatch {
     Field mf = MultiLevelPinkNoiseWindModel.LevelWindModel.class.getDeclaredField("model"); mf.setAccessible(true);
     for (int i=0;i<lv.size();i++) mf.set(lv.get(i), copy((PinkNoiseWindModel) mf.get(lv.get(i)), seed + 7919*(i+1)));
   }
-  static String q(String s){ return "\"" + s.replace("\\","\\\\").replace("\"","\\\"") + "\""; }
+  /** JSON-string with every control character escaped: the strings come from .ork files the
+   *  model generated, so unescaped newlines would split the one-JSON-line-per-run output. */
+  static String q(String s) {
+    StringBuilder sb = new StringBuilder("\"");
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '"': sb.append("\\\""); break;
+        case '\\': sb.append("\\\\"); break;
+        case '\b': sb.append("\\b"); break;
+        case '\f': sb.append("\\f"); break;
+        case '\n': sb.append("\\n"); break;
+        case '\r': sb.append("\\r"); break;
+        case '\t': sb.append("\\t"); break;
+        default:
+          if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
+          else sb.append(c);
+      }
+    }
+    return sb.append('"').toString();
+  }
   static String num(double d){ return (Double.isNaN(d)||Double.isInfinite(d)) ? "null" : Double.toString(d); }
   public static void main(String[] a) throws Exception {
     PrintStream out = new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8");
@@ -69,7 +91,8 @@ public class OrBatch {
         StringBuilder sb = new StringBuilder("{\"file\":"+q(path)+",\"sim\":"+q(name)+",\"seed\":"+seed+",\"rep\":"+r+",\"uuid_seed\":"+useed);
         try {
           seedUUID(useed);
-          OpenRocketDocument doc = new GeneralRocketLoader(new File(path)).load();
+          GeneralRocketLoader loader = new GeneralRocketLoader(new File(path));
+          OpenRocketDocument doc = loader.load();
           Simulation sim=null; List<String> names=new ArrayList<>();
           for (Simulation s: doc.getSimulations()) { names.add(s.getName()); if (s.getName().equals(name)) sim=s; }
           if (sim==null) throw new RuntimeException("simulation not found; available: "+names);
@@ -81,11 +104,19 @@ public class OrBatch {
             +",\"time_to_apogee_s\":"+num(d.getTimeToApogee())+",\"flight_time_s\":"+num(d.getFlightTime())
             +",\"ground_hit_ms\":"+num(d.getGroundHitVelocity())+",\"deployment_velocity_ms\":"+num(d.getDeploymentVelocity())
             +",\"wind_ms\":"+num(sim.getOptions().getWindSpeedAverage()));
+          if (!loader.getWarnings().isEmpty()) {
+            StringBuilder wl=new StringBuilder(); boolean wfirst=true;
+            for (Object w : loader.getWarnings()) { if(!wfirst) wl.append(","); wfirst=false; wl.append(q(String.valueOf(w))); }
+            sb.append(",\"load_warnings\":["+wl+"]");
+          }
           sb.append(",\"events\":[");
           boolean first=true;
           for (int b=0;b<d.getBranchCount();b++) for (FlightEvent e: d.getBranch(b).getEvents()) {
             if(!first) sb.append(","); first=false;
-            sb.append("{\"branch\":"+b+",\"type\":"+q(e.getType().name())+",\"t\":"+num(e.getTime())+"}");
+            sb.append("{\"branch\":"+b+",\"type\":"+q(e.getType().name())+",\"t\":"+num(e.getTime()));
+            Object edata = e.getData();
+            if (edata != null) sb.append(",\"data\":"+q(String.valueOf(edata)));
+            sb.append("}");
           }
           sb.append("]}");
         } catch (Throwable t) {
