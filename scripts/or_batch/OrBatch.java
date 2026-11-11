@@ -55,7 +55,27 @@ public class OrBatch {
     Field mf = MultiLevelPinkNoiseWindModel.LevelWindModel.class.getDeclaredField("model"); mf.setAccessible(true);
     for (int i=0;i<lv.size();i++) mf.set(lv.get(i), copy((PinkNoiseWindModel) mf.get(lv.get(i)), seed + 7919*(i+1)));
   }
-  static String q(String s){ return "\"" + s.replace("\\","\\\\").replace("\"","\\\"") + "\""; }
+  /** JSON-string with every control character escaped: the strings come from .ork files the
+   *  model generated, so unescaped newlines would split the one-JSON-line-per-run output. */
+  static String q(String s) {
+    StringBuilder sb = new StringBuilder("\"");
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      switch (c) {
+        case '"': sb.append("\\\""); break;
+        case '\\': sb.append("\\\\"); break;
+        case '\b': sb.append("\\b"); break;
+        case '\f': sb.append("\\f"); break;
+        case '\n': sb.append("\\n"); break;
+        case '\r': sb.append("\\r"); break;
+        case '\t': sb.append("\\t"); break;
+        default:
+          if (c < 0x20) sb.append(String.format("\\u%04x", (int) c));
+          else sb.append(c);
+      }
+    }
+    return sb.append('"').toString();
+  }
   static String num(double d){ return (Double.isNaN(d)||Double.isInfinite(d)) ? "null" : Double.toString(d); }
   public static void main(String[] a) throws Exception {
     PrintStream out = new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8");

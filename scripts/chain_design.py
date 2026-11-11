@@ -11,8 +11,8 @@ For every model answer (v5 format: an OpenRocket tree written as JSON):
   3. fly:  scripts/or_batch/OrBatch.java flies the .ork in OpenRocket 24.12 with the same
            fixed seeds as the rest of the project (seed 42, UUID seed 42, one warm-up run).
            If OpenRocket aborts (no motor, never ignites, ...) the reason string is shown in
-           the table and summary.json; .ork load warnings (e.g. "no motor with designation
-           found") are saved as sim["load_warnings"]
+           the table and summary.json (aborts tally separately from ok flights); .ork load
+           warnings (e.g. "no motor with designation found") are saved as sim["load_warnings"]
 
 Writes model_out/chain/<id>.ork, model_out/chain/<id>/ (CAD files) and
 model_out/chain/summary.json, and prints one line per design plus totals.
@@ -264,12 +264,13 @@ def main():
         else:
             ev = [e for e in f.get("events", []) if e["branch"] == 0]
             types = [e["type"] for e in ev]
-            abort = next((e["data"] for e in f.get("events", [])
-                          if e["type"] == "SIM_ABORT" and e.get("data")), None)
+            ab = next((e for e in f.get("events", [])
+                       if e["type"] == "SIM_ABORT" and e.get("data")), None)
             row["sim"] = {k: f.get(k) for k in ("apogee_m", "max_velocity_ms", "time_to_apogee_s",
                                                 "flight_time_s", "ground_hit_ms", "deployment_velocity_ms")}
-            if abort:
-                row["sim"]["abort"] = abort
+            if ab:
+                row["sim"]["abort"] = ab["data"]
+                row["sim"]["abort_branch"] = ab["branch"]
             if f.get("load_warnings"):
                 row["sim"]["load_warnings"] = f["load_warnings"]
             row["sim"]["recovery_deployed"] = "RECOVERY_DEVICE_DEPLOYMENT" in types
@@ -302,13 +303,18 @@ def main():
             if "error" in s:
                 sim_s = "FAILED: " + s["error"][:44]
                 tally["sim failed"] += 1
+            elif s.get("abort"):
+                br = s.get("abort_branch")
+                sim_s = f"ABORT{' (b' + str(br) + ')' if br else ''}: {s['abort'][:70]}"
+                hint = next((w for w in s.get("load_warnings", [])
+                             if w.startswith("No motor with designation")), None)
+                if hint:
+                    sim_s += f"  [{hint[:60]}]"
+                tally["sim: aborted"] += 1
             else:
                 sim_s = (f"apogee {fin(s['apogee_m'], 0)} m, lands {fin(s['ground_hit_ms'])} m/s, "
                          f"{fin(s['flight_time_s'], 0)} s" + ("" if s["recovery_deployed"] else ", NO CHUTE"))
                 tally["sim ok"] += 1
-                if s.get("abort"):
-                    sim_s += f"  ABORT: {s['abort'][:60]}"
-                    tally["sim: aborted"] += 1
                 if not s["recovery_deployed"]:
                     tally["sim: recovery never deployed"] += 1
                 if isinstance(s.get("ground_hit_ms"), (int, float)) and s["ground_hit_ms"] > 6:
