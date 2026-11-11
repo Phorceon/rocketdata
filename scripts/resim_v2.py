@@ -87,7 +87,11 @@ def build_cache(runs):
             rec["error"] = a["error"]
         else:
             rec.update({k: a.get(k) for k in METRICS})
-            rec["events"] = a["events"]
+            # verify_sft_v2.py compares this cache byte for byte with the committed one, so
+            # keep only the historical event fields (--resim must not see OrBatch additions
+            # like the "data" payload or "load_warnings").
+            rec["events"] = [{k: e[k] for k in ("branch", "type", "t") if k in e}
+                              for e in a["events"]]
             c = alt[0]
             if "error" in c:
                 rec["uuid_sensitivity"] = None
