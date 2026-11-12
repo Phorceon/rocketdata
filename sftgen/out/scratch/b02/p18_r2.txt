@@ -1,5 +1,0 @@
-2. Feasibility: G64W is an AeroTech G, 118 N*s, 60.9 N average, burn 1.92 s, diameter 0.029 m, length 0.124 m, mass 0.151 kg, delays 4, 8 and 10 s. Class G, under the I ceiling. H128W is 178 N*s and would sit high of 800 m in a tube this small, so I leave it. Drag-free speed is sqrt(2 * 9.81 * 800) = 125 m/s. The 5% band is 760 to 840 m.
-
-3. Size: 46 mm cardboard, a bit wider than minimum so the G does not sail past 800 m. Liftoff guess 0.28 kg. Thrust-to-weight is 60.9 / (0.28 * 9.81) = 22.2. Weight is 0.28 * 9.81 = 2.75 N, rail acceleration (60.9 - 2.75) / 0.28 = 208 m/s^2, exit speed sqrt(2 * 208 * 1.5) = 25.0 m/s. Chute for about 0.22 kg at 5 m/s: area 2 * 0.22 * 9.81 / (1.225 * 0.8 * 25) = 0.176 m^2, diameter sqrt(4 * 0.176 / pi) = 0.47 m. I will fly 0.55 m. Delay 10 s. Burn plus delay is about 12 s, near apogee for this altitude.
-
-4. Draft: 46 mm tube 0.50 m, ogive nose, four balsa fins, AeroTech G64W with a 10 s delay, 0.55 m chute on ejection. Default rail and 2 m/s wind.

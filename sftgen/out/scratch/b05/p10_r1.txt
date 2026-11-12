@@ -1,2 +1,0 @@
-1. Understand: the motor is fixed, an AeroTech F50. Apogee is a minimum of 350 m, it has to clear that. Wind is about 4 m/s, and that goes in the flight call. Rail and landing speed are not stated, so I assume a 1.5 m rail and a 6 m/s touchdown. Single stage, vertical, sea level.
-2. Feasibility: 350 m with no drag is only sqrt(2 * 9.81 * 350) = 83 m/s. An F has enough impulse for that on a normal sport rocket. The question is the F50's diameter, thrust, and delays. Looking those up.

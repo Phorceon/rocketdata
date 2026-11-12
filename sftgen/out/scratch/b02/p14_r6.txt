@@ -1,5 +1,0 @@
-4. Check: Clay brought the margin up and left the altitude in the band. The simulator gives 370.8 m. (375 - 370.8) / 375 = 1.1% low, inside 5%. Margin is 1.16 cal at rail exit and through the burn. Landing is 4.4 m/s, under 6 m/s. Rail exit is 24.9 m/s on the 2 m rail. Thrust-to-weight is 7.3. Impulse is 27.1 N*s, class E. The chute opened at 8.4 s, after apogee at 7.88 s, at 4.7 m/s.
-
-5. Fix: nothing left that fails.
-
-6. Uncertainty: Liftoff mass is 0.157 kg. The 0.018 kg clay is what made the margin, after two fin sizes barely moved it. Chute Cd is 0.8. The first material name was rejected before any flight, so that pass does not count as an altitude result.

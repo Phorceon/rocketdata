@@ -1,5 +1,0 @@
-2. Feasibility: E30 is 33.6 N*s, under the 40 N*s cap, with 34.9 N average and a 49 N peak in 0.96 s. D12 is only 10.4 N and will struggle to reach 15 m/s on a 1 m rod. E12 is 27.1 N*s but only 11.2 N average, same problem. E20W is 34.7 N*s at 22 N, legal but softer off the rod than the E30. D21T is 19.6 N*s, which may not clear 250 m once the rocket has any size. E30-7 is the one that satisfies both the impulse cap and the short rod.
-
-3. Size: Liftoff guess 0.09 kg. Thrust-to-weight is 34.9 / (0.09 * 9.81) = 39.5. Weight is 0.09 * 9.81 = 0.883 N, rail acceleration (34.9 - 0.88) / 0.09 = 378 m/s^2, rail exit sqrt(2 * 378 * 1) = 27.5 m/s. Burnout mass is about 0.09 - 0.018 = 0.072 kg. For a 4 m/s sink, under the 4.5 m/s cap, a 0.40 m chute is enough. Delay 7 s: burnout is under 1 s, and a flight past 250 m should still be coasting at 8 s.
-
-4. Draft: 34 mm cardboard, 0.35 m tube, short ogive, three balsa fins, 24 mm mount, E30-7, 0.40 m chute on ejection. Rail length 1 m, wind left at the 2 m/s default.

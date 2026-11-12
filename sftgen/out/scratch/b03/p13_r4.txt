@@ -1,2 +1,0 @@
-4. Check: still a hair short on stability. The simulator gives 0.99 cal at rail exit and through the burn, just under 1.0 cal. Apogee is 688.2 m, still above 610 m. Landing is 3.4 m/s. Rail exit 35.0 m/s, thrust-to-weight 32.3. The chute opens at 7.4 s, just before the 7.85 s apogee, at 13.5 m/s. Mass is 0.176 kg.
-5. Fix: the failing value is 0.99 cal. More fin area would add drag I do not need, since 688.2 - 610 = 78.2 m is spare but the margin gap is only 0.01 cal. I am adding 0.005 kg of clay at the top of the tube to pull the CG forward. Fins, motor and chute stay.

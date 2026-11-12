@@ -1,3 +1,0 @@
-1. Understand: Four-motor cluster (fixed count). No motor above a D (maximum class). Apogee about 750 ft, within 5%. 750 * 0.3048 = 229 m. Every section lands under 6 m/s (maximum). This is one stage, so that is the single section. Wind and rail not stated: 2 m/s, 1.5 m vertical rail, sea level.
-
-2. Feasibility: Four D motors would be far too much impulse for 229 m. Four C motors may still be high once they are in the fat tube a cluster needs. Four B motors are about one D of total impulse, which is the right neighborhood. Drag-free speed for 229 m is sqrt(2 * 9.81 * 229) = 67 m/s. Checking B and C cluster candidates.

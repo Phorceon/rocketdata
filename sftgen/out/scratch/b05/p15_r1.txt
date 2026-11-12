@@ -1,2 +1,0 @@
-1. Understand: apogee is about 175 m, so the band is 175 * 0.95 = 166 m to 175 * 1.05 = 184 m. Motor class is D or smaller. Diameter is under 1 inch, and 1 * 0.0254 = 0.0254 m, so the body has to be narrower than that. Wind is about 4 m/s and goes in every flight call. Landing speed is not stated, so I assume 6 m/s. Rail is not stated, so 1.5 m. Single stage, vertical, sea level.
-2. Feasibility: 175 m with no drag is sqrt(2 * 9.81 * 175) = 59 m/s. A C or a D on a tube this skinny will overshoot. A B is the right class. Looking up B6 and C6.

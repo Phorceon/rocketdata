@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 3134 m. The bottom of the band is 3,330 m, and 3330 - 3134 = 196 m short. Landing is 5.3 m/s, under 6. Rail exit is 31.8 m/s, thrust-to-weight is 26.0, and margin is 2.34 cal. The chute opened. The miss is altitude. The 75 mm tube is wider than a 54 mm motor needs, and that drag is the cause. There is a supersonic warning.
-5. Fix: shrink the airframe to 66 mm, still wide enough for the 58 mm mount. Nose diameter matches. Motor, fins, chute, and length stay.

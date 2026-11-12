@@ -1,2 +1,0 @@
-4. Check: Still short and still loose. The simulator gives 307.0 m and a rail margin of 0.36 cal, with the burn minimum also 0.36 cal. Rail exit 22.4 m/s, thrust-to-weight 8.3, and landing 4.7 m/s pass. Mass 0.128 kg. Chute at 8.7 s, apogee at 7.34 s. The last fin growth moved the margin from -0.37 cal to 0.36 cal and did not get it to 1.
-5. Fix: 0.36 cal is the failure. Fins go to root 0.10 m, tip 0.045 m, span 0.08 m, sweep 0.045 m. That is a large fin on a 41 mm tube, which is what a tail-heavy D needs. Everything else stays, including the 300 m site.

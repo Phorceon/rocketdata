@@ -1,2 +1,0 @@
-1. Understand: Around 175 m means 166 to 184 m. Motor class B at most, so nothing above a B. No wind, rail, site, or landing number, so 2 m/s, 1.5 m, sea level, and 6 m/s. Drag-free speed for 175 m is sqrt(2 * 9.81 * 175) = 59 m/s.
-2. Feasibility: A C is already too much motor and it is over the class cap anyway. A B on a light 18 mm rocket is the right size. An A is the fallback if the B overshoots.

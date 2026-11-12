@@ -13,7 +13,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.or_headless import DEFAULT_JAR, DEFAULT_JAVA_HOME, simulate
 
-ORK = REPO_ROOT / "ork" / "ESTES Alpha 3.ork"
+ORK = REPO_ROOT / "meta" / "ork" / "ESTES Alpha 3.ork"
 
 
 @pytest.mark.skipif(

@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 2554 m. The band top is 2,520 m, and 2554 - 2520 = 34 m still over it. Flight time is 176.1 s, under 200. Landing is 5.4 m/s and the section reached the ground. Rail exit is 25.8 m/s, thrust-to-weight is 18.1, and margin is 2.13 cal. Widening helped: 2701.4 - 2554 = 147 m. It needs one more step of drag.
-5. Fix: widen the airframe from 66 mm to 69 mm. Nose diameter matches. Everything else stays, including the 0.20 kg and both chutes.

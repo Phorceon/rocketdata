@@ -1,5 +1,0 @@
-2. Feasibility: The lookup resolves I205 to an AeroTech HP-I205W: 346 N*s, 204 N average, burn 1.68 s, diameter 0.029 m, length 0.305 m, mass 0.315 kg, delay 14 s. Class I, which is the Level 1 ceiling. A 38 mm tube fits the motor. The 14 s delay plus the 1.68 s burn is about 16 s to ejection.
-
-3. Size: Liftoff guess 0.50 kg. Thrust-to-weight is 204 / (0.50 * 9.81) = 41.6. Weight is 0.50 * 9.81 = 4.91 N, rail acceleration (204 - 4.91) / 0.50 = 398 m/s^2, exit speed sqrt(2 * 398 * 1.5) = 34.6 m/s. Chute for about 0.40 kg at 5 m/s: area 2 * 0.40 * 9.81 / (1.225 * 0.8 * 25) = 0.320 m^2, diameter sqrt(4 * 0.320 / pi) = 0.64 m. I will fly 0.75 m. One stage, four balsa fins.
-
-4. Draft: 38 mm cardboard, tube 0.62 m, ogive nose, AeroTech HP-I205W with a 14 s delay, 0.75 m chute. Wind 6.71 m/s, 1.5 m rail.

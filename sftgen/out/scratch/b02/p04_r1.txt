@@ -1,3 +1,0 @@
-1. Understand: A rocket for 9,000 ft. I read that as about 9,000 ft, within 5%. 9000 * 0.3048 = 2740 m. Nothing else is specified: no motor limit, no landing number, no wind. I assume a 1.5 m vertical rail, 2 m/s wind, sea level, and a 6 m/s landing limit. Single stage. The altitude is high, but it does not ask for staging.
-
-2. Feasibility: Drag-free burnout speed is sqrt(2 * 9.81 * 2740) = 232 m/s. With drag, that is a long-burn K in a narrow tube, not a short M. I need impulse, mass and diameter for a few 54 mm K motors before I commit.

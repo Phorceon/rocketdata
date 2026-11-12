@@ -10,8 +10,8 @@ numbers come from OpenRocket itself.
 ```python
 from scripts.or_headless import simulate
 
-simulate("ork/ESTES Alpha 3.ork")             # first simulation in the file
-simulate("ork/Skyshot.ork", "Simulation 5")   # by name
+simulate("meta/ork/ESTES Alpha 3.ork")             # first simulation in the file
+simulate("meta/ork/Skyshot.ork", "Simulation 5")   # by name
 ```
 
 It returns `apogee_m`, `max_velocity_ms`, `time_to_apogee_s`, `flight_time_s`,
@@ -60,7 +60,7 @@ are read — nothing system-wide is changed).
 Run one simulation from the command line:
 
 ```bash
-.venv/bin/python -m scripts.or_headless "ork/ESTES Alpha 3.ork"
+.venv/bin/python -m scripts.or_headless "meta/ork/ESTES Alpha 3.ork"
 ```
 
 ## Performance and known issues

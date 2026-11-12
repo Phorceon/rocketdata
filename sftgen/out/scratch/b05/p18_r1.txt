@@ -1,2 +1,0 @@
-1. Understand: apogee has to get above 225 m. That is a minimum, not a band. Motor class is C or below. One stage. The rod is 1 m, so every flight call uses a 1.0 m rail. Landing speed and wind are not stated. I assume 6 m/s and 2 m/s wind, vertical, sea level.
-2. Feasibility: 225 m with no drag is sqrt(2 * 9.81 * 225) = 66 m/s. A C can do that. The 1 m rod is the tight part, because a low-thrust C may leave the rod under 15 m/s. Looking up C6 and a higher-thrust C18.

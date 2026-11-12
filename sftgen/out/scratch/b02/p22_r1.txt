@@ -1,3 +1,0 @@
-1. Understand: Level 1, so class I at most, and the motor is fixed as an I205. Apogee must clear 2,000 ft. 2,000 * 0.3048 = 610 m, a floor. One stage. Wind is 15 mph. 15 * 0.447 = 6.71 m/s, and that goes in every simulation. Rail and site are not stated: 1.5 m vertical rail, sea level. Landing is not stated, so the 6 m/s gate applies.
-
-2. Feasibility: 610 m is a low floor for an I. Drag-free speed is sqrt(2 * 9.81 * 610) = 109 m/s. The motor is specified, so the airframe just has to be stable, come down under 6 m/s, and not be so draggy that it misses 610 m. Wind 6.71 m/s is under the 8.94 m/s gate. Looking up the I205.

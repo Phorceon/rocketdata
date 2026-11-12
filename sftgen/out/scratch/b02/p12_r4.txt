@@ -1,3 +1,0 @@
-4. Check: Apogee moved the right way. The simulator gives 645.4 m, still under 750 m. The fins did not. Margin fell from 0.69 cal to 0.58 cal. The plywood added tail mass and the CP gain did not keep up. Landing is 4.4 m/s. Rail exit is 26.9 m/s, thrust-to-weight 13.8. Ejection is at 10.4 s, after apogee at 9.57 s, and the canopy opens at 8.2 m/s. That is late, but the landing speed still passes.
-
-5. Fix: The failing value is margin 0.58 cal. More fin area made it worse, so this change is nose mass, not fins. One change: 0.06 kg of clay at the top of the tube. The G64W, the 54 mm tube and the chute stay. Altitude should stay under the ceiling.

@@ -1,5 +1,0 @@
-2. Feasibility: The lookup resolves K1200 to a Cesaroni 2014K1200-16A: 2008 N*s, 1190 N average, burn 1.69 s, diameter 0.054 m, length 0.404 m, mass 1.63 kg. The only listed delay is 16 s. Burning for 1.69 s plus 16 s would open well before a high apogee, so the motor flies plugged and the chute opens at apogee. That is the sensible altitude choice. The 54 mm motor fits a 60 mm airframe, under the 110 mm cap.
-
-3. Size: Liftoff guess 2.3 kg. Thrust-to-weight is 1190 / (2.3 * 9.81) = 52.7. Weight is 2.3 * 9.81 = 22.6 N, rail acceleration (1190 - 22.6) / 2.3 = 507 m/s^2, exit speed on the 2.5 m rail sqrt(2 * 507 * 2.5) = 50.3 m/s. Landing under 4.57 m/s. For about 1.32 kg at burnout and 4.2 m/s: area 2 * 1.32 * 9.81 / (1.225 * 0.8 * 17.6) = 1.51 m^2, diameter sqrt(4 * 1.51 / pi) = 1.39 m. I will fly 1.8 m so the landing stays under 4.57 m/s if the rocket is heavier than the guess.
-
-4. Draft: 60 mm fiberglass, 0.85 m tube, ogive nose, four fiberglass fins, Cesaroni K1200 plugged, 1.8 m chute at apogee. Rail 2.5 m, wind 2 m/s.

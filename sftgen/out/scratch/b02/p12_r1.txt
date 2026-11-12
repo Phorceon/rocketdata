@@ -1,3 +1,0 @@
-1. Understand: Ceiling, not a target. Apogee must stay under 750 m. Motor class H or smaller. Wind is 6 m/s, so that goes in every simulation. Rail, angle and site are not stated: 1.5 m vertical rail, sea level. Landing is not stated, so the 6 m/s gate applies. No diameter, no flight-time window. "Any ideas" means a practical single-stage rocket that clears the gates with margin under the ceiling, not a rocket tuned to kiss 750 m.
-
-2. Feasibility: 750 m is an easy ceiling for H and G motors if the airframe is not tiny. Drag-free speed for 750 m would be sqrt(2 * 9.81 * 750) = 121 m/s, but I want to land well below that, so a mid-size tube and a G-class motor is the conservative choice. Checking two candidates under H.

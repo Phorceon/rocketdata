@@ -1,3 +1,0 @@
-Infeasible: a P motor cannot meet the amateur impulse cap. Cesaroni 40960O8000-P is class P at 41125.3 N*s, about 165 N*s over the 40,960 N*s limit.
-The 100,000 ft altitude is moot, because that motor is not a legal flight.
-An O such as the 21041 N*s O3400 stays under the cap, and it is not a P.

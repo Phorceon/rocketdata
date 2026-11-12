@@ -1,3 +1,0 @@
-4. Check: The larger fins missed both ways. The simulator gives 2952.6 m, and (3,048 - 2952.6) / 3,048 = 3% under the 3,048 m floor. Margin only reached 0.94 cal, still under 1.0. Flight time is 214 s, inside 300 s. Landing is 4.2 m/s. Rail exit is 37.5 m/s, thrust-to-weight 42.5. The earlier smaller fins had the altitude and not the margin. Extra fin area at Mach 1.89 cost more altitude than it bought in calibers.
-
-5. Fix: Failing values are apogee 2952.6 m and margin 0.94 cal. The fin growth is the wrong knob. Fins go back to span 0.10 m and root 0.16 m, and 0.10 kg of clay goes at the top of the tube. That is a nose-mass fix on the rocket that was already above 3,048 m, not more fin. Both chutes, the K1200 and the 60 mm tube stay. Wind stays 5.36 m/s.

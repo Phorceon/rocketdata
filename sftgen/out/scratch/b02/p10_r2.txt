@@ -1,5 +1,0 @@
-2. Feasibility: The M1545 is 8,182 N*s, 1,547 N average, 5.29 s burn, 75 mm, 1.03 m long, loaded mass 7.88 kg, and its only delay is 0 s. It flies plugged, with the chute on an altimeter at apogee. That impulse in a near-minimum-diameter 75 mm airframe is the reasonable way to buy altitude. A fat 4 inch sport rocket would throw the height away.
-
-3. Size: Liftoff guess 11 kg. Thrust-to-weight is 1547 / (11 * 9.81) = 14.3. Weight is 11 * 9.81 = 108 N, rail acceleration (1547 - 108) / 11 = 131 m/s^2, exit speed on the 2.5 m rail sqrt(2 * 131 * 2.5) = 25.6 m/s. Burnout mass is roughly 6 kg once 4.8 kg of propellant is gone. A 2.5 m chute at Cd 0.8 should descend under 5.5 m/s. Fins around 1.5 calibers, four of them, so a 4 m/s wind does not need a huge static margin that weathervanes the whole flight.
-
-4. Draft: 86 mm fiberglass tube, 1.55 m long, ogive nose, four fiberglass fins, 75 mm mount, M1545 plugged, 2.5 m ripstop chute at apogee. Conditions: 4 m/s wind, 2.5 m rail.

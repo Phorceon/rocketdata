@@ -1,5 +1,0 @@
-2. Feasibility: K185W is 1,380 N*s over 7.1 s at 194 N, 54 mm, loaded mass 1.43 kg, propellant 0.83 kg, and the only delay is 0 s, so the chute has to be on an altimeter at apogee. K270W has 1,970 N*s but the motor weighs 2.1 kg and is 0.58 m long, which is a lot of tail mass for a 1.5 m rail. K550W is 1,620 N*s in 3 s, fast enough to spend the flight supersonic where fin drag gets expensive. The long K185W is the better match for about 2,740 m.
-
-3. Size: Liftoff guess 1.9 kg. Thrust-to-weight is 194 / (1.9 * 9.81) = 10.4. Weight is 1.9 * 9.81 = 18.6 N, rail acceleration (194 - 18.6) / 1.9 = 92.3 m/s^2, average rail exit sqrt(2 * 92.3 * 1.5) = 16.6 m/s. The 340 N spike should lift that over 15 m/s. Burnout mass is 1.9 - 0.83 = 1.07 kg. A 5 m/s descent needs 2 * 1.07 * 9.81 / (1.225 * 0.8 * 5^2) = 0.857 m^2, diameter sqrt(4 * 0.857 / 3.1416) = 1.04 m. I will use a 1.2 m chute so touchdown stays under 6 m/s.
-
-4. Draft: 60 mm blue tube, 0.85 m long, polystyrene ogive, four plywood fins with enough span to keep a 1.4 kg motor stable, 54 mm mount, 35 g altimeter, chute at apogee. Defaults: 1.5 m rail and 2 m/s wind.

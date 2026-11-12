@@ -6,59 +6,59 @@
  "exact_duplicate_rows": [
   {
    "dropped": "sft_0016",
-   "file": "ork/38MDL2__7e70a9.ork",
+   "file": "meta/ork/38MDL2__7e70a9.ork",
    "duplicate_of": "sft_0013",
-   "duplicate_of_file": "ork/38MDL1__2cbbf2.ork"
+   "duplicate_of_file": "meta/ork/38MDL1__2cbbf2.ork"
   },
   {
    "dropped": "sft_0017",
-   "file": "ork/38MDL2__7e70a9.ork",
+   "file": "meta/ork/38MDL2__7e70a9.ork",
    "duplicate_of": "sft_0014",
-   "duplicate_of_file": "ork/38MDL1__2cbbf2.ork"
+   "duplicate_of_file": "meta/ork/38MDL1__2cbbf2.ork"
   },
   {
    "dropped": "sft_0018",
-   "file": "ork/38MDL2__7e70a9.ork",
+   "file": "meta/ork/38MDL2__7e70a9.ork",
    "duplicate_of": "sft_0015",
-   "duplicate_of_file": "ork/38MDL1__2cbbf2.ork"
+   "duplicate_of_file": "meta/ork/38MDL1__2cbbf2.ork"
   }
  ],
  "merged_copies": [
   {
-   "a": "ork/38MDL1__2cbbf2.ork",
-   "b": "ork/38MDL2__7e70a9.ork",
+   "a": "meta/ork/38MDL1__2cbbf2.ork",
+   "b": "meta/ork/38MDL2__7e70a9.ork",
    "reason": "identical design JSON; identical stored sim outputs (apogee 1769.1 m, max velocity 341.3 m/s, flight time 96.1 s); related names ('38mdl1' ~ '38mdl2')"
   },
   {
-   "a": "ork/APEX 30.08.2021__10a283.ork",
-   "b": "ork/APEX__5761c9.ork",
+   "a": "meta/ork/APEX 30.08.2021__10a283.ork",
+   "b": "meta/ork/APEX__5761c9.ork",
    "reason": "identical stored sim outputs (apogee 2884.2 m, max velocity 364.9 m/s, flight time 131.6 s); related names ('apex' ~ 'apex'); design JSON differs in 46 lines (edited copy; its stored sim was not re-run)"
   },
   {
-   "a": "ork/ASTRA 13.06.2021__c8c6df.ork",
-   "b": "ork/ASTRA__c3425a.ork",
+   "a": "meta/ork/ASTRA 13.06.2021__c8c6df.ork",
+   "b": "meta/ork/ASTRA__c3425a.ork",
    "reason": "identical stored sim outputs (apogee 550.4 m, max velocity 95.6 m/s, flight time 30.1 s); related names ('astra' ~ 'astra'); design JSON differs in 14 lines (edited copy; its stored sim was not re-run)"
   },
   {
-   "a": "ork/ASTRA_08.03.21__1b3d83.ork",
-   "b": "ork/ASTRA_11.03.21__3ec349.ork",
+   "a": "meta/ork/ASTRA_08.03.21__1b3d83.ork",
+   "b": "meta/ork/ASTRA_11.03.21__3ec349.ork",
    "reason": "identical stored sim outputs (apogee 477.7 m, max velocity 103.4 m/s, flight time 54.0 s); related names ('astra' ~ 'astra'); design JSON differs in 6 lines (edited copy; its stored sim was not re-run)"
   },
   {
-   "a": "ork/ASTRA__bbbe1f.ork",
-   "b": "ork/ASTRAwFairing__1976e9.ork",
+   "a": "meta/ork/ASTRA__bbbe1f.ork",
+   "b": "meta/ork/ASTRAwFairing__1976e9.ork",
    "reason": "identical stored sim outputs (apogee 1243.9 m, max velocity 260.3 m/s, flight time 165.2 s); related names ('astra' ~ 'astrawfairing'); design JSON differs in 20 lines (edited copy; its stored sim was not re-run)"
   },
   {
-   "a": "ork/Siruis_O3800_CADmasses__44ad19.ork",
-   "b": "ork/Siruis_O3800__62b0d9.ork",
+   "a": "meta/ork/Siruis_O3800_CADmasses__44ad19.ork",
+   "b": "meta/ork/Siruis_O3800__62b0d9.ork",
    "reason": "identical stored sim outputs (apogee 8175.2 m, max velocity 595.7 m/s, flight time 87.6 s); related names ('siruiso3800cadmasses' ~ 'siruiso3800'); design JSON differs in 16 lines (edited copy; its stored sim was not re-run)"
   }
  ],
  "checked_not_merged": [
   {
-   "a": "ork/rocket__2ba66a.ork",
-   "b": "ork/rocket__f39723.ork",
+   "a": "meta/ork/rocket__2ba66a.ork",
+   "b": "meta/ork/rocket__f39723.ork",
    "reason": "share one rounded old prompt but sim outputs differ ((3036.4, 325.43, 48.495) vs (3041.0, 312.41, 212.56)); kept as separate designs"
   }
  ],
@@ -67,10 +67,10 @@
    "group_id": "g_two_stage_02",
    "family": "02twostage",
    "members": [
-    "ork/02.Two-stage.ork"
+    "meta/ork/02.Two-stage.ork"
    ],
    "ork_paths": {
-    "ork/02.Two-stage.ork": "ork/02.Two-stage.ork"
+    "meta/ork/02.Two-stage.ork": "meta/ork/02.Two-stage.ork"
    },
    "row_ids": [
     "sft_0001",
@@ -179,10 +179,10 @@
    "group_id": "g_three_stage_03",
    "family": "03threestage",
    "members": [
-    "ork/03.Three-stage.ork"
+    "meta/ork/03.Three-stage.ork"
    ],
    "ork_paths": {
-    "ork/03.Three-stage.ork": "ork/03.Three-stage.ork"
+    "meta/ork/03.Three-stage.ork": "meta/ork/03.Three-stage.ork"
    },
    "row_ids": [
     "sft_0004",
@@ -316,10 +316,10 @@
    "group_id": "g_rounded_spline_1",
    "family": "rounded",
    "members": [
-    "ork/1. Rounded Spline.ork"
+    "meta/ork/1. Rounded Spline.ork"
    ],
    "ork_paths": {
-    "ork/1. Rounded Spline.ork": "ork/1. Rounded Spline.ork"
+    "meta/ork/1. Rounded Spline.ork": "meta/ork/1. Rounded Spline.ork"
    },
    "row_ids": [
     "sft_0007",
@@ -401,10 +401,10 @@
    "group_id": "g_24mmrocket",
    "family": "mmrocket",
    "members": [
-    "ork/24mmRocket__bd6d71.ork"
+    "meta/ork/24mmRocket__bd6d71.ork"
    ],
    "ork_paths": {
-    "ork/24mmRocket__bd6d71.ork": "ork/24mmRocket.ork"
+    "meta/ork/24mmRocket__bd6d71.ork": "meta/ork/24mmRocket.ork"
    },
    "row_ids": [
     "sft_0010",
@@ -486,12 +486,12 @@
    "group_id": "g_38mdl1",
    "family": "38mdl1__2cbbf2",
    "members": [
-    "ork/38MDL1__2cbbf2.ork",
-    "ork/38MDL2__7e70a9.ork"
+    "meta/ork/38MDL1__2cbbf2.ork",
+    "meta/ork/38MDL2__7e70a9.ork"
    ],
    "ork_paths": {
-    "ork/38MDL1__2cbbf2.ork": "ork/38MDL1.ork",
-    "ork/38MDL2__7e70a9.ork": null
+    "meta/ork/38MDL1__2cbbf2.ork": "meta/ork/38MDL1.ork",
+    "meta/ork/38MDL2__7e70a9.ork": null
    },
    "row_ids": [
     "sft_0013",
@@ -576,10 +576,10 @@
    "group_id": "g_3d_printable_nose_cone_and_fins",
    "family": "3dprintablenoseconeandfins",
    "members": [
-    "ork/3D printable nose cone and fins.ork"
+    "meta/ork/3D printable nose cone and fins.ork"
    ],
    "ork_paths": {
-    "ork/3D printable nose cone and fins.ork": "ork/3D printable nose cone and fins.ork"
+    "meta/ork/3D printable nose cone and fins.ork": "meta/ork/3D printable nose cone and fins.ork"
    },
    "row_ids": [
     "sft_0019",
@@ -661,10 +661,10 @@
    "group_id": "g_54activeaero",
    "family": "activeaero",
    "members": [
-    "ork/54ActiveAero__89c085.ork"
+    "meta/ork/54ActiveAero__89c085.ork"
    ],
    "ork_paths": {
-    "ork/54ActiveAero__89c085.ork": "ork/54ActiveAero.ork"
+    "meta/ork/54ActiveAero__89c085.ork": "meta/ork/54ActiveAero.ork"
    },
    "row_ids": [
     "sft_0022",
@@ -746,10 +746,10 @@
    "group_id": "g_54mdl2",
    "family": "54mdl2__8d6955",
    "members": [
-    "ork/54MDL2__8d6955.ork"
+    "meta/ork/54MDL2__8d6955.ork"
    ],
    "ork_paths": {
-    "ork/54MDL2__8d6955.ork": "ork/54MDL2.ork"
+    "meta/ork/54MDL2__8d6955.ork": "meta/ork/54MDL2.ork"
    },
    "row_ids": [
     "sft_0025",
@@ -831,10 +831,10 @@
    "group_id": "g_54subminl3",
    "family": "subminl",
    "members": [
-    "ork/54SubminL3.ork"
+    "meta/ork/54SubminL3.ork"
    ],
    "ork_paths": {
-    "ork/54SubminL3.ork": "ork/54SubminL3.ork"
+    "meta/ork/54SubminL3.ork": "meta/ork/54SubminL3.ork"
    },
    "row_ids": [
     "sft_0028",
@@ -916,10 +916,10 @@
    "group_id": "g_75mdl3",
    "family": "75mdl3__2ff3c4",
    "members": [
-    "ork/75MDL3__2ff3c4.ork"
+    "meta/ork/75MDL3__2ff3c4.ork"
    ],
    "ork_paths": {
-    "ork/75MDL3__2ff3c4.ork": "ork/75MDL3.ork"
+    "meta/ork/75MDL3__2ff3c4.ork": "meta/ork/75MDL3.ork"
    },
    "row_ids": [
     "sft_0031",
@@ -1003,10 +1003,10 @@
    "group_id": "g_a_simple_model_rocket",
    "family": "asimplemodelrocket",
    "members": [
-    "ork/A simple model rocket.ork"
+    "meta/ork/A simple model rocket.ork"
    ],
    "ork_paths": {
-    "ork/A simple model rocket.ork": "ork/A simple model rocket.ork"
+    "meta/ork/A simple model rocket.ork": "meta/ork/A simple model rocket.ork"
    },
    "row_ids": [
     "sft_0034",
@@ -1088,10 +1088,10 @@
    "group_id": "g_aeolus_updated_weights",
    "family": "aeolus",
    "members": [
-    "ork/Aeolus_updated_weights.ork"
+    "meta/ork/Aeolus_updated_weights.ork"
    ],
    "ork_paths": {
-    "ork/Aeolus_updated_weights.ork": null
+    "meta/ork/Aeolus_updated_weights.ork": null
    },
    "row_ids": [
     "sft_0037",
@@ -1169,10 +1169,10 @@
    "group_id": "g_aerotech_arreaux",
    "family": "aerotecharreaux__ac75e5",
    "members": [
-    "ork/aerotech_arreaux__ac75e5.ork"
+    "meta/ork/aerotech_arreaux__ac75e5.ork"
    ],
    "ork_paths": {
-    "ork/aerotech_arreaux__ac75e5.ork": "ork/aerotech_arreaux_2.ork"
+    "meta/ork/aerotech_arreaux__ac75e5.ork": "meta/ork/aerotech_arreaux_2.ork"
    },
    "row_ids": [
     "sft_0040",
@@ -1254,10 +1254,10 @@
    "group_id": "g_airstart_timing",
    "family": "airstarttiming",
    "members": [
-    "ork/Airstart timing.ork"
+    "meta/ork/Airstart timing.ork"
    ],
    "ork_paths": {
-    "ork/Airstart timing.ork": "ork/Airstart timing.ork"
+    "meta/ork/Airstart timing.ork": "meta/ork/Airstart timing.ork"
    },
    "row_ids": [
     "sft_0043",
@@ -1374,10 +1374,10 @@
    "group_id": "g_apex_20102020_longer_bt",
    "family": "apex",
    "members": [
-    "ork/APEX 20102020 (Longer BT)__02ca07.ork"
+    "meta/ork/APEX 20102020 (Longer BT)__02ca07.ork"
    ],
    "ork_paths": {
-    "ork/APEX 20102020 (Longer BT)__02ca07.ork": "ork/APEX 20102020 (Longer BT).ork"
+    "meta/ork/APEX 20102020 (Longer BT)__02ca07.ork": "meta/ork/APEX 20102020 (Longer BT).ork"
    },
    "row_ids": [
     "sft_0049",
@@ -1459,10 +1459,10 @@
    "group_id": "g_apex_29_08_2021",
    "family": "apex",
    "members": [
-    "ork/APEX 29.08.2021__179543.ork"
+    "meta/ork/APEX 29.08.2021__179543.ork"
    ],
    "ork_paths": {
-    "ork/APEX 29.08.2021__179543.ork": "ork/APEX 29.08.2021.ork"
+    "meta/ork/APEX 29.08.2021__179543.ork": "meta/ork/APEX 29.08.2021.ork"
    },
    "row_ids": [
     "sft_0052",
@@ -1544,12 +1544,12 @@
    "group_id": "g_apex",
    "family": "apex",
    "members": [
-    "ork/APEX__5761c9.ork",
-    "ork/APEX 30.08.2021__10a283.ork"
+    "meta/ork/APEX__5761c9.ork",
+    "meta/ork/APEX 30.08.2021__10a283.ork"
    ],
    "ork_paths": {
-    "ork/APEX__5761c9.ork": "ork/APEX.ork",
-    "ork/APEX 30.08.2021__10a283.ork": "ork/APEX 30.08.2021.ork"
+    "meta/ork/APEX__5761c9.ork": "meta/ork/APEX.ork",
+    "meta/ork/APEX 30.08.2021__10a283.ork": "meta/ork/APEX 30.08.2021.ork"
    },
    "row_ids": [
     "sft_0055",
@@ -1634,10 +1634,10 @@
    "group_id": "g_apex_04_21",
    "family": "apex",
    "members": [
-    "ork/APEX_04.21__2a660f.ork"
+    "meta/ork/APEX_04.21__2a660f.ork"
    ],
    "ork_paths": {
-    "ork/APEX_04.21__2a660f.ork": "ork/APEX_04:21.ork"
+    "meta/ork/APEX_04.21__2a660f.ork": "meta/ork/APEX_04:21.ork"
    },
    "row_ids": [
     "sft_0046",
@@ -1719,10 +1719,10 @@
    "group_id": "g_apex_4f8fe7",
    "family": "apex",
    "members": [
-    "ork/APEX__4f8fe7.ork"
+    "meta/ork/APEX__4f8fe7.ork"
    ],
    "ork_paths": {
-    "ork/APEX__4f8fe7.ork": "ork/APEX.ork"
+    "meta/ork/APEX__4f8fe7.ork": "meta/ork/APEX.ork"
    },
    "row_ids": [
     "sft_0061",
@@ -1806,10 +1806,10 @@
    "group_id": "g_apex_bf43c5",
    "family": "apex",
    "members": [
-    "ork/APEX__bf43c5.ork"
+    "meta/ork/APEX__bf43c5.ork"
    ],
    "ork_paths": {
-    "ork/APEX__bf43c5.ork": "ork/APEX_1.ork"
+    "meta/ork/APEX__bf43c5.ork": "meta/ork/APEX_1.ork"
    },
    "row_ids": [
     "sft_0067",
@@ -1891,10 +1891,10 @@
    "group_id": "g_apex_aerotech",
    "family": "apex",
    "members": [
-    "ork/APEX_AeroTech__c07a5a.ork"
+    "meta/ork/APEX_AeroTech__c07a5a.ork"
    ],
    "ork_paths": {
-    "ork/APEX_AeroTech__c07a5a.ork": "ork/APEX_AeroTech.ork"
+    "meta/ork/APEX_AeroTech__c07a5a.ork": "meta/ork/APEX_AeroTech.ork"
    },
    "row_ids": [
     "sft_0064",
@@ -1976,10 +1976,10 @@
    "group_id": "g_apex_cesaroni",
    "family": "apex",
    "members": [
-    "ork/APEX_Cesaroni__c75b0f.ork"
+    "meta/ork/APEX_Cesaroni__c75b0f.ork"
    ],
    "ork_paths": {
-    "ork/APEX_Cesaroni__c75b0f.ork": "ork/APEX_Cesaroni.ork"
+    "meta/ork/APEX_Cesaroni__c75b0f.ork": "meta/ork/APEX_Cesaroni.ork"
    },
    "row_ids": [
     "sft_0070",
@@ -2061,10 +2061,10 @@
    "group_id": "g_apex_k_dart",
    "family": "apex",
    "members": [
-    "ork/APEX_K_Dart__a7a1a4.ork"
+    "meta/ork/APEX_K_Dart__a7a1a4.ork"
    ],
    "ork_paths": {
-    "ork/APEX_K_Dart__a7a1a4.ork": "ork/APEX_K_Dart.ork"
+    "meta/ork/APEX_K_Dart__a7a1a4.ork": "meta/ork/APEX_K_Dart.ork"
    },
    "row_ids": [
     "sft_0073",
@@ -2148,10 +2148,10 @@
    "group_id": "g_apex_k_ss",
    "family": "apex",
    "members": [
-    "ork/APEX_K_SS__cb1d67.ork"
+    "meta/ork/APEX_K_SS__cb1d67.ork"
    ],
    "ork_paths": {
-    "ork/APEX_K_SS__cb1d67.ork": "ork/APEX_K_SS.ork"
+    "meta/ork/APEX_K_SS__cb1d67.ork": "meta/ork/APEX_K_SS.ork"
    },
    "row_ids": [
     "sft_0076",
@@ -2235,10 +2235,10 @@
    "group_id": "g_apex_target",
    "family": "apex",
    "members": [
-    "ork/APEX_Target__4ae962.ork"
+    "meta/ork/APEX_Target__4ae962.ork"
    ],
    "ork_paths": {
-    "ork/APEX_Target__4ae962.ork": "ork/APEX_Target.ork"
+    "meta/ork/APEX_Target__4ae962.ork": "meta/ork/APEX_Target.ork"
    },
    "row_ids": [
     "sft_0079",
@@ -2320,10 +2320,10 @@
    "group_id": "g_apexjtentative",
    "family": "apexjtentative",
    "members": [
-    "ork/APEXJTentative__ec5252.ork"
+    "meta/ork/APEXJTentative__ec5252.ork"
    ],
    "ork_paths": {
-    "ork/APEXJTentative__ec5252.ork": "ork/APEXJTentative.ork"
+    "meta/ork/APEXJTentative__ec5252.ork": "meta/ork/APEXJTentative.ork"
    },
    "row_ids": [
     "sft_0082",
@@ -2405,10 +2405,10 @@
    "group_id": "g_arc_payload_rocket",
    "family": "arcpayloadrocket",
    "members": [
-    "ork/ARC payload rocket.ork"
+    "meta/ork/ARC payload rocket.ork"
    ],
    "ork_paths": {
-    "ork/ARC payload rocket.ork": "ork/ARC payload rocket.ork"
+    "meta/ork/ARC payload rocket.ork": "meta/ork/ARC payload rocket.ork"
    },
    "row_ids": [
     "sft_0085",
@@ -2490,10 +2490,10 @@
    "group_id": "g_argonia_3p120od_k160_p_sim_9_22_24",
    "family": "argonia",
    "members": [
-    "ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork"
+    "meta/ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork"
    ],
    "ork_paths": {
-    "ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork": "ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork"
+    "meta/ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork": "meta/ork/Argonia_3p120OD_K160-P_SIM_9-22-24.ork"
    },
    "row_ids": [
     "sft_0088",
@@ -2602,10 +2602,10 @@
    "group_id": "g_ascension",
    "family": "ascension",
    "members": [
-    "ork/ASCENSION__269a6b.ork"
+    "meta/ork/ASCENSION__269a6b.ork"
    ],
    "ork_paths": {
-    "ork/ASCENSION__269a6b.ork": "ork/ASCENSION.ork"
+    "meta/ork/ASCENSION__269a6b.ork": "meta/ork/ASCENSION.ork"
    },
    "row_ids": [
     "sft_0091",
@@ -2687,10 +2687,10 @@
    "group_id": "g_ascension_f5b937",
    "family": "ascension",
    "members": [
-    "ork/ASCENSION__f5b937.ork"
+    "meta/ork/ASCENSION__f5b937.ork"
    ],
    "ork_paths": {
-    "ork/ASCENSION__f5b937.ork": "ork/ASCENSION_1.ork"
+    "meta/ork/ASCENSION__f5b937.ork": "meta/ork/ASCENSION_1.ork"
    },
    "row_ids": [
     "sft_0094",
@@ -2772,10 +2772,10 @@
    "group_id": "g_astra_11_04_2021",
    "family": "astra",
    "members": [
-    "ork/ASTRA 11.04.2021__f71068.ork"
+    "meta/ork/ASTRA 11.04.2021__f71068.ork"
    ],
    "ork_paths": {
-    "ork/ASTRA 11.04.2021__f71068.ork": "ork/ASTRA 11.04.2021.ork"
+    "meta/ork/ASTRA 11.04.2021__f71068.ork": "meta/ork/ASTRA 11.04.2021.ork"
    },
    "row_ids": [
     "sft_0103",
@@ -2857,12 +2857,12 @@
    "group_id": "g_astra",
    "family": "astra",
    "members": [
-    "ork/ASTRA__c3425a.ork",
-    "ork/ASTRA 13.06.2021__c8c6df.ork"
+    "meta/ork/ASTRA__c3425a.ork",
+    "meta/ork/ASTRA 13.06.2021__c8c6df.ork"
    ],
    "ork_paths": {
-    "ork/ASTRA__c3425a.ork": "ork/ASTRA_1.ork",
-    "ork/ASTRA 13.06.2021__c8c6df.ork": "ork/ASTRA 13.06.2021.ork"
+    "meta/ork/ASTRA__c3425a.ork": "meta/ork/ASTRA_1.ork",
+    "meta/ork/ASTRA 13.06.2021__c8c6df.ork": "meta/ork/ASTRA 13.06.2021.ork"
    },
    "row_ids": [
     "sft_0106",
@@ -2947,12 +2947,12 @@
    "group_id": "g_astra_08_03_21",
    "family": "astra",
    "members": [
-    "ork/ASTRA_08.03.21__1b3d83.ork",
-    "ork/ASTRA_11.03.21__3ec349.ork"
+    "meta/ork/ASTRA_08.03.21__1b3d83.ork",
+    "meta/ork/ASTRA_11.03.21__3ec349.ork"
    ],
    "ork_paths": {
-    "ork/ASTRA_08.03.21__1b3d83.ork": "ork/ASTRA_08.03.21.ork",
-    "ork/ASTRA_11.03.21__3ec349.ork": "ork/ASTRA_11.03.21.ork"
+    "meta/ork/ASTRA_08.03.21__1b3d83.ork": "meta/ork/ASTRA_08.03.21.ork",
+    "meta/ork/ASTRA_11.03.21__3ec349.ork": "meta/ork/ASTRA_11.03.21.ork"
    },
    "row_ids": [
     "sft_0097",
@@ -3037,12 +3037,12 @@
    "group_id": "g_astra_bbbe1f",
    "family": "astra",
    "members": [
-    "ork/ASTRA__bbbe1f.ork",
-    "ork/ASTRAwFairing__1976e9.ork"
+    "meta/ork/ASTRA__bbbe1f.ork",
+    "meta/ork/ASTRAwFairing__1976e9.ork"
    ],
    "ork_paths": {
-    "ork/ASTRA__bbbe1f.ork": "ork/ASTRA.ork",
-    "ork/ASTRAwFairing__1976e9.ork": "ork/ASTRAwFairing.ork"
+    "meta/ork/ASTRA__bbbe1f.ork": "meta/ork/ASTRA.ork",
+    "meta/ork/ASTRAwFairing__1976e9.ork": "meta/ork/ASTRAwFairing.ork"
    },
    "row_ids": [
     "sft_0115",
@@ -3127,10 +3127,10 @@
    "group_id": "g_astra_v1",
    "family": "astra",
    "members": [
-    "ork/ASTRA_V1__36e356.ork"
+    "meta/ork/ASTRA_V1__36e356.ork"
    ],
    "ork_paths": {
-    "ork/ASTRA_V1__36e356.ork": "ork/ASTRA_V1.ork"
+    "meta/ork/ASTRA_V1__36e356.ork": "meta/ork/ASTRA_V1.ork"
    },
    "row_ids": [
     "sft_0112",
@@ -3212,10 +3212,10 @@
    "group_id": "g_astron_drifter",
    "family": "astron",
    "members": [
-    "ork/astron drifter.ork"
+    "meta/ork/astron drifter.ork"
    ],
    "ork_paths": {
-    "ork/astron drifter.ork": "ork/astron drifter.ork"
+    "meta/ork/astron drifter.ork": "meta/ork/astron drifter.ork"
    },
    "row_ids": [
     "sft_0121",
@@ -3297,10 +3297,10 @@
    "group_id": "g_base_drag_hack_short_wide",
    "family": "basedraghackshortwide",
    "members": [
-    "ork/Base drag hack (short-wide).ork"
+    "meta/ork/Base drag hack (short-wide).ork"
    ],
    "ork_paths": {
-    "ork/Base drag hack (short-wide).ork": "ork/Base drag hack (short-wide).ork"
+    "meta/ork/Base drag hack (short-wide).ork": "meta/ork/Base drag hack (short-wide).ork"
    },
    "row_ids": [
     "sft_0124",
@@ -3382,10 +3382,10 @@
    "group_id": "g_baseline_rocket",
    "family": "baselinerocket",
    "members": [
-    "ork/baseline_rocket.ork"
+    "meta/ork/baseline_rocket.ork"
    ],
    "ork_paths": {
-    "ork/baseline_rocket.ork": "ork/baseline_rocket.ork"
+    "meta/ork/baseline_rocket.ork": "meta/ork/baseline_rocket.ork"
    },
    "row_ids": [
     "sft_0127",
@@ -3467,10 +3467,10 @@
    "group_id": "g_bigheavy1_simulation",
    "family": "bigheavy",
    "members": [
-    "ork/BigHeavy1_simulation.ork"
+    "meta/ork/BigHeavy1_simulation.ork"
    ],
    "ork_paths": {
-    "ork/BigHeavy1_simulation.ork": null
+    "meta/ork/BigHeavy1_simulation.ork": null
    },
    "row_ids": [
     "sft_0130",
@@ -3546,10 +3546,10 @@
    "group_id": "g_borealisa8_10_final",
    "family": "borealisa",
    "members": [
-    "ork/BorealisA8-10_FINAL.ork"
+    "meta/ork/BorealisA8-10_FINAL.ork"
    ],
    "ork_paths": {
-    "ork/BorealisA8-10_FINAL.ork": "ork/BorealisA8-10_FINAL.ork"
+    "meta/ork/BorealisA8-10_FINAL.ork": "meta/ork/BorealisA8-10_FINAL.ork"
    },
    "row_ids": [
     "sft_0133",
@@ -3631,10 +3631,10 @@
    "group_id": "g_chute_release",
    "family": "chuterelease",
    "members": [
-    "ork/Chute release.ork"
+    "meta/ork/Chute release.ork"
    ],
    "ork_paths": {
-    "ork/Chute release.ork": "ork/Chute release.ork"
+    "meta/ork/Chute release.ork": "meta/ork/Chute release.ork"
    },
    "row_ids": [
     "sft_0136",
@@ -3716,10 +3716,10 @@
    "group_id": "g_clustered_motors",
    "family": "clusteredmotors",
    "members": [
-    "ork/Clustered motors.ork"
+    "meta/ork/Clustered motors.ork"
    ],
    "ork_paths": {
-    "ork/Clustered motors.ork": "ork/Clustered motors.ork"
+    "meta/ork/Clustered motors.ork": "meta/ork/Clustered motors.ork"
    },
    "row_ids": [
     "sft_0139",
@@ -3822,10 +3822,10 @@
    "group_id": "g_comet_chaser",
    "family": "comet",
    "members": [
-    "ork/Comet Chaser.ork"
+    "meta/ork/Comet Chaser.ork"
    ],
    "ork_paths": {
-    "ork/Comet Chaser.ork": "ork/Comet Chaser.ork"
+    "meta/ork/Comet Chaser.ork": "meta/ork/Comet Chaser.ork"
    },
    "row_ids": [
     "sft_0142",
@@ -3907,10 +3907,10 @@
    "group_id": "g_czech_rocket_challenge_2025_raketa",
    "family": "czech",
    "members": [
-    "ork/czech-rocket-challenge-2025__Raketa.ork"
+    "meta/ork/czech-rocket-challenge-2025__Raketa.ork"
    ],
    "ork_paths": {
-    "ork/czech-rocket-challenge-2025__Raketa.ork": "ork/czech-rocket-challenge-2025__Raketa.ork"
+    "meta/ork/czech-rocket-challenge-2025__Raketa.ork": "meta/ork/czech-rocket-challenge-2025__Raketa.ork"
    },
    "row_ids": [
     "sft_0145",
@@ -3988,10 +3988,10 @@
    "group_id": "g_darkmatter2",
    "family": "darkmatter",
    "members": [
-    "ork/DarkMatter2.ork"
+    "meta/ork/DarkMatter2.ork"
    ],
    "ork_paths": {
-    "ork/DarkMatter2.ork": "ork/DarkMatter2.ork"
+    "meta/ork/DarkMatter2.ork": "meta/ork/DarkMatter2.ork"
    },
    "row_ids": [
     "sft_0148",
@@ -4073,10 +4073,10 @@
    "group_id": "g_darkstar_mini_1",
    "family": "darkstar",
    "members": [
-    "ork/DarkStar_Mini[1].ork"
+    "meta/ork/DarkStar_Mini[1].ork"
    ],
    "ork_paths": {
-    "ork/DarkStar_Mini[1].ork": "ork/DarkStar_Mini[1].ork"
+    "meta/ork/DarkStar_Mini[1].ork": "meta/ork/DarkStar_Mini[1].ork"
    },
    "row_ids": [
     "sft_0151",
@@ -4158,10 +4158,10 @@
    "group_id": "g_demo_payload_separation",
    "family": "demopayloadseparation",
    "members": [
-    "ork/demo-payload-separation.ork"
+    "meta/ork/demo-payload-separation.ork"
    ],
    "ork_paths": {
-    "ork/demo-payload-separation.ork": "ork/demo-payload-separation.ork"
+    "meta/ork/demo-payload-separation.ork": "meta/ork/demo-payload-separation.ork"
    },
    "row_ids": [
     "sft_0154",
@@ -4243,10 +4243,10 @@
    "group_id": "g_deployable_payload",
    "family": "deployablepayload",
    "members": [
-    "ork/Deployable payload.ork"
+    "meta/ork/Deployable payload.ork"
    ],
    "ork_paths": {
-    "ork/Deployable payload.ork": "ork/Deployable payload.ork"
+    "meta/ork/Deployable payload.ork": "meta/ork/Deployable payload.ork"
    },
    "row_ids": [
     "sft_0157",
@@ -4328,10 +4328,10 @@
    "group_id": "g_dual_parachute_deployment",
    "family": "dualparachutedeployment",
    "members": [
-    "ork/Dual parachute deployment.ork"
+    "meta/ork/Dual parachute deployment.ork"
    ],
    "ork_paths": {
-    "ork/Dual parachute deployment.ork": "ork/Dual parachute deployment.ork"
+    "meta/ork/Dual parachute deployment.ork": "meta/ork/Dual parachute deployment.ork"
    },
    "row_ids": [
     "sft_0160",
@@ -4413,10 +4413,10 @@
    "group_id": "g_endurance",
    "family": "endurance",
    "members": [
-    "ork/endurance.ork"
+    "meta/ork/endurance.ork"
    ],
    "ork_paths": {
-    "ork/endurance.ork": "ork/endurance.ork"
+    "meta/ork/endurance.ork": "meta/ork/endurance.ork"
    },
    "row_ids": [
     "sft_0166",
@@ -4498,10 +4498,10 @@
    "group_id": "g_estes_alpha_3",
    "family": "estesalpha3",
    "members": [
-    "ork/ESTES Alpha 3.ork"
+    "meta/ork/ESTES Alpha 3.ork"
    ],
    "ork_paths": {
-    "ork/ESTES Alpha 3.ork": "ork/ESTES Alpha 3.ork"
+    "meta/ork/ESTES Alpha 3.ork": "meta/ork/ESTES Alpha 3.ork"
    },
    "row_ids": [
     "sft_0172",
@@ -4583,10 +4583,10 @@
    "group_id": "g_estes_impulse",
    "family": "estesimpulse",
    "members": [
-    "ork/Estes Impulse.ork"
+    "meta/ork/Estes Impulse.ork"
    ],
    "ork_paths": {
-    "ork/Estes Impulse.ork": "ork/Estes Impulse.ork"
+    "meta/ork/Estes Impulse.ork": "meta/ork/Estes Impulse.ork"
    },
    "row_ids": [
     "sft_0193",
@@ -4675,10 +4675,10 @@
    "group_id": "g_estes_wizard",
    "family": "esteswizard",
    "members": [
-    "ork/Estes Wizard.ork"
+    "meta/ork/Estes Wizard.ork"
    ],
    "ork_paths": {
-    "ork/Estes Wizard.ork": "ork/Estes Wizard.ork"
+    "meta/ork/Estes Wizard.ork": "meta/ork/Estes Wizard.ork"
    },
    "row_ids": [
     "sft_0208",
@@ -4762,10 +4762,10 @@
    "group_id": "g_estes_007275_sterling_silver",
    "family": "estes007275sterlingsilver",
    "members": [
-    "ork/estes-007275–STERLING_SILVER.ork"
+    "meta/ork/estes-007275–STERLING_SILVER.ork"
    ],
    "ork_paths": {
-    "ork/estes-007275–STERLING_SILVER.ork": "ork/estes-007275–STERLING_SILVER.ork"
+    "meta/ork/estes-007275–STERLING_SILVER.ork": "meta/ork/estes-007275–STERLING_SILVER.ork"
    },
    "row_ids": [
     "sft_0169",
@@ -4872,10 +4872,10 @@
    "group_id": "g_estes_alpha_vi_1958",
    "family": "estesalphavi1958",
    "members": [
-    "ork/estes_alpha_vi_1958.ork"
+    "meta/ork/estes_alpha_vi_1958.ork"
    ],
    "ork_paths": {
-    "ork/estes_alpha_vi_1958.ork": "ork/estes_alpha_vi_1958.ork"
+    "meta/ork/estes_alpha_vi_1958.ork": "meta/ork/estes_alpha_vi_1958.ork"
    },
    "row_ids": [
     "sft_0175",
@@ -4957,10 +4957,10 @@
    "group_id": "g_estes_antar_7310",
    "family": "estesantar7310",
    "members": [
-    "ork/estes_antar_7310.ork"
+    "meta/ork/estes_antar_7310.ork"
    ],
    "ork_paths": {
-    "ork/estes_antar_7310.ork": "ork/estes_antar_7310.ork"
+    "meta/ork/estes_antar_7310.ork": "meta/ork/estes_antar_7310.ork"
    },
    "row_ids": [
     "sft_0178",
@@ -5042,10 +5042,10 @@
    "group_id": "g_estes_big_bertha",
    "family": "estesbigbertha",
    "members": [
-    "ork/estes_big_bertha.ork"
+    "meta/ork/estes_big_bertha.ork"
    ],
    "ork_paths": {
-    "ork/estes_big_bertha.ork": "ork/estes_big_bertha.ork"
+    "meta/ork/estes_big_bertha.ork": "meta/ork/estes_big_bertha.ork"
    },
    "row_ids": [
     "sft_0181",
@@ -5127,10 +5127,10 @@
    "group_id": "g_estes_boosted_bertha_1946",
    "family": "estesboostedbertha1946",
    "members": [
-    "ork/estes_boosted_bertha_1946.ork"
+    "meta/ork/estes_boosted_bertha_1946.ork"
    ],
    "ork_paths": {
-    "ork/estes_boosted_bertha_1946.ork": "ork/estes_boosted_bertha_1946.ork"
+    "meta/ork/estes_boosted_bertha_1946.ork": "meta/ork/estes_boosted_bertha_1946.ork"
    },
    "row_ids": [
     "sft_0184",
@@ -5237,10 +5237,10 @@
    "group_id": "g_estes_boosted_bertha_1946_mod24",
    "family": "estesboostedbertha1946",
    "members": [
-    "ork/estes_boosted_bertha_1946_mod24.ork"
+    "meta/ork/estes_boosted_bertha_1946_mod24.ork"
    ],
    "ork_paths": {
-    "ork/estes_boosted_bertha_1946_mod24.ork": "ork/estes_boosted_bertha_1946_mod24.ork"
+    "meta/ork/estes_boosted_bertha_1946_mod24.ork": "meta/ork/estes_boosted_bertha_1946_mod24.ork"
    },
    "row_ids": [
     "sft_0187",
@@ -5349,10 +5349,10 @@
    "group_id": "g_estes_explorer_aquarius_2016_7253",
    "family": "estesexploreraquarius2053",
    "members": [
-    "ork/estes_explorer_aquarius_2016-7253.ork"
+    "meta/ork/estes_explorer_aquarius_2016-7253.ork"
    ],
    "ork_paths": {
-    "ork/estes_explorer_aquarius_2016-7253.ork": "ork/estes_explorer_aquarius_2016-7253.ork"
+    "meta/ork/estes_explorer_aquarius_2016-7253.ork": "meta/ork/estes_explorer_aquarius_2016-7253.ork"
    },
    "row_ids": [
     "sft_0190",
@@ -5434,10 +5434,10 @@
    "group_id": "g_estes_mark2",
    "family": "estesmark2",
    "members": [
-    "ork/Estes_Mark2.ork"
+    "meta/ork/Estes_Mark2.ork"
    ],
    "ork_paths": {
-    "ork/Estes_Mark2.ork": "ork/Estes_Mark2.ork"
+    "meta/ork/Estes_Mark2.ork": "meta/ork/Estes_Mark2.ork"
    },
    "row_ids": [
     "sft_0196",
@@ -5519,10 +5519,10 @@
    "group_id": "g_estes_patriot",
    "family": "estespatriot",
    "members": [
-    "ork/estes_patriot.ork"
+    "meta/ork/estes_patriot.ork"
    ],
    "ork_paths": {
-    "ork/estes_patriot.ork": "ork/estes_patriot.ork"
+    "meta/ork/estes_patriot.ork": "meta/ork/estes_patriot.ork"
    },
    "row_ids": [
     "sft_0199",
@@ -5604,10 +5604,10 @@
    "group_id": "g_estes_rubicon_2189",
    "family": "estesrubicon2189",
    "members": [
-    "ork/estes_rubicon_2189.ork"
+    "meta/ork/estes_rubicon_2189.ork"
    ],
    "ork_paths": {
-    "ork/estes_rubicon_2189.ork": "ork/estes_rubicon_2189.ork"
+    "meta/ork/estes_rubicon_2189.ork": "meta/ork/estes_rubicon_2189.ork"
    },
    "row_ids": [
     "sft_0202",
@@ -5689,10 +5689,10 @@
    "group_id": "g_estes_sky_raider",
    "family": "estesskyraider",
    "members": [
-    "ork/estes_sky_raider.ork"
+    "meta/ork/estes_sky_raider.ork"
    ],
    "ork_paths": {
-    "ork/estes_sky_raider.ork": "ork/estes_sky_raider.ork"
+    "meta/ork/estes_sky_raider.ork": "meta/ork/estes_sky_raider.ork"
    },
    "row_ids": [
     "sft_0205",
@@ -5774,10 +5774,10 @@
    "group_id": "g_example_rocket",
    "family": "examplerocket",
    "members": [
-    "ork/Example Rocket.ork"
+    "meta/ork/Example Rocket.ork"
    ],
    "ork_paths": {
-    "ork/Example Rocket.ork": "ork/Example Rocket.ork"
+    "meta/ork/Example Rocket.ork": "meta/ork/Example Rocket.ork"
    },
    "row_ids": [
     "sft_0211",
@@ -5859,10 +5859,10 @@
    "group_id": "g_falconheavey",
    "family": "falconheavey",
    "members": [
-    "ork/falconHeavey.ork"
+    "meta/ork/falconHeavey.ork"
    ],
    "ork_paths": {
-    "ork/falconHeavey.ork": "ork/falconHeavey.ork"
+    "meta/ork/falconHeavey.ork": "meta/ork/falconHeavey.ork"
    },
    "row_ids": [
     "sft_0214",
@@ -5944,10 +5944,10 @@
    "group_id": "g_final_rocket_design_2",
    "family": "finalrocketdesign2",
    "members": [
-    "ork/Final rocket design 2.ork"
+    "meta/ork/Final rocket design 2.ork"
    ],
    "ork_paths": {
-    "ork/Final rocket design 2.ork": "ork/Final rocket design 2.ork"
+    "meta/ork/Final rocket design 2.ork": "meta/ork/Final rocket design 2.ork"
    },
    "row_ids": [
     "sft_0217",
@@ -6029,10 +6029,10 @@
    "group_id": "g_flipflyer",
    "family": "flipflyer",
    "members": [
-    "ork/FlipFlyer.ork"
+    "meta/ork/FlipFlyer.ork"
    ],
    "ork_paths": {
-    "ork/FlipFlyer.ork": "ork/FlipFlyer.ork"
+    "meta/ork/FlipFlyer.ork": "meta/ork/FlipFlyer.ork"
    },
    "row_ids": [
     "sft_0220",
@@ -6114,10 +6114,10 @@
    "group_id": "g_fred_v_2_3",
    "family": "fred",
    "members": [
-    "ork/FRED_v_2.3.ork"
+    "meta/ork/FRED_v_2.3.ork"
    ],
    "ork_paths": {
-    "ork/FRED_v_2.3.ork": "ork/FRED_v_2.3.ork"
+    "meta/ork/FRED_v_2.3.ork": "meta/ork/FRED_v_2.3.ork"
    },
    "row_ids": [
     "sft_0223",
@@ -6201,10 +6201,10 @@
    "group_id": "g_gabrielpresley_arrow",
    "family": "gabrielpresley",
    "members": [
-    "ork/GabrielPresley_arrow.ork"
+    "meta/ork/GabrielPresley_arrow.ork"
    ],
    "ork_paths": {
-    "ork/GabrielPresley_arrow.ork": null
+    "meta/ork/GabrielPresley_arrow.ork": null
    },
    "row_ids": [
     "sft_0226",
@@ -6280,10 +6280,10 @@
    "group_id": "g_k2050sim",
    "family": "k2050sim__2ffdfd",
    "members": [
-    "ork/K2050Sim__2ffdfd.ork"
+    "meta/ork/K2050Sim__2ffdfd.ork"
    ],
    "ork_paths": {
-    "ork/K2050Sim__2ffdfd.ork": null
+    "meta/ork/K2050Sim__2ffdfd.ork": null
    },
    "row_ids": [
     "sft_0229",
@@ -6359,10 +6359,10 @@
    "group_id": "g_l1_example",
    "family": "l1example__2358ed",
    "members": [
-    "ork/L1 Example__2358ed.ork"
+    "meta/ork/L1 Example__2358ed.ork"
    ],
    "ork_paths": {
-    "ork/L1 Example__2358ed.ork": "ork/L1 Example.ork"
+    "meta/ork/L1 Example__2358ed.ork": "meta/ork/L1 Example.ork"
    },
    "row_ids": [
     "sft_0232",
@@ -6444,10 +6444,10 @@
    "group_id": "g_l2_cert",
    "family": "l2cert",
    "members": [
-    "ork/l2_cert.ork"
+    "meta/ork/l2_cert.ork"
    ],
    "ork_paths": {
-    "ork/l2_cert.ork": null
+    "meta/ork/l2_cert.ork": null
    },
    "row_ids": [
     "sft_0235",
@@ -6523,10 +6523,10 @@
    "group_id": "g_locprecision_starburst_pk_28",
    "family": "locprecision",
    "members": [
-    "ork/locprecision_starburst_pk-28.ork"
+    "meta/ork/locprecision_starburst_pk-28.ork"
    ],
    "ork_paths": {
-    "ork/locprecision_starburst_pk-28.ork": "ork/locprecision_starburst_pk-28.ork"
+    "meta/ork/locprecision_starburst_pk-28.ork": "meta/ork/locprecision_starburst_pk-28.ork"
    },
    "row_ids": [
     "sft_0238",
@@ -6615,10 +6615,10 @@
    "group_id": "g_mockupofascension_stabilityissue",
    "family": "mockupofascension",
    "members": [
-    "ork/MockUpofASCENSION(StabilityIssue).ork"
+    "meta/ork/MockUpofASCENSION(StabilityIssue).ork"
    ],
    "ork_paths": {
-    "ork/MockUpofASCENSION(StabilityIssue).ork": "ork/MockUpofASCENSION(StabilityIssue).ork"
+    "meta/ork/MockUpofASCENSION(StabilityIssue).ork": "meta/ork/MockUpofASCENSION(StabilityIssue).ork"
    },
    "row_ids": [
     "sft_0241",
@@ -6700,10 +6700,10 @@
    "group_id": "g_mojave_sphinx_v1_2",
    "family": "mojave",
    "members": [
-    "ork/Mojave Sphinx V1.2__c1c8d9.ork"
+    "meta/ork/Mojave Sphinx V1.2__c1c8d9.ork"
    ],
    "ork_paths": {
-    "ork/Mojave Sphinx V1.2__c1c8d9.ork": "ork/Mojave Sphinx V1.2.ork"
+    "meta/ork/Mojave Sphinx V1.2__c1c8d9.ork": "meta/ork/Mojave Sphinx V1.2.ork"
    },
    "row_ids": [
     "sft_0244",
@@ -6782,10 +6782,10 @@
    "group_id": "g_myles_l1",
    "family": "myles",
    "members": [
-    "ork/Myles_L1.ork"
+    "meta/ork/Myles_L1.ork"
    ],
    "ork_paths": {
-    "ork/Myles_L1.ork": "ork/Myles_L1.ork"
+    "meta/ork/Myles_L1.ork": "meta/ork/Myles_L1.ork"
    },
    "row_ids": [
     "sft_0247",
@@ -6867,10 +6867,10 @@
    "group_id": "g_nasa_rocket_v1",
    "family": "nasa",
    "members": [
-    "ork/NASA_Rocket_V1.ork"
+    "meta/ork/NASA_Rocket_V1.ork"
    ],
    "ork_paths": {
-    "ork/NASA_Rocket_V1.ork": "ork/NASA_Rocket_V1.ork"
+    "meta/ork/NASA_Rocket_V1.ork": "meta/ork/NASA_Rocket_V1.ork"
    },
    "row_ids": [
     "sft_0250",
@@ -6952,10 +6952,10 @@
    "group_id": "g_navya_l1",
    "family": "navya",
    "members": [
-    "ork/Navya_L1.ork"
+    "meta/ork/Navya_L1.ork"
    ],
    "ork_paths": {
-    "ork/Navya_L1.ork": "ork/Navya_L1.ork"
+    "meta/ork/Navya_L1.ork": "meta/ork/Navya_L1.ork"
    },
    "row_ids": [
     "sft_0253",
@@ -7037,10 +7037,10 @@
    "group_id": "g_nemesis150_v4_3",
    "family": "nemesis",
    "members": [
-    "ork/Nemesis150_v4.3.ork"
+    "meta/ork/Nemesis150_v4.3.ork"
    ],
    "ork_paths": {
-    "ork/Nemesis150_v4.3.ork": "ork/Nemesis150_v4.3.ork"
+    "meta/ork/Nemesis150_v4.3.ork": "meta/ork/Nemesis150_v4.3.ork"
    },
    "row_ids": [
     "sft_0256",
@@ -7124,10 +7124,10 @@
    "group_id": "g_numericalrocketry_green_eggs_openrocket_design",
    "family": "numericalrocketry",
    "members": [
-    "ork/numericalrocketry__green_eggs_openrocket_design.ork"
+    "meta/ork/numericalrocketry__green_eggs_openrocket_design.ork"
    ],
    "ork_paths": {
-    "ork/numericalrocketry__green_eggs_openrocket_design.ork": "ork/numericalrocketry__green_eggs_openrocket_design.ork"
+    "meta/ork/numericalrocketry__green_eggs_openrocket_design.ork": "meta/ork/numericalrocketry__green_eggs_openrocket_design.ork"
    },
    "row_ids": [
     "sft_0259",
@@ -7209,10 +7209,10 @@
    "group_id": "g_olexam_twomotors",
    "family": "olexam",
    "members": [
-    "ork/olexam_TwoMotors.ork"
+    "meta/ork/olexam_TwoMotors.ork"
    ],
    "ork_paths": {
-    "ork/olexam_TwoMotors.ork": null
+    "meta/ork/olexam_TwoMotors.ork": null
    },
    "row_ids": [
     "sft_0262",
@@ -7297,10 +7297,10 @@
    "group_id": "g_openrocket_estes_super_shot_design",
    "family": "openrocketestessupershotdesign",
    "members": [
-    "ork/OpenRocket Estes Super Shot Design.ork"
+    "meta/ork/OpenRocket Estes Super Shot Design.ork"
    ],
    "ork_paths": {
-    "ork/OpenRocket Estes Super Shot Design.ork": "ork/OpenRocket Estes Super Shot Design.ork"
+    "meta/ork/OpenRocket Estes Super Shot Design.ork": "meta/ork/OpenRocket Estes Super Shot Design.ork"
    },
    "row_ids": [
     "sft_0268",
@@ -7382,10 +7382,10 @@
    "group_id": "g_openrocket_design_rocket_model",
    "family": "openrocketdesignrocketmodel",
    "members": [
-    "ork/OpenRocket-Design__Rocket_Model.ork"
+    "meta/ork/OpenRocket-Design__Rocket_Model.ork"
    ],
    "ork_paths": {
-    "ork/OpenRocket-Design__Rocket_Model.ork": "ork/OpenRocket-Design__Rocket_Model.ork"
+    "meta/ork/OpenRocket-Design__Rocket_Model.ork": "meta/ork/OpenRocket-Design__Rocket_Model.ork"
    },
    "row_ids": [
     "sft_0265",
@@ -7467,10 +7467,10 @@
    "group_id": "g_openrocket_file_utils_centuriarrow300",
    "family": "openrocketfileutilscenturiarrow300",
    "members": [
-    "ork/openrocket-file-utils__CenturiArrow300.ork"
+    "meta/ork/openrocket-file-utils__CenturiArrow300.ork"
    ],
    "ork_paths": {
-    "ork/openrocket-file-utils__CenturiArrow300.ork": "ork/openrocket-file-utils__CenturiArrow300.ork"
+    "meta/ork/openrocket-file-utils__CenturiArrow300.ork": "meta/ork/openrocket-file-utils__CenturiArrow300.ork"
    },
    "row_ids": [
     "sft_0271",
@@ -7606,10 +7606,10 @@
    "group_id": "g_openrocket_projects_bryant_test_rocket",
    "family": "openrocketprojectsbryanttestrocket",
    "members": [
-    "ork/Openrocket-projects__Bryant_Test_Rocket.ork"
+    "meta/ork/Openrocket-projects__Bryant_Test_Rocket.ork"
    ],
    "ork_paths": {
-    "ork/Openrocket-projects__Bryant_Test_Rocket.ork": "ork/Openrocket-projects__Bryant_Test_Rocket.ork"
+    "meta/ork/Openrocket-projects__Bryant_Test_Rocket.ork": "meta/ork/Openrocket-projects__Bryant_Test_Rocket.ork"
    },
    "row_ids": [
     "sft_0274",
@@ -7745,10 +7745,10 @@
    "group_id": "g_openrocket_web_test_rocket",
    "family": "openrocketwebtestrocket",
    "members": [
-    "ork/openrocket-web__test-rocket.ork"
+    "meta/ork/openrocket-web__test-rocket.ork"
    ],
    "ork_paths": {
-    "ork/openrocket-web__test-rocket.ork": "ork/openrocket-web__test-rocket.ork"
+    "meta/ork/openrocket-web__test-rocket.ork": "meta/ork/openrocket-web__test-rocket.ork"
    },
    "row_ids": [
     "sft_0277",
@@ -7830,10 +7830,10 @@
    "group_id": "g_openrocketdoc_example_simple_1",
    "family": "openrocketdoc",
    "members": [
-    "ork/openrocketdoc__example_simple_1.ork"
+    "meta/ork/openrocketdoc__example_simple_1.ork"
    ],
    "ork_paths": {
-    "ork/openrocketdoc__example_simple_1.ork": "ork/openrocketdoc__example_simple_1.ork"
+    "meta/ork/openrocketdoc__example_simple_1.ork": "meta/ork/openrocketdoc__example_simple_1.ork"
    },
    "row_ids": [
     "sft_0280",
@@ -7915,10 +7915,10 @@
    "group_id": "g_othertwostager",
    "family": "othertwostager",
    "members": [
-    "ork/OtherTwoStager.ork"
+    "meta/ork/OtherTwoStager.ork"
    ],
    "ork_paths": {
-    "ork/OtherTwoStager.ork": "ork/OtherTwoStager.ork"
+    "meta/ork/OtherTwoStager.ork": "meta/ork/OtherTwoStager.ork"
    },
    "row_ids": [
     "sft_0283",
@@ -8026,10 +8026,10 @@
    "group_id": "g_parallel_booster_staging",
    "family": "parallelboosterstaging",
    "members": [
-    "ork/Parallel booster staging.ork"
+    "meta/ork/Parallel booster staging.ork"
    ],
    "ork_paths": {
-    "ork/Parallel booster staging.ork": "ork/Parallel booster staging.ork"
+    "meta/ork/Parallel booster staging.ork": "meta/ork/Parallel booster staging.ork"
    },
    "row_ids": [
     "sft_0286",
@@ -8145,10 +8145,10 @@
    "group_id": "g_parth_l1",
    "family": "parth",
    "members": [
-    "ork/Parth_L1.ork"
+    "meta/ork/Parth_L1.ork"
    ],
    "ork_paths": {
-    "ork/Parth_L1.ork": "ork/Parth_L1.ork"
+    "meta/ork/Parth_L1.ork": "meta/ork/Parth_L1.ork"
    },
    "row_ids": [
     "sft_0289",
@@ -8230,10 +8230,10 @@
    "group_id": "g_pk37_athena",
    "family": "pk37athena",
    "members": [
-    "ork/PK37-Athena.ork"
+    "meta/ork/PK37-Athena.ork"
    ],
    "ork_paths": {
-    "ork/PK37-Athena.ork": "ork/PK37-Athena.ork"
+    "meta/ork/PK37-Athena.ork": "meta/ork/PK37-Athena.ork"
    },
    "row_ids": [
     "sft_0292",
@@ -8315,10 +8315,10 @@
    "group_id": "g_pml_smallendeavour_38_8",
    "family": "pmlsmallendeavour",
    "members": [
-    "ork/PML_SmallEndeavour_38-8.ork"
+    "meta/ork/PML_SmallEndeavour_38-8.ork"
    ],
    "ork_paths": {
-    "ork/PML_SmallEndeavour_38-8.ork": "ork/PML_SmallEndeavour_38-8.ork"
+    "meta/ork/PML_SmallEndeavour_38-8.ork": "meta/ork/PML_SmallEndeavour_38-8.ork"
    },
    "row_ids": [
     "sft_0295",
@@ -8400,10 +8400,10 @@
    "group_id": "g_pods_airframes_and_winglets",
    "family": "podsairframesandwinglets",
    "members": [
-    "ork/Pods--airframes and winglets.ork"
+    "meta/ork/Pods--airframes and winglets.ork"
    ],
    "ork_paths": {
-    "ork/Pods--airframes and winglets.ork": "ork/Pods--airframes and winglets.ork"
+    "meta/ork/Pods--airframes and winglets.ork": "meta/ork/Pods--airframes and winglets.ork"
    },
    "row_ids": [
     "sft_0298",
@@ -8485,10 +8485,10 @@
    "group_id": "g_pods_powered_with_recovery_deployment",
    "family": "podspoweredwithrecoverydeployment",
    "members": [
-    "ork/Pods--powered with recovery deployment.ork"
+    "meta/ork/Pods--powered with recovery deployment.ork"
    ],
    "ork_paths": {
-    "ork/Pods--powered with recovery deployment.ork": "ork/Pods--powered with recovery deployment.ork"
+    "meta/ork/Pods--powered with recovery deployment.ork": "meta/ork/Pods--powered with recovery deployment.ork"
    },
    "row_ids": [
     "sft_0301",
@@ -8599,10 +8599,10 @@
    "group_id": "g_quest_astra_1004",
    "family": "questastra1004",
    "members": [
-    "ork/quest_astra_1004.ork"
+    "meta/ork/quest_astra_1004.ork"
    ],
    "ork_paths": {
-    "ork/quest_astra_1004.ork": "ork/quest_astra_1004.ork"
+    "meta/ork/quest_astra_1004.ork": "meta/ork/quest_astra_1004.ork"
    },
    "row_ids": [
     "sft_0304",
@@ -8684,10 +8684,10 @@
    "group_id": "g_rato",
    "family": "rato",
    "members": [
-    "ork/RATO.ork"
+    "meta/ork/RATO.ork"
    ],
    "ork_paths": {
-    "ork/RATO.ork": "ork/RATO.ork"
+    "meta/ork/RATO.ork": "meta/ork/RATO.ork"
    },
    "row_ids": [
     "sft_0307",
@@ -8769,10 +8769,10 @@
    "group_id": "g_renegade",
    "family": "renegade",
    "members": [
-    "ork/Renegade.ork"
+    "meta/ork/Renegade.ork"
    ],
    "ork_paths": {
-    "ork/Renegade.ork": "ork/Renegade.ork"
+    "meta/ork/Renegade.ork": "meta/ork/Renegade.ork"
    },
    "row_ids": [
     "sft_0310",
@@ -8854,10 +8854,10 @@
    "group_id": "g_rocket",
    "family": "rocket__188a6a",
    "members": [
-    "ork/rocket__188a6a.ork"
+    "meta/ork/rocket__188a6a.ork"
    ],
    "ork_paths": {
-    "ork/rocket__188a6a.ork": "ork/rocket_19.ork"
+    "meta/ork/rocket__188a6a.ork": "meta/ork/rocket_19.ork"
    },
    "row_ids": [
     "sft_0313",
@@ -8935,10 +8935,10 @@
    "group_id": "g_rocket_19b6ba",
    "family": "rocket__19b6ba",
    "members": [
-    "ork/rocket__19b6ba.ork"
+    "meta/ork/rocket__19b6ba.ork"
    ],
    "ork_paths": {
-    "ork/rocket__19b6ba.ork": null
+    "meta/ork/rocket__19b6ba.ork": null
    },
    "row_ids": [
     "sft_0316",
@@ -9014,10 +9014,10 @@
    "group_id": "g_rocket_1cd69d",
    "family": "rocket__1cd69d",
    "members": [
-    "ork/rocket__1cd69d.ork"
+    "meta/ork/rocket__1cd69d.ork"
    ],
    "ork_paths": {
-    "ork/rocket__1cd69d.ork": "ork/rocket_18.ork"
+    "meta/ork/rocket__1cd69d.ork": "meta/ork/rocket_18.ork"
    },
    "row_ids": [
     "sft_0319",
@@ -9099,10 +9099,10 @@
    "group_id": "g_rocket_2ba66a",
    "family": "rocket__2ba66a",
    "members": [
-    "ork/rocket__2ba66a.ork"
+    "meta/ork/rocket__2ba66a.ork"
    ],
    "ork_paths": {
-    "ork/rocket__2ba66a.ork": "ork/rocket_14.ork"
+    "meta/ork/rocket__2ba66a.ork": "meta/ork/rocket_14.ork"
    },
    "row_ids": [
     "sft_0322",
@@ -9184,10 +9184,10 @@
    "group_id": "g_rocket_3b8501",
    "family": "rocket__3b8501",
    "members": [
-    "ork/rocket__3b8501.ork"
+    "meta/ork/rocket__3b8501.ork"
    ],
    "ork_paths": {
-    "ork/rocket__3b8501.ork": "ork/rocket_10.ork"
+    "meta/ork/rocket__3b8501.ork": "meta/ork/rocket_10.ork"
    },
    "row_ids": [
     "sft_0325",
@@ -9269,10 +9269,10 @@
    "group_id": "g_rocket_45ac95",
    "family": "rocket__45ac95",
    "members": [
-    "ork/rocket__45ac95.ork"
+    "meta/ork/rocket__45ac95.ork"
    ],
    "ork_paths": {
-    "ork/rocket__45ac95.ork": "ork/rocket_11.ork"
+    "meta/ork/rocket__45ac95.ork": "meta/ork/rocket_11.ork"
    },
    "row_ids": [
     "sft_0328",
@@ -9354,10 +9354,10 @@
    "group_id": "g_rocket_49c8de",
    "family": "rocket__49c8de",
    "members": [
-    "ork/rocket__49c8de.ork"
+    "meta/ork/rocket__49c8de.ork"
    ],
    "ork_paths": {
-    "ork/rocket__49c8de.ork": null
+    "meta/ork/rocket__49c8de.ork": null
    },
    "row_ids": [
     "sft_0331",
@@ -9433,10 +9433,10 @@
    "group_id": "g_rocket_504e63",
    "family": "rocket__504e63",
    "members": [
-    "ork/rocket__504e63.ork"
+    "meta/ork/rocket__504e63.ork"
    ],
    "ork_paths": {
-    "ork/rocket__504e63.ork": "ork/rocket_13.ork"
+    "meta/ork/rocket__504e63.ork": "meta/ork/rocket_13.ork"
    },
    "row_ids": [
     "sft_0334",
@@ -9520,10 +9520,10 @@
    "group_id": "g_rocket_61cb00",
    "family": "rocket__61cb00",
    "members": [
-    "ork/rocket__61cb00.ork"
+    "meta/ork/rocket__61cb00.ork"
    ],
    "ork_paths": {
-    "ork/rocket__61cb00.ork": null
+    "meta/ork/rocket__61cb00.ork": null
    },
    "row_ids": [
     "sft_0337",
@@ -9599,10 +9599,10 @@
    "group_id": "g_rocket_620f66",
    "family": "rocket__620f66",
    "members": [
-    "ork/rocket__620f66.ork"
+    "meta/ork/rocket__620f66.ork"
    ],
    "ork_paths": {
-    "ork/rocket__620f66.ork": "ork/rocket_17.ork"
+    "meta/ork/rocket__620f66.ork": "meta/ork/rocket_17.ork"
    },
    "row_ids": [
     "sft_0340",
@@ -9686,10 +9686,10 @@
    "group_id": "g_rocket_7e1fd3",
    "family": "rocket__7e1fd3",
    "members": [
-    "ork/rocket__7e1fd3.ork"
+    "meta/ork/rocket__7e1fd3.ork"
    ],
    "ork_paths": {
-    "ork/rocket__7e1fd3.ork": "ork/rocket_12.ork"
+    "meta/ork/rocket__7e1fd3.ork": "meta/ork/rocket_12.ork"
    },
    "row_ids": [
     "sft_0343",
@@ -9773,10 +9773,10 @@
    "group_id": "g_rocket_a79076",
    "family": "rocket__a79076",
    "members": [
-    "ork/rocket__a79076.ork"
+    "meta/ork/rocket__a79076.ork"
    ],
    "ork_paths": {
-    "ork/rocket__a79076.ork": null
+    "meta/ork/rocket__a79076.ork": null
    },
    "row_ids": [
     "sft_0346",
@@ -9852,10 +9852,10 @@
    "group_id": "g_rocket_b87d11",
    "family": "rocket__b87d11",
    "members": [
-    "ork/rocket__b87d11.ork"
+    "meta/ork/rocket__b87d11.ork"
    ],
    "ork_paths": {
-    "ork/rocket__b87d11.ork": "ork/rocket_21.ork"
+    "meta/ork/rocket__b87d11.ork": "meta/ork/rocket_21.ork"
    },
    "row_ids": [
     "sft_0349",
@@ -9937,10 +9937,10 @@
    "group_id": "g_rocket_c08cee",
    "family": "rocket__c08cee",
    "members": [
-    "ork/rocket__c08cee.ork"
+    "meta/ork/rocket__c08cee.ork"
    ],
    "ork_paths": {
-    "ork/rocket__c08cee.ork": "ork/rocket_3.ork"
+    "meta/ork/rocket__c08cee.ork": "meta/ork/rocket_3.ork"
    },
    "row_ids": [
     "sft_0352",
@@ -10022,10 +10022,10 @@
    "group_id": "g_rocket_c3d681",
    "family": "rocket__c3d681",
    "members": [
-    "ork/rocket__c3d681.ork"
+    "meta/ork/rocket__c3d681.ork"
    ],
    "ork_paths": {
-    "ork/rocket__c3d681.ork": null
+    "meta/ork/rocket__c3d681.ork": null
    },
    "row_ids": [
     "sft_0355",
@@ -10101,10 +10101,10 @@
    "group_id": "g_rocket_d5a7f2",
    "family": "rocket__d5a7f2",
    "members": [
-    "ork/rocket__d5a7f2.ork"
+    "meta/ork/rocket__d5a7f2.ork"
    ],
    "ork_paths": {
-    "ork/rocket__d5a7f2.ork": "ork/rocket_15.ork"
+    "meta/ork/rocket__d5a7f2.ork": "meta/ork/rocket_15.ork"
    },
    "row_ids": [
     "sft_0358",
@@ -10182,10 +10182,10 @@
    "group_id": "g_rocket_d77051",
    "family": "rocket__d77051",
    "members": [
-    "ork/rocket__d77051.ork"
+    "meta/ork/rocket__d77051.ork"
    ],
    "ork_paths": {
-    "ork/rocket__d77051.ork": null
+    "meta/ork/rocket__d77051.ork": null
    },
    "row_ids": [
     "sft_0361",
@@ -10255,10 +10255,10 @@
    "group_id": "g_rocket_e711b1",
    "family": "rocket__e711b1",
    "members": [
-    "ork/rocket__e711b1.ork"
+    "meta/ork/rocket__e711b1.ork"
    ],
    "ork_paths": {
-    "ork/rocket__e711b1.ork": "ork/rocket_16.ork"
+    "meta/ork/rocket__e711b1.ork": "meta/ork/rocket_16.ork"
    },
    "row_ids": [
     "sft_0364",
@@ -10340,10 +10340,10 @@
    "group_id": "g_rocket_e9e655",
    "family": "rocket__e9e655",
    "members": [
-    "ork/rocket__e9e655.ork"
+    "meta/ork/rocket__e9e655.ork"
    ],
    "ork_paths": {
-    "ork/rocket__e9e655.ork": null
+    "meta/ork/rocket__e9e655.ork": null
    },
    "row_ids": [
     "sft_0367",
@@ -10421,10 +10421,10 @@
    "group_id": "g_rocket_f39723",
    "family": "rocket__f39723",
    "members": [
-    "ork/rocket__f39723.ork"
+    "meta/ork/rocket__f39723.ork"
    ],
    "ork_paths": {
-    "ork/rocket__f39723.ork": "ork/rocket_20.ork"
+    "meta/ork/rocket__f39723.ork": "meta/ork/rocket_20.ork"
    },
    "row_ids": [
     "sft_0370",
@@ -10503,10 +10503,10 @@
    "group_id": "g_rocket_f4bcc9",
    "family": "rocket__f4bcc9",
    "members": [
-    "ork/rocket__f4bcc9.ork"
+    "meta/ork/rocket__f4bcc9.ork"
    ],
    "ork_paths": {
-    "ork/rocket__f4bcc9.ork": "ork/rocket_3.ork"
+    "meta/ork/rocket__f4bcc9.ork": "meta/ork/rocket_3.ork"
    },
    "row_ids": [
     "sft_0373",
@@ -10588,10 +10588,10 @@
    "group_id": "g_rocket_fdc85b",
    "family": "rocket__fdc85b",
    "members": [
-    "ork/rocket__fdc85b.ork"
+    "meta/ork/rocket__fdc85b.ork"
    ],
    "ork_paths": {
-    "ork/rocket__fdc85b.ork": null
+    "meta/ork/rocket__fdc85b.ork": null
    },
    "row_ids": [
     "sft_0376",
@@ -10661,10 +10661,10 @@
    "group_id": "g_rocketarium_trident",
    "family": "rocketarium",
    "members": [
-    "ork/rocketarium_trident.ork"
+    "meta/ork/rocketarium_trident.ork"
    ],
    "ork_paths": {
-    "ork/rocketarium_trident.ork": "ork/rocketarium_trident.ork"
+    "meta/ork/rocketarium_trident.ork": "meta/ork/rocketarium_trident.ork"
    },
    "row_ids": [
     "sft_0379",
@@ -10784,10 +10784,10 @@
    "group_id": "g_rocketproject",
    "family": "rocketproject",
    "members": [
-    "ork/RocketProject.ork"
+    "meta/ork/RocketProject.ork"
    ],
    "ork_paths": {
-    "ork/RocketProject.ork": "ork/RocketProject.ork"
+    "meta/ork/RocketProject.ork": "meta/ork/RocketProject.ork"
    },
    "row_ids": [
     "sft_0382",
@@ -10869,10 +10869,10 @@
    "group_id": "g_rockets_bt_55",
    "family": "rocketsbt55",
    "members": [
-    "ork/rockets__bt_55.ork"
+    "meta/ork/rockets__bt_55.ork"
    ],
    "ork_paths": {
-    "ork/rockets__bt_55.ork": "ork/rockets__bt_55.ork"
+    "meta/ork/rockets__bt_55.ork": "meta/ork/rockets__bt_55.ork"
    },
    "row_ids": [
     "sft_0385",
@@ -10954,10 +10954,10 @@
    "group_id": "g_rocketserializer_rocket",
    "family": "rocketserializer",
    "members": [
-    "ork/RocketSerializer__rocket.ork"
+    "meta/ork/RocketSerializer__rocket.ork"
    ],
    "ork_paths": {
-    "ork/RocketSerializer__rocket.ork": "ork/RocketSerializer__rocket.ork"
+    "meta/ork/RocketSerializer__rocket.ork": "meta/ork/RocketSerializer__rocket.ork"
    },
    "row_ids": [
     "sft_0163",
@@ -11041,10 +11041,10 @@
    "group_id": "g_rocketv1_1",
    "family": "rocketv",
    "members": [
-    "ork/RocketV1.1.ork"
+    "meta/ork/RocketV1.1.ork"
    ],
    "ork_paths": {
-    "ork/RocketV1.1.ork": "ork/RocketV1.1.ork"
+    "meta/ork/RocketV1.1.ork": "meta/ork/RocketV1.1.ork"
    },
    "row_ids": [
     "sft_0388",
@@ -11128,10 +11128,10 @@
    "group_id": "g_sainath_l1",
    "family": "sainath",
    "members": [
-    "ork/Sainath_L1.ork"
+    "meta/ork/Sainath_L1.ork"
    ],
    "ork_paths": {
-    "ork/Sainath_L1.ork": "ork/Sainath_L1.ork"
+    "meta/ork/Sainath_L1.ork": "meta/ork/Sainath_L1.ork"
    },
    "row_ids": [
     "sft_0391",
@@ -11213,10 +11213,10 @@
    "group_id": "g_semroc_starfire_kv_20",
    "family": "semrocstarfirekv20",
    "members": [
-    "ork/semroc_starfire_kv-20.ork"
+    "meta/ork/semroc_starfire_kv-20.ork"
    ],
    "ork_paths": {
-    "ork/semroc_starfire_kv-20.ork": "ork/semroc_starfire_kv-20.ork"
+    "meta/ork/semroc_starfire_kv-20.ork": "meta/ork/semroc_starfire_kv-20.ork"
    },
    "row_ids": [
     "sft_0394",
@@ -11298,10 +11298,10 @@
    "group_id": "g_simplel1",
    "family": "simplel",
    "members": [
-    "ork/SimpleL1.ork"
+    "meta/ork/SimpleL1.ork"
    ],
    "ork_paths": {
-    "ork/SimpleL1.ork": "ork/SimpleL1.ork"
+    "meta/ork/SimpleL1.ork": "meta/ork/SimpleL1.ork"
    },
    "row_ids": [
     "sft_0397",
@@ -11383,10 +11383,10 @@
    "group_id": "g_simulation_extensions",
    "family": "simulationextensions",
    "members": [
-    "ork/Simulation extensions.ork"
+    "meta/ork/Simulation extensions.ork"
    ],
    "ork_paths": {
-    "ork/Simulation extensions.ork": "ork/Simulation extensions.ork"
+    "meta/ork/Simulation extensions.ork": "meta/ork/Simulation extensions.ork"
    },
    "row_ids": [
     "sft_0403",
@@ -11468,10 +11468,10 @@
    "group_id": "g_simulation_1",
    "family": "simulation1",
    "members": [
-    "ork/simulation_1.ork"
+    "meta/ork/simulation_1.ork"
    ],
    "ork_paths": {
-    "ork/simulation_1.ork": "ork/simulation_1.ork"
+    "meta/ork/simulation_1.ork": "meta/ork/simulation_1.ork"
    },
    "row_ids": [
     "sft_0400",
@@ -11551,10 +11551,10 @@
    "group_id": "g_sirius",
    "family": "sirius",
    "members": [
-    "ork/SIRIUS__4f0e68.ork"
+    "meta/ork/SIRIUS__4f0e68.ork"
    ],
    "ork_paths": {
-    "ork/SIRIUS__4f0e68.ork": "ork/SIRIUS.ork"
+    "meta/ork/SIRIUS__4f0e68.ork": "meta/ork/SIRIUS.ork"
    },
    "row_ids": [
     "sft_0406",
@@ -11666,10 +11666,10 @@
    "group_id": "g_siriusrocketry_eradicator_s_0017",
    "family": "siriusrocketry",
    "members": [
-    "ork/siriusrocketry_eradicator_s-0017.ork"
+    "meta/ork/siriusrocketry_eradicator_s-0017.ork"
    ],
    "ork_paths": {
-    "ork/siriusrocketry_eradicator_s-0017.ork": "ork/siriusrocketry_eradicator_s-0017.ork"
+    "meta/ork/siriusrocketry_eradicator_s-0017.ork": "meta/ork/siriusrocketry_eradicator_s-0017.ork"
    },
    "row_ids": [
     "sft_0409",
@@ -11751,10 +11751,10 @@
    "group_id": "g_siruis_n1560",
    "family": "sirius",
    "members": [
-    "ork/Siruis_N1560__962247.ork"
+    "meta/ork/Siruis_N1560__962247.ork"
    ],
    "ork_paths": {
-    "ork/Siruis_N1560__962247.ork": "ork/Siruis_N1560.ork"
+    "meta/ork/Siruis_N1560__962247.ork": "meta/ork/Siruis_N1560.ork"
    },
    "row_ids": [
     "sft_0412",
@@ -11865,10 +11865,10 @@
    "group_id": "g_siruis_o3400",
    "family": "sirius",
    "members": [
-    "ork/Siruis_O3400__3b00eb.ork"
+    "meta/ork/Siruis_O3400__3b00eb.ork"
    ],
    "ork_paths": {
-    "ork/Siruis_O3400__3b00eb.ork": "ork/Siruis_O3400.ork"
+    "meta/ork/Siruis_O3400__3b00eb.ork": "meta/ork/Siruis_O3400.ork"
    },
    "row_ids": [
     "sft_0415",
@@ -11979,10 +11979,10 @@
    "group_id": "g_siruis_o3800_actualmass",
    "family": "sirius",
    "members": [
-    "ork/Siruis_O3800_ACTUALmass__b07ddf.ork"
+    "meta/ork/Siruis_O3800_ACTUALmass__b07ddf.ork"
    ],
    "ork_paths": {
-    "ork/Siruis_O3800_ACTUALmass__b07ddf.ork": "ork/Siruis_O3800_ACTUALmass.ork"
+    "meta/ork/Siruis_O3800_ACTUALmass__b07ddf.ork": "meta/ork/Siruis_O3800_ACTUALmass.ork"
    },
    "row_ids": [
     "sft_0421",
@@ -12061,12 +12061,12 @@
    "group_id": "g_siruis_o3800",
    "family": "sirius",
    "members": [
-    "ork/Siruis_O3800__62b0d9.ork",
-    "ork/Siruis_O3800_CADmasses__44ad19.ork"
+    "meta/ork/Siruis_O3800__62b0d9.ork",
+    "meta/ork/Siruis_O3800_CADmasses__44ad19.ork"
    ],
    "ork_paths": {
-    "ork/Siruis_O3800__62b0d9.ork": "ork/Siruis_O3800.ork",
-    "ork/Siruis_O3800_CADmasses__44ad19.ork": "ork/Siruis_O3800_CADmasses.ork"
+    "meta/ork/Siruis_O3800__62b0d9.ork": "meta/ork/Siruis_O3800.ork",
+    "meta/ork/Siruis_O3800_CADmasses__44ad19.ork": "meta/ork/Siruis_O3800_CADmasses.ork"
    },
    "row_ids": [
     "sft_0418",
@@ -12180,10 +12180,10 @@
    "group_id": "g_skyshot",
    "family": "skyshot",
    "members": [
-    "ork/Skyshot.ork"
+    "meta/ork/Skyshot.ork"
    ],
    "ork_paths": {
-    "ork/Skyshot.ork": "ork/Skyshot.ork"
+    "meta/ork/Skyshot.ork": "meta/ork/Skyshot.ork"
    },
    "row_ids": [
     "sft_0427",
@@ -12265,10 +12265,10 @@
    "group_id": "g_starfire73_talon",
    "family": "starfire73talon",
    "members": [
-    "ork/starfire73_talon.ork"
+    "meta/ork/starfire73_talon.ork"
    ],
    "ork_paths": {
-    "ork/starfire73_talon.ork": "ork/starfire73_talon.ork"
+    "meta/ork/starfire73_talon.ork": "meta/ork/starfire73_talon.ork"
    },
    "row_ids": [
     "sft_0436",
@@ -12350,10 +12350,10 @@
    "group_id": "g_starfire_bell_x_1",
    "family": "starfirebellx1",
    "members": [
-    "ork/starfire_bell_x-1.ork"
+    "meta/ork/starfire_bell_x-1.ork"
    ],
    "ork_paths": {
-    "ork/starfire_bell_x-1.ork": "ork/starfire_bell_x-1.ork"
+    "meta/ork/starfire_bell_x-1.ork": "meta/ork/starfire_bell_x-1.ork"
    },
    "row_ids": [
     "sft_0430",
@@ -12435,10 +12435,10 @@
    "group_id": "g_starfire_star_crusher",
    "family": "starfirestarcrusher",
    "members": [
-    "ork/starfire_star_crusher.ork"
+    "meta/ork/starfire_star_crusher.ork"
    ],
    "ork_paths": {
-    "ork/starfire_star_crusher.ork": "ork/starfire_star_crusher.ork"
+    "meta/ork/starfire_star_crusher.ork": "meta/ork/starfire_star_crusher.ork"
    },
    "row_ids": [
     "sft_0433",
@@ -12520,10 +12520,10 @@
    "group_id": "g_superdx3",
    "family": "superdx",
    "members": [
-    "ork/superdx3__8c40bf.ork"
+    "meta/ork/superdx3__8c40bf.ork"
    ],
    "ork_paths": {
-    "ork/superdx3__8c40bf.ork": "ork/superdx3.ork"
+    "meta/ork/superdx3__8c40bf.ork": "meta/ork/superdx3.ork"
    },
    "row_ids": [
     "sft_0439",
@@ -12605,10 +12605,10 @@
    "group_id": "g_tarc_payloader",
    "family": "tarc",
    "members": [
-    "ork/TARC Payloader.ork"
+    "meta/ork/TARC Payloader.ork"
    ],
    "ork_paths": {
-    "ork/TARC Payloader.ork": "ork/TARC Payloader.ork"
+    "meta/ork/TARC Payloader.ork": "meta/ork/TARC Payloader.ork"
    },
    "row_ids": [
     "sft_0442",
@@ -12690,10 +12690,10 @@
    "group_id": "g_test_1",
    "family": "test1",
    "members": [
-    "ork/test_1.ork"
+    "meta/ork/test_1.ork"
    ],
    "ork_paths": {
-    "ork/test_1.ork": "ork/test_1.ork"
+    "meta/ork/test_1.ork": "meta/ork/test_1.ork"
    },
    "row_ids": [
     "sft_0445",
@@ -12775,10 +12775,10 @@
    "group_id": "g_testlaunch_fall2022",
    "family": "testlaunch",
    "members": [
-    "ork/TestLaunch_Fall2022.ork"
+    "meta/ork/TestLaunch_Fall2022.ork"
    ],
    "ork_paths": {
-    "ork/TestLaunch_Fall2022.ork": "ork/TestLaunch_Fall2022.ork"
+    "meta/ork/TestLaunch_Fall2022.ork": "meta/ork/TestLaunch_Fall2022.ork"
    },
    "row_ids": [
     "sft_0448",
@@ -12863,10 +12863,10 @@
    "group_id": "g_theboringrocket",
    "family": "theboringrocket",
    "members": [
-    "ork/TheBoringRocket.ork"
+    "meta/ork/TheBoringRocket.ork"
    ],
    "ork_paths": {
-    "ork/TheBoringRocket.ork": "ork/TheBoringRocket.ork"
+    "meta/ork/TheBoringRocket.ork": "meta/ork/TheBoringRocket.ork"
    },
    "row_ids": [
     "sft_0451",
@@ -12948,10 +12948,10 @@
    "group_id": "g_three_stage_low_power_rocket",
    "family": "threestagelowpowerrocket",
    "members": [
-    "ork/Three stage low power rocket.ork"
+    "meta/ork/Three stage low power rocket.ork"
    ],
    "ork_paths": {
-    "ork/Three stage low power rocket.ork": "ork/Three stage low power rocket.ork"
+    "meta/ork/Three stage low power rocket.ork": "meta/ork/Three stage low power rocket.ork"
    },
    "row_ids": [
     "sft_0454",
@@ -13083,10 +13083,10 @@
    "group_id": "g_three_stage_rocket",
    "family": "threestagerocket",
    "members": [
-    "ork/Three-stage rocket.ork"
+    "meta/ork/Three-stage rocket.ork"
    ],
    "ork_paths": {
-    "ork/Three-stage rocket.ork": "ork/Three-stage rocket.ork"
+    "meta/ork/Three-stage rocket.ork": "meta/ork/Three-stage rocket.ork"
    },
    "row_ids": [
     "sft_0457",
@@ -13218,10 +13218,10 @@
    "group_id": "g_tlp_phoenix_k_017",
    "family": "tlpphoenixk017",
    "members": [
-    "ork/tlp_phoenix_k-017.ork"
+    "meta/ork/tlp_phoenix_k-017.ork"
    ],
    "ork_paths": {
-    "ork/tlp_phoenix_k-017.ork": "ork/tlp_phoenix_k-017.ork"
+    "meta/ork/tlp_phoenix_k-017.ork": "meta/ork/tlp_phoenix_k-017.ork"
    },
    "row_ids": [
     "sft_0460",
@@ -13305,10 +13305,10 @@
    "group_id": "g_trinetraone",
    "family": "trinetraone",
    "members": [
-    "ork/TrinetraOne.ork"
+    "meta/ork/TrinetraOne.ork"
    ],
    "ork_paths": {
-    "ork/TrinetraOne.ork": "ork/TrinetraOne.ork"
+    "meta/ork/TrinetraOne.ork": "meta/ork/TrinetraOne.ork"
    },
    "row_ids": [
     "sft_0463",
@@ -13390,10 +13390,10 @@
    "group_id": "g_tube_fin_rocket",
    "family": "tubefinrocket",
    "members": [
-    "ork/Tube fin rocket.ork"
+    "meta/ork/Tube fin rocket.ork"
    ],
    "ork_paths": {
-    "ork/Tube fin rocket.ork": "ork/Tube fin rocket.ork"
+    "meta/ork/Tube fin rocket.ork": "meta/ork/Tube fin rocket.ork"
    },
    "row_ids": [
     "sft_0469",
@@ -13475,10 +13475,10 @@
    "group_id": "g_tube_fin",
    "family": "tubefin",
    "members": [
-    "ork/Tube Fin.ork"
+    "meta/ork/Tube Fin.ork"
    ],
    "ork_paths": {
-    "ork/Tube Fin.ork": "ork/Tube Fin.ork"
+    "meta/ork/Tube Fin.ork": "meta/ork/Tube Fin.ork"
    },
    "row_ids": [
     "sft_0466",
@@ -13560,10 +13560,10 @@
    "group_id": "g_two_stage_high_power_rocket",
    "family": "twostagehighpowerrocket",
    "members": [
-    "ork/Two stage high power rocket.ork"
+    "meta/ork/Two stage high power rocket.ork"
    ],
    "ork_paths": {
-    "ork/Two stage high power rocket.ork": "ork/Two stage high power rocket.ork"
+    "meta/ork/Two stage high power rocket.ork": "meta/ork/Two stage high power rocket.ork"
    },
    "row_ids": [
     "sft_0472",
@@ -13670,10 +13670,10 @@
    "group_id": "g_twostager",
    "family": "twostager",
    "members": [
-    "ork/TwoStager.ork"
+    "meta/ork/TwoStager.ork"
    ],
    "ork_paths": {
-    "ork/TwoStager.ork": "ork/TwoStager.ork"
+    "meta/ork/TwoStager.ork": "meta/ork/TwoStager.ork"
    },
    "row_ids": [
     "sft_0475",

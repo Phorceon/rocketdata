@@ -1,1 +1,0 @@
-4. Check: stability puts the static margin at 2.06 cal on a 0.169 kg liftoff, CG at 0.484 m and CP at 0.554 m. That is above the 1.0 cal launch minimum, with room for the rail-exit number to come out a bit lower than the static value. The 5 g nose weight is enough, so the design does not change. Flying it next.

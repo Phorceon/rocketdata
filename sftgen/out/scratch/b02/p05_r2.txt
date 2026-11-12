@@ -1,5 +1,0 @@
-2. Feasibility: The B6 is 4.3 N*s, 5.2 N average, 0.83 s burn, 18 mm, mass 0.016 kg. Its only listed delay is 0 s, so I will fly it plugged and open the single chute at apogee rather than at burnout. The A8 is only 2.2 N*s, light for 175 m. The C6 is 8.8 N*s with useful delays, but in a small rocket it climbs far past 175 m. The B6 is the closer impulse. The B4 lookup came back as a 5.1 N*s motor with no delays, so I am not using it.
-
-3. Size: Liftoff guess 0.045 kg for a short 25 mm cardboard rocket. Thrust-to-weight is 5.2 / (0.045 * 9.81) = 11.8. Weight is 0.045 * 9.81 = 0.441 N, rail acceleration (5.2 - 0.44) / 0.045 = 106 m/s^2, rail exit sqrt(2 * 106 * 1.5) = 17.8 m/s. Burnout mass is about 0.045 - 0.006 = 0.039 kg. A 0.30 m chute is larger than a 5 m/s canopy for that mass, so landing should sit under 6 m/s.
-
-4. Draft: 25 mm cardboard tube, 0.28 m long, small polystyrene ogive, three balsa fins, 18 mm mount, one 0.30 m chute at apogee. Default 1.5 m rail and 2 m/s wind.

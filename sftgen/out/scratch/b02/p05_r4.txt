@@ -1,3 +1,0 @@
-4. Check: The wider tube overshot. The simulator gives 150.2 m, and (175 - 150.2) / 175 = 14% under the 175 m target, outside the 5% band. Margin 1.26 cal, rail exit 23.3 m/s, thrust-to-weight 9.4 and landing 3.8 m/s still pass. The single chute opens at 5.4 s.
-
-5. Fix: The failing value is apogee 150.2 m. The 25 mm rocket flew to 216.1 m and the 34 mm rocket to 150.2 m, so the diameter that should split them near 175 m is about 31 mm. One change: tube and nose to 31 mm, wall 0.8 mm. Motor, fins and the 0.30 m chute stay.

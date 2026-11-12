@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 3459.8 m. The band floor is 3,560 m, and 3560 - 3459.8 = 100 m still short. Margin is now 1.47 cal, over 1.0. Landing is 5.7 m/s, under 6, and the section reached the ground. Rail exit is 32.5 m/s and thrust-to-weight is 29.8. The fins did their job. The remaining miss is drag on the 90 mm tube.
-5. Fix: slim the airframe from 90 mm to 86 mm. The mount is 80 mm, so 86 mm still clears it. Nose diameter matches. Motor, fins, and chute stay.

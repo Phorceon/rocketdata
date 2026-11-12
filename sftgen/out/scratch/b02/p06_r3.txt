@@ -1,3 +1,0 @@
-4. Check: The simulator gives 338.1 m, and (338.1 - 229) / 229 = 48% above about 229 m. Stability fails too: 0.95 cal at rail exit against 1.0, and the low point in the burn is 0.78 cal. Landings pass, sustainer 3.3 m/s and booster 2.9 m/s, both under 5 m/s. Rail exit is 17.2 m/s and thrust-to-weight is 3.7. There is a warning about an open forward airframe on a body tube; both chutes did open. Liftoff mass is 0.131 kg, close to the guess, so the altitude miss is too little drag for two C6s.
-
-5. Fix: The failing values are apogee 338.1 m and rail-exit margin 0.95 cal. One change: larger fins on both stages. Sustainer span 0.055 m, booster span 0.07 m. That moves the CP back and adds the drag two C6s need. Motors, chutes and the 42 mm tubes stay.

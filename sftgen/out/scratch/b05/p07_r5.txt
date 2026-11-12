@@ -1,3 +1,0 @@
-4. Check: the simulator gives apogee 1288 m. Against 1,300 m that is (1300 - 1288) / 1300 = 0.9% low, inside the 5% band. Landing is 4.5 m/s, under the 4.6 m/s limit. Margin is 1.04 cal, above 1.0. Rail exit is 32.3 m/s and thrust-to-weight is 32.1. Four H128W motors are H class, inside the K cap. The chute opened, and the wind in the run was 4.5 m/s. Every check passes.
-5. Fix: no further change; altitude, landing, the cluster, and the safety gates all pass.
-6. Uncertainty: 1.04 cal and 4.5 m/s are both close to their limits. A heavier fin can or a chute that opens poorly can miss one of them. Chute Cd is a model 0.8. The 4.5 m/s wind will drift the rocket a long way under the 1.4 m canopy (the run shows 1169 m), which the prompt did not cap. Liftoff mass is 1.94 kg.

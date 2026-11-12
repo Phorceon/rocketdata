@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 3559.3 m. The 5% floor is 0.95 * 3750 = 3560 m, and 3560 - 3559.3 = 0.7 m still short. Landing is 5.6 m/s and the section reached the ground. Margin is 1.40 cal, rail exit is 31.8 m/s, and thrust-to-weight is 30.8. Shortening helped: 3559.3 - 3526.9 = 32 m.
-5. Fix: shorten the body from 0.88 m to 0.82 m. The mount is 0.72 m, so the chute at the top still fits. That should clear the last metre of the band.

@@ -1,2 +1,0 @@
-4. Check: the design never reached flight — the builder rejected it because a 0.055 m mount tube with a 0.0015 m wall leaves only a 52 mm bore for a 54 mm motor. My mistake: the mount needs an inside diameter above 54 mm plus a little clearance, and it still has to fit inside the body.
-5. Fix: the mount bore of 52 mm is under the 54 mm motor. I am widening the mount to 0.058 m outside diameter at the same wall, which gives a 55 mm bore, and opening the body and nose to 0.062 m so the mount keeps clearance inside the tube. Fins, chute and recovery stay unchanged.

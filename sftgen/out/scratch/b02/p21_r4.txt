@@ -1,3 +1,0 @@
-4. Check: Bigger fins barely moved the margin. The simulator gives 0.01 cal, still under 1.0. Apogee fell to 642.8 m, still well above 200 m. Landing is 3.8 m/s. Rail exit is 32.3 m/s, thrust-to-weight 22.5. The fin area is adding tail mass about as fast as it adds CP.
-
-5. Fix: The failing value is margin 0.01 cal. One change: 0.02 kg of clay at the top of the tube. Fins stay where they are. The altitude has hundreds of metres of room above 200 m, and a little nose mass will not spend it. Motor and wind stay.

@@ -1,2 +1,0 @@
-1. Understand: Around 400 m means 380 to 420 m. The airframe has to stay under 55 mm, so outer diameter at or below 0.054 m. The field is about 300 m above sea level, and that goes on the run. Wind, rail, and landing are not stated: 2 m/s, 1.5 m, and 6 m/s. Drag-free speed for 400 m is sqrt(2 * 9.81 * 400) = 89 m/s, a small motor.
-2. Feasibility: A C on a thin tube has been landing near 300 m, so a D is the first thing to check, with an E only if the D falls short. Diameter is not the hard part.

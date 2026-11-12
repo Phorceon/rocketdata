@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 1080 m, and 1080 - 700 = 380 m over the minimum. Landing is 4.4 m/s. Impulse is 188.3 N*s, under 200. Rail exit is 19.1 m/s and thrust-to-weight is 12.4. The failure is margin: 0.07 cal at rail exit and through the burn. The H73J sits far aft for these fins. Site altitude in the run was 1,200 m.
-5. Fix: grow the fins. Span goes from 0.08 m to 0.13 m, root chord from 0.14 m to 0.20 m. There is 380 m of spare altitude, so the extra drag should still leave the flight over 700 m. Motor, chute, and the 1,200 m site stay.

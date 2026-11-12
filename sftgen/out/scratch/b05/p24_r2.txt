@@ -1,3 +1,0 @@
-2. Feasibility: F50T is 68.7 N*s. G80T is 136 N*s, 80.6 N, 29 mm, 0.124 m long, 0.129 kg, delays 4, 7 and 10 s. 136 / 68.7 = 2.0 times the F, which is the margin I want over a 700 m minimum, and it is still a G. I'll plug it and open the chute at apogee. Body outer diameter 0.054 m, and 0.0762 - 0.054 = 0.022 m under the 3 inch cap.
-3. Size: guessed liftoff mass 0.32 kg. Thrust-to-weight is 80.6 / (0.32 * 9.81) = 26. Descent mass is about 0.32 - 0.069 = 0.25 kg. A 5 m/s landing, under 6, needs 2 * 0.25 * 9.81 / (1.225 * 0.8 * 5^2) = 0.20 m^2, diameter sqrt(4 * 0.20 / 3.1416) = 0.50 m. I'll fit a 0.55 m chute.
-4. Draft: 54 mm cardboard body, 0.60 m long, ogive nose, three balsa fins, 29 mm mount, AeroTech G80T. Defaults: 1.5 m rail, 2 m/s wind.

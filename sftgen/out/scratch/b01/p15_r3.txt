@@ -1,2 +1,0 @@
-4. Check: The simulator gives 1083.7 m, under 1,200 m, and the rail margin is 0.82 cal with the same 0.82 cal through the burn. It is not flying straight, so the altitude is partly a weathercock. Rail exit 38.8 m/s, thrust-to-weight 45.3, and landing 3.3 m/s pass. The chute opens at 15.3 s, after the 11.16 s apogee. Mass 0.343 kg.
-5. Fix: 0.82 cal is the failure under the low apogee. Fins grow to root 0.12 m, tip 0.05 m, span 0.09 m, sweep 0.05 m. Motor and chute stay.

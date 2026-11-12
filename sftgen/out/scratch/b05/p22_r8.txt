@@ -1,3 +1,0 @@
-4. Check: the simulator gives apogee 3570.5 m. The target is 3,750 m, and 3750 - 3570.5 = 180 m, inside the 5% band of 0.05 * 3750 = 188 m. Landing is 5.6 m/s, under 6, and the section reached the ground. Margin is 1.36 cal, rail exit is 32.0 m/s, and thrust-to-weight is 31.0. The chute opened. There is a supersonic warning. Every check passes.
-5. Fix: no further change; the altitude band and the landing both pass.
-6. Uncertainty: 180 m under 3,750 m is near the edge of the band, so a heavier build than the 7.37 kg liftoff mass falls short. The flight is supersonic, Mach 1.77, and the drag model warns that it is less sure there. Chute Cd is a model 0.8. Margin is 1.36 cal in the assumed 2 m/s wind. Drift in the run was 1059 m, with no drift limit stated.
