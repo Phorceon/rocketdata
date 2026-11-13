@@ -1,0 +1,18 @@
+[project]
+name = "rocket-design"
+description = "Rocket design RL: mission prompt in, OpenRocket design out, scored by the repo's reward ladder (scripts/reward.py)"
+tags = ["rocketry", "openrocket", "cadquery", "single-turn", "train", "eval"]
+version = "0.1.0"
+requires-python = ">=3.10"
+# The reward also needs what the repo's .venv already has: cadquery (CAD gate), JPype1 + a JDK +
+# lib/OpenRocket.jar (flight gate). They are not listed here so installing this never touches them.
+dependencies = [
+    "verifiers>=0.4",  # the v1 API: Taskset / Task / @vf.reward
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["rocket_design.py", "pyproject.toml", "README.md"]
