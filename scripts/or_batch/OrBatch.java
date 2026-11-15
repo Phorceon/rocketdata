@@ -77,6 +77,43 @@ public class OrBatch {
     return sb.append('"').toString();
   }
   static String num(double d){ return (Double.isNaN(d)||Double.isInfinite(d)) ? "null" : Double.toString(d); }
+  /** Safety numbers for scripts/reward.py: stability (cal) at rail exit and its minimum from rail exit
+   *  to the last burnout (main branch), and per branch: name, recovery deployed, ground hit, and the
+   *  vertical speed at the last sample (the touchdown speed). */
+  static void safety(StringBuilder sb, FlightData d) {
+    FlightDataBranch m = d.getBranch(0);
+    List<Double> t = m.get(FlightDataType.TYPE_TIME), s = m.get(FlightDataType.TYPE_STABILITY);
+    double rod = Double.NaN, burn = Double.NaN;
+    for (FlightEvent e : m.getEvents()) {
+      if (e.getType() == FlightEvent.Type.LAUNCHROD && Double.isNaN(rod)) rod = e.getTime();
+      if (e.getType() == FlightEvent.Type.BURNOUT) burn = e.getTime();
+    }
+    double atRail = Double.NaN, minBurn = Double.NaN;
+    if (t != null && s != null && !Double.isNaN(rod)) {
+      for (int i = 0; i < Math.min(t.size(), s.size()); i++) {
+        double ti = t.get(i), si = s.get(i);
+        if (ti < rod || Double.isNaN(si) || Double.isInfinite(si)) continue;
+        if (Double.isNaN(atRail)) atRail = si;
+        if (!Double.isNaN(burn) && ti <= burn) minBurn = Double.isNaN(minBurn) ? si : Math.min(minBurn, si);
+      }
+    }
+    if (Double.isNaN(minBurn)) minBurn = atRail;
+    sb.append(",\"stability_rail_cal\":"+num(atRail)+",\"stability_min_burn_cal\":"+num(minBurn));
+    sb.append(",\"branches\":[");
+    for (int b = 0; b < d.getBranchCount(); b++) {
+      FlightDataBranch br = d.getBranch(b);
+      boolean dep = false, ground = false;
+      for (FlightEvent e : br.getEvents()) {
+        dep |= e.getType() == FlightEvent.Type.RECOVERY_DEVICE_DEPLOYMENT;
+        ground |= e.getType() == FlightEvent.Type.GROUND_HIT;
+      }
+      List<Double> vz = br.get(FlightDataType.TYPE_VELOCITY_Z);
+      double land = (vz == null || vz.isEmpty()) ? Double.NaN : Math.abs(vz.get(vz.size() - 1));
+      sb.append((b > 0 ? "," : "")+"{\"name\":"+q(String.valueOf(br.getName()))+",\"deployed\":"+dep
+        +",\"ground\":"+ground+",\"landing_ms\":"+num(land)+"}");
+    }
+    sb.append("]");
+  }
   public static void main(String[] a) throws Exception {
     PrintStream out = new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8");
     System.setOut(new PrintStream(OutputStream.nullOutputStream()));
@@ -109,6 +146,8 @@ public class OrBatch {
             for (Object w : loader.getWarnings()) { if(!wfirst) wl.append(","); wfirst=false; wl.append(q(String.valueOf(w))); }
             sb.append(",\"load_warnings\":["+wl+"]");
           }
+          sb.append(",\"rail_exit_ms\":"+num(d.getLaunchRodVelocity()));
+          safety(sb, d);
           sb.append(",\"events\":[");
           boolean first=true;
           for (int b=0;b<d.getBranchCount();b++) for (FlightEvent e: d.getBranch(b).getEvents()) {

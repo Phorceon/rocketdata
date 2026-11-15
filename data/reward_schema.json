@@ -1,0 +1,3398 @@
+{
+ "_source": "built by scripts/reward.py --build-schema from sft_v5.jsonl",
+ "nodes": {
+  "bodytube": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth",
+      "unfinished"
+     ],
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 3.8000000000000003,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Acrylic",
+      "Aluminum",
+      "Blue tube",
+      "Carbon fiber",
+      "Cardboard",
+      "Cellulose Acetate Propionate",
+      "Fiberglass",
+      "Fiberglass, G12, filament wound tube, bulk",
+      "G10 Fiberglass Filament Wound Tube",
+      "Kraft phenolic",
+      "Mylar, bulk",
+      "PETG - 100% infill",
+      "PETG-CF",
+      "PLA",
+      "PVC",
+      "Paper",
+      "Paper, kraft glassine, LOC tube avg",
+      "Paper, spiral kraft glassine, BMS avg, bulk",
+      "Paper, spiral kraft glassine, Estes avg, bulk",
+      "Paper, spiral kraft glassine, bulk",
+      "Polycarbonate",
+      "Polycarbonate (Lexan)",
+      "Polystyrene",
+      "Polystyrene PS",
+      "RS: Fiber",
+      "RS: Kraft phenolic",
+      "RS: Quantum Tubing",
+      "Spiral/Glassine",
+      "Styrene Plastic",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 300.0,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Other",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "radius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.2032,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.031,
+     "words": [
+      "filled"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "bulkhead": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.2953999999999997,
+     "hi": 2.971800000000005,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 2.0,
+     "attrs": {}
+    },
+    "instanceseparation": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.15239999999999998,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "ABS",
+      "Aircraft plywood (Birch)",
+      "Aircraft plywood (LOC)",
+      "Aluminum",
+      "Balsa",
+      "Basswood",
+      "Birch",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "G10 fiberglass",
+      "Kraft phenolic",
+      "Maple",
+      "PLA",
+      "Plywood (birch)",
+      "RS: Aircraft plywood (Birch)",
+      "RS: Birch",
+      "Rocketwood",
+      "[material:Aircraft plywood (LOC)]"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 61.554420244774825,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Metals",
+        "PaperProducts",
+        "Woods"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerradius": {
+     "kind": "num",
+     "lo": 0.0060325,
+     "hi": 0.152578,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.2953999999999997,
+     "hi": 2.971800000000005,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    }
+   }
+  },
+  "centeringring": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.125,
+     "hi": 5.175249999999999,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "innerradius": {
+     "kind": "num",
+     "lo": 0.0035369499999999996,
+     "hi": 0.15239999999999998,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 2.0,
+     "attrs": {}
+    },
+    "instanceseparation": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.06,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "1/4 Aircraft Plywood",
+      "1/8 Aircraft Plywood",
+      "ABS",
+      "ABS - 100% infill",
+      "Aircraft plywood",
+      "Aircraft plywood (Birch)",
+      "Aircraft plywood (LOC)",
+      "Aluminum",
+      "Birch",
+      "Birch plywood",
+      "Cardboard",
+      "Fiber",
+      "Fiber, bulk",
+      "Fiberglass",
+      "Kraft phenolic",
+      "Lexan",
+      "PETG - 100% infill",
+      "PVC",
+      "Paper",
+      "Paper (office)",
+      "Plywood (birch)",
+      "Plywood, Baltic birch, bulk",
+      "RS: Aircraft plywood (Birch)",
+      "RS: Birch",
+      "RS: Lite Plywood",
+      "RS: Polystyrene PS",
+      "Steel",
+      "kompozit",
+      "lite ply"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 20.413929672,
+       "hi": 15700.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Metals",
+        "PaperProducts",
+        "Plastics",
+        "Woods"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerradius": {
+     "kind": "num",
+     "lo": 0.0045084999999999995,
+     "hi": 0.198501,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.552575,
+     "hi": 5.175249999999999,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    }
+   }
+  },
+  "deploymentconfiguration": {
+   "parents": [
+    "parachute"
+   ],
+   "attrs": {
+    "configid": {
+     "kind": "enum",
+     "values": [
+      "cfg0"
+     ]
+    }
+   },
+   "fields": {
+    "deployaltitude": {
+     "kind": "num",
+     "lo": 76.2,
+     "hi": 609.6,
+     "attrs": {}
+    },
+    "deploydelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "deployevent": {
+     "kind": "enum",
+     "values": [
+      "altitude",
+      "apogee",
+      "ejection"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "ellipticalfinset": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "cant": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "crosssection": {
+     "kind": "enum",
+     "values": [
+      "square"
+     ],
+     "attrs": {}
+    },
+    "filletmaterial": {
+     "kind": "enum",
+     "values": [
+      "Cardboard"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 340.0,
+       "hi": 1360.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "PaperProducts"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "filletradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "fincount": {
+     "kind": "num",
+     "lo": 1.5,
+     "hi": 6.0,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal"
+     ],
+     "attrs": {}
+    },
+    "height": {
+     "kind": "num",
+     "lo": 0.03,
+     "hi": 0.12,
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 1.5,
+     "hi": 6.0,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Cardboard"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 340.0,
+       "hi": 1360.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "PaperProducts"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "surface"
+       ]
+      }
+     }
+    },
+    "rootchord": {
+     "kind": "num",
+     "lo": 0.03,
+     "hi": 0.12,
+     "attrs": {}
+    },
+    "rotation": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0015,
+     "hi": 0.006,
+     "attrs": {}
+    }
+   }
+  },
+  "engineblock": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.0574999999999999,
+     "hi": 0.43,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0005,
+     "hi": 1.200658,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Aluminum",
+      "Cardboard",
+      "Fiber, bulk",
+      "PETG - 100% infill",
+      "PVC",
+      "Paper",
+      "Paper, bulk"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.00055,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "Metals",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerradius": {
+     "kind": "num",
+     "lo": 0.004445,
+     "hi": 0.10200000000000001,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.0574999999999999,
+     "hi": 0.43,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.145,
+     "attrs": {}
+    }
+   }
+  },
+  "finpoints": {
+   "parents": [
+    "freeformfinset"
+   ],
+   "attrs": {},
+   "fields": {
+    "point": {
+     "none": true,
+     "kind": "enum",
+     "values": [],
+     "attrs": {
+      "x": {
+       "kind": "num",
+       "lo": -0.028575006600825747,
+       "hi": 0.9398
+      },
+      "y": {
+       "kind": "num",
+       "lo": -0.028213049999999996,
+       "hi": 0.3937
+      }
+     }
+    }
+   }
+  },
+  "freeformfinset": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": -179.99999999999997,
+     "hi": 360.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.1905,
+     "hi": 1.6446500000000002,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "cant": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "crosssection": {
+     "kind": "enum",
+     "values": [
+      "airfoil",
+      "rounded",
+      "square"
+     ],
+     "attrs": {}
+    },
+    "filletmaterial": {
+     "kind": "enum",
+     "values": [
+      "Acrylic",
+      "Balsa",
+      "Basswood",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "PLA"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 85.0,
+       "hi": 3700.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "PaperProducts",
+        "Woods"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "filletradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.02,
+     "attrs": {}
+    },
+    "fincount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 16.0,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth",
+      "unfinished"
+     ],
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 16.0,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "1/4 Aircraft Plywood",
+      "1/8 Aircraft Plywood",
+      "Aircraft plywood (Birch)",
+      "Aluminum",
+      "Balsa",
+      "Basswood",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "Firm Balsa",
+      "G10 fiberglass",
+      "PLA",
+      "Plywood (birch)",
+      "Polystyrene PS",
+      "RS: Aircraft plywood (Birch)",
+      "RS: G10 (PML 0.093)",
+      "RS: G10 fiberglass",
+      "Styrene Plastic"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.00356775797115,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "PaperProducts",
+        "Woods"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.7619999999999998,
+     "hi": 1.6446500000000002,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "surface"
+       ]
+      }
+     }
+    },
+    "rotation": {
+     "kind": "num",
+     "lo": -180.00000000000003,
+     "hi": 360.0,
+     "attrs": {}
+    },
+    "tabheight": {
+     "kind": "num",
+     "lo": 9.798850574712644e-06,
+     "hi": 0.137541,
+     "attrs": {}
+    },
+    "tablength": {
+     "kind": "num",
+     "lo": 2.904094827586207e-05,
+     "hi": 0.9398,
+     "attrs": {}
+    },
+    "tabposition": {
+     "kind": "num",
+     "lo": -0.019049999999999984,
+     "hi": 0.3,
+     "attrs": {
+      "relativeto": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "center",
+        "end",
+        "front",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 1.3335129310344828e-07,
+     "hi": 0.09,
+     "attrs": {}
+    }
+   }
+  },
+  "ignitionconfiguration": {
+   "parents": [
+    "motormount"
+   ],
+   "attrs": {
+    "configid": {
+     "kind": "enum",
+     "values": [
+      "cfg0"
+     ]
+    }
+   },
+   "fields": {
+    "ignitiondelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 18.0,
+     "attrs": {}
+    },
+    "ignitionevent": {
+     "kind": "enum",
+     "values": [
+      "automatic",
+      "burnout",
+      "launch"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "innertube": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.0725,
+     "hi": 4.444999999999999,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "clusterconfiguration": {
+     "kind": "enum",
+     "values": [
+      "3-ring",
+      "4-ring",
+      "4-row",
+      "6-ring",
+      "double",
+      "single"
+     ],
+     "attrs": {}
+    },
+    "clusterrotation": {
+     "kind": "num",
+     "lo": -89.99999999999999,
+     "hi": 360.0,
+     "attrs": {}
+    },
+    "clusterscale": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 55.6,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 2.05,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "ABS - 100% infill",
+      "Acrylic",
+      "Aluminum",
+      "Carbon fiber",
+      "Cardboard",
+      "Fenolico",
+      "Fiberglass",
+      "Fiberglass, G12, filament wound tube, bulk",
+      "G10 fiberglass",
+      "Kraft phenolic",
+      "Masking Tape",
+      "PETG - 100% infill",
+      "PETG-CF",
+      "PVC",
+      "Paper",
+      "Paper, kraft glassine, LOC tube avg",
+      "Paper, kraft, 29mm, heavy, bulk",
+      "Paper, spiral kraft glassine, BMS avg, bulk",
+      "Paper, spiral kraft glassine, Estes avg, bulk",
+      "Paper, spiral kraft glassine, bulk",
+      "Paper, spiral kraft, Motor Mount, 29mm, 8\", bulk",
+      "RS: Fiber",
+      "RS: Kraft phenolic",
+      "Spiral/Glassine",
+      "Steel",
+      "Vulcanized Fiber",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 300.0,
+       "hi": 15700.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Metals",
+        "Other",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.152578,
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.0725,
+     "hi": 4.444999999999999,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": -236.25,
+     "hi": 360.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.041,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.025578000000000004,
+     "attrs": {}
+    }
+   }
+  },
+  "launchlug": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": -22.499999999999996,
+     "hi": 360.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.5524999999999998,
+     "hi": 2.9972,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth",
+      "unfinished"
+     ],
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 2.0,
+     "attrs": {}
+    },
+    "instanceseparation": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.12,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0034999999999999996,
+     "hi": 0.3048,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Cardboard",
+      "Delrin Plastic",
+      "PETG - 100% infill",
+      "Paper",
+      "Paper, spiral kraft glassine, Estes avg, bulk",
+      "Polycarbonate",
+      "Polystyrene PS",
+      "RS: Brass",
+      "RS: Copper (rolled)",
+      "RS: Paper",
+      "Styrene Plastic",
+      "paper"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 304.350797,
+       "hi": 17812.530856
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.5524999999999998,
+     "hi": 2.9972,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": -90.0002104591497,
+     "hi": 360.0,
+     "attrs": {}
+    },
+    "radius": {
+     "kind": "num",
+     "lo": 0.000500635,
+     "hi": 0.019145000000000002,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.006999999999999999,
+     "attrs": {}
+    }
+   }
+  },
+  "masscomponent": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.1468099999999999,
+     "hi": 2.4116,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "mass": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 25.382,
+     "attrs": {}
+    },
+    "masscomponenttype": {
+     "kind": "enum",
+     "values": [
+      "altimeter",
+      "battery",
+      "deploymentcharge",
+      "flightcomputer",
+      "masscomponent",
+      "payload",
+      "recoveryhardware",
+      "tracker"
+     ],
+     "attrs": {}
+    },
+    "packedlength": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 1.4000000000000001,
+     "attrs": {}
+    },
+    "packedradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.17398999999999998,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.5825,
+     "hi": 2.9560000000000004,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": -135.0,
+     "hi": 360.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.11,
+     "attrs": {}
+    }
+   }
+  },
+  "motor": {
+   "parents": [
+    "motormount"
+   ],
+   "attrs": {
+    "configid": {
+     "kind": "enum",
+     "values": [
+      "cfg0"
+     ]
+    }
+   },
+   "fields": {
+    "delay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 38.0,
+     "words": [
+      "none"
+     ],
+     "attrs": {}
+    },
+    "designation": {
+     "kind": "text",
+     "attrs": {}
+    },
+    "diameter": {
+     "kind": "num",
+     "lo": 0.009,
+     "hi": 0.196,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.035,
+     "hi": 3.014,
+     "attrs": {}
+    },
+    "manufacturer": {
+     "kind": "enum",
+     "values": [
+      "AeroTech",
+      "Cesaroni Technology",
+      "Ellis Mountain",
+      "Estes",
+      "Gorilla Rocket Motors",
+      "HyperTEK",
+      "Klima",
+      "Kosdon by AeroTech",
+      "Loki Research"
+     ],
+     "attrs": {}
+    },
+    "motor_id": {
+     "kind": "text",
+     "attrs": {}
+    },
+    "type": {
+     "kind": "enum",
+     "values": [
+      "hybrid",
+      "reload",
+      "single"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "motorconfiguration": {
+   "parents": [
+    "rocket"
+   ],
+   "attrs": {
+    "configid": {
+     "kind": "enum",
+     "values": [
+      "cfg0"
+     ]
+    },
+    "default": {
+     "kind": "bool"
+    }
+   },
+   "fields": {
+    "stage": {
+     "none": true,
+     "kind": "enum",
+     "values": [],
+     "attrs": {
+      "active": {
+       "kind": "bool"
+      },
+      "number": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 4.0
+      }
+     }
+    }
+   }
+  },
+  "motormount": {
+   "parents": [
+    "bodytube",
+    "innertube"
+   ],
+   "attrs": {},
+   "fields": {
+    "ignitiondelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 12.0,
+     "attrs": {}
+    },
+    "ignitionevent": {
+     "kind": "enum",
+     "values": [
+      "automatic",
+      "burnout",
+      "launch"
+     ],
+     "attrs": {}
+    },
+    "overhang": {
+     "kind": "num",
+     "lo": -0.015,
+     "hi": 1.002,
+     "attrs": {}
+    }
+   }
+  },
+  "nosecone": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "aftradius": {
+     "kind": "num",
+     "lo": 0.00118745,
+     "hi": 0.2032,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "aftshouldercapped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "aftshoulderlength": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.3048,
+     "attrs": {}
+    },
+    "aftshoulderradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.1984248,
+     "attrs": {}
+    },
+    "aftshoulderthickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.055244999999999995,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth",
+      "unfinished"
+     ],
+     "attrs": {}
+    },
+    "isflipped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.0011937999999999999,
+     "hi": 1.8541999999999998,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "ABS",
+      "Balsa",
+      "Balsa, bulk, 7lb/ft3",
+      "Balsa, bulk, Estes typical",
+      "Blue tube",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "Fiberglass, G10, bulk",
+      "G10 fiberglass",
+      "PETG - 100% infill",
+      "PETG-CF",
+      "PLA",
+      "PLA - 100% infill",
+      "PLA Plastic",
+      "PVC",
+      "Polycarbonate",
+      "Polycarbonate (Lexan)",
+      "Polyethylene, HIPS, bulk",
+      "Polypropylene, bulk",
+      "Polystyrene",
+      "Polystyrene PS",
+      "Polystyrene, cast, bulk",
+      "RS: Fiberglass",
+      "RS: Polystyrene PS",
+      "Styrene Plastic",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 49.15814714179578,
+       "hi": 3819.82
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Other",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "shape": {
+     "kind": "enum",
+     "values": [
+      "conical",
+      "ellipsoid",
+      "haack",
+      "ogive",
+      "parabolic",
+      "power"
+     ],
+     "attrs": {}
+    },
+    "shapeclipped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "shapeparameter": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 2.0,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0508,
+     "words": [
+      "filled"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "parachute": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.5095875,
+     "hi": 1.0922,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "cd": {
+     "kind": "num",
+     "lo": 0.305,
+     "hi": 4.4,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "deployaltitude": {
+     "kind": "num",
+     "lo": 45.72,
+     "hi": 1200.0,
+     "attrs": {}
+    },
+    "deploydelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 3.0,
+     "attrs": {}
+    },
+    "deployevent": {
+     "kind": "enum",
+     "values": [
+      "altitude",
+      "apogee",
+      "ejection",
+      "lowerstageseparation",
+      "never"
+     ],
+     "attrs": {}
+    },
+    "diameter": {
+     "kind": "num",
+     "lo": 0.1016,
+     "hi": 9.144,
+     "attrs": {}
+    },
+    "linecount": {
+     "kind": "num",
+     "lo": 1.5,
+     "hi": 48.0,
+     "attrs": {}
+    },
+    "linelength": {
+     "kind": "num",
+     "lo": 0.003,
+     "hi": 7.3152,
+     "attrs": {}
+    },
+    "linematerial": {
+     "kind": "enum",
+     "values": [
+      "0555 Nylon webbing #440 [flat 1/2 x 3/64 in (12.7 x 1 mm)]",
+      "1/16 In. braided nylon",
+      "30 Lb. kevlar",
+      "Braided nylon",
+      "Braided nylon (2 mm, 1/16 in)",
+      "Braided nylon (3 mm, 1/8 in)",
+      "Carpet String",
+      "Carpet String (Apogee 29500)",
+      "Carpet Thread",
+      "Elastic cord (flat 6 mm, 1/4 in)",
+      "Elastic cord (round 2 mm, 1/16 in)",
+      "Elastic cord (round 2mm, 1/16 in)",
+      "Kevlar thread 138  (0.4 mm, 1/64 in)",
+      "MIL-C-5040 Type IA paraline 1/16 in (1.6 mm)",
+      "Nylon #200 IIa Paraline [flat 4.0 mm, 5/32 in]",
+      "Nylon IIIa Paraline [flat 6.4 mm, 1/4 in]",
+      "Nylon Paracord, 110 lb, 1/16 in. dia.",
+      "Nylon Paracord, 275 lb, 2.38 mm dia.",
+      "Nylon thread, rod wrapping, size D",
+      "RS:",
+      "RS: 1/16 in. Braided Nylon",
+      "RS: Heavy poly",
+      "RS: Medium poly",
+      "RS: Thin poly",
+      "Spectra #200 [Round 1.5 mm, 1/16 in]",
+      "Spectra #400 [Oval 2.55 mm, 3/32in]",
+      "Thread (heavy-duty)",
+      "Tubular nylon",
+      "Tubular nylon (11 mm, 7/16 in)",
+      "Tubular nylon (14 mm, 9/16 in)"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.06535532904
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "Other",
+        "ThreadsLines"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "line"
+       ]
+      }
+     }
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "1.9 oz. Ripstop Nylon (SkyAngle)",
+      "Mylar",
+      "Mylar polyester film, 0.50 mil",
+      "Nylon fabric, ripstop, 1.1 oz actual",
+      "Nylon fabric, ripstop, 1.7 oz actual",
+      "Nylon fabric, ripstop, 1.9 oz actual",
+      "Polyethylene (heavy)",
+      "Polyethylene (thin)",
+      "Polyethylene LDPE",
+      "Polyethylene film, HDPE, 1.0 mil, bare",
+      "RS: 1.1 oz. Rip Stop Nylon",
+      "RS: Rip stop nylon",
+      "Rip stop nylon",
+      "Ripstop Nylon, 1.9 oz 5 mil",
+      "Ripstop Nylon, ultra-lightweight 66 oz 1 mil",
+      "Ripstop nylon",
+      "Ripstop nylon thin",
+      "Ripstop nylon, lightweight, 3 mil",
+      "Ripstop nylon, ultra lightweight, 2 mil"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.134
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "Fabrics",
+        "Other",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "surface"
+       ]
+      }
+     }
+    },
+    "packedlength": {
+     "kind": "num",
+     "lo": 0.001728437907229158,
+     "hi": 1.2191999999999998,
+     "attrs": {}
+    },
+    "packedradius": {
+     "kind": "num",
+     "lo": 0.0035324999999999996,
+     "hi": 0.19080479999999997,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.5334000000000003,
+     "hi": 1.0922,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    }
+   }
+  },
+  "parallelstage": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 1.0,
+     "hi": 4.0,
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "separationaltitude": {
+     "kind": "num",
+     "lo": 100.0,
+     "hi": 400.0,
+     "attrs": {}
+    },
+    "separationdelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "separationevent": {
+     "kind": "enum",
+     "values": [
+      "ejection"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "podset": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": -202.5,
+     "hi": 180.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.10668000000000002,
+     "hi": 0.376,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 4.0,
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.10668000000000002,
+     "hi": 0.376,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.1016,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "free",
+        "relative"
+       ]
+      }
+     }
+    }
+   }
+  },
+  "railbutton": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": -202.5,
+     "hi": 360.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.561975,
+     "hi": 1.46558,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "baseheight": {
+     "kind": "num",
+     "lo": 0.0009270999999999999,
+     "hi": 0.0154,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "smooth"
+     ],
+     "attrs": {}
+    },
+    "flangeheight": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.009524999999999999,
+     "attrs": {}
+    },
+    "height": {
+     "kind": "num",
+     "lo": 0.0037782499999999995,
+     "hi": 0.028448,
+     "attrs": {}
+    },
+    "innerdiameter": {
+     "kind": "num",
+     "lo": 0.00290195,
+     "hi": 0.016000000000000007,
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 4.0,
+     "attrs": {}
+    },
+    "instanceseparation": {
+     "kind": "num",
+     "lo": 0.0291,
+     "hi": 1.4859,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Delrin"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 482.15156869219607,
+       "hi": 2840.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 473000000.0,
+       "hi": 1892000000.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerdiameter": {
+     "kind": "num",
+     "lo": 0.00485,
+     "hi": 0.04,
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.561975,
+     "hi": 1.46558,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "screwheight": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    }
+   }
+  },
+  "rocket": {
+   "parents": [
+    "openrocket"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute"
+       ]
+      }
+     }
+    },
+    "motorconfiguration": {
+     "none": true,
+     "kind": "enum",
+     "values": [],
+     "attrs": {
+      "configid": {
+       "kind": "enum",
+       "values": [
+        "cfg0"
+       ]
+      },
+      "default": {
+       "kind": "bool"
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute"
+       ]
+      }
+     }
+    },
+    "referencetype": {
+     "kind": "enum",
+     "values": [
+      "maximum"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "separationconfiguration": {
+   "parents": [
+    "parallelstage",
+    "stage"
+   ],
+   "attrs": {
+    "configid": {
+     "kind": "enum",
+     "values": [
+      "cfg0"
+     ]
+    }
+   },
+   "fields": {
+    "separationaltitude": {
+     "kind": "num",
+     "lo": 100.0,
+     "hi": 400.0,
+     "attrs": {}
+    },
+    "separationdelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 1.0,
+     "attrs": {}
+    },
+    "separationevent": {
+     "kind": "enum",
+     "values": [
+      "burnout",
+      "ejection"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "shockcord": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.46863000000000005,
+     "hi": 1.371599999999999,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "cordlength": {
+     "kind": "num",
+     "lo": 0.1016,
+     "hi": 25.6,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "#100 Kevlar",
+      "1/2 In. flat elastic",
+      "1/4 In. flat elastic",
+      "1/8 In. flat elastic",
+      "1050 lb Emmakites",
+      "3/4 In. flat elastic",
+      "3/8 inch Flat Elastic",
+      "9/16 In. tubular nylon",
+      "Braided nylon (2 mm, 1/16 in)",
+      "Braided nylon (3 mm, 1/8 in)",
+      "Elastic braided cord (flat 13 mm, 1/2 in)",
+      "Elastic braided cord (flat 3.2 mm, 1/8 in)",
+      "Elastic braided cord (flat 4 mm, 5/32 in)",
+      "Elastic braided cord (flat 6.4 mm, 1/4 in)",
+      "Elastic cord (flat  6mm, 1/4 in)",
+      "Elastic cord (flat 12 mm, 1/2 in)",
+      "Elastic cord (flat 25mm, 1 in)",
+      "Elastic cord (flat 6 mm, 1/4 in)",
+      "Elastic cord (round 2 mm, 1/16 in)",
+      "Elastic cord (round 2mm, 1/16 in)",
+      "Elastic rubber band (flat 3.2 mm, 1/8 in)",
+      "Elastic rubber band (flat 6.4 mm, 1/4 in)",
+      "Kevlar 12-strand (10 mm, 3/8 in)",
+      "Kevlar 12-strand (13 mm, 1/2 in)",
+      "Kevlar 12-strand (3.2 mm, 1/8 in)",
+      "Kevlar thread 415  (0.8 mm, 1/32 in)",
+      "Kevlar thread 800 (1.1 mm, 3/64 in)",
+      "Tubular nylon (11 mm, 7/16 in)",
+      "Tubular nylon (14 mm, 9/16 in)",
+      "Tubular nylon (25 mm, 1 in)"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.00025,
+       "hi": 0.23215356
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom",
+        "ThreadsLines"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "line"
+       ]
+      }
+     }
+    },
+    "packedlength": {
+     "kind": "num",
+     "lo": 0.00102108,
+     "hi": 1.3462000000000076,
+     "attrs": {}
+    },
+    "packedradius": {
+     "kind": "num",
+     "lo": 0.00125,
+     "hi": 0.146,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.81534,
+     "hi": 1.371599999999999,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    }
+   }
+  },
+  "stage": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "separationaltitude": {
+     "kind": "num",
+     "lo": 100.0,
+     "hi": 400.0,
+     "attrs": {}
+    },
+    "separationdelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "separationevent": {
+     "kind": "enum",
+     "values": [
+      "burnout",
+      "ejection",
+      "ignition",
+      "upperignition"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "streamer": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.12065000000000001,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "top"
+       ]
+      }
+     }
+    },
+    "cd": {
+     "kind": "num",
+     "lo": 0.05,
+     "hi": 0.2,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "deployaltitude": {
+     "kind": "num",
+     "lo": 100.0,
+     "hi": 400.0,
+     "attrs": {}
+    },
+    "deploydelay": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "deployevent": {
+     "kind": "enum",
+     "values": [
+      "ejection"
+     ],
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Nomex",
+      "RS: Rip stop nylon",
+      "Ripstop nylon"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 0.033424999999999996,
+       "hi": 0.36
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "surface"
+       ]
+      }
+     }
+    },
+    "packedlength": {
+     "kind": "num",
+     "lo": 0.0125,
+     "hi": 0.3,
+     "attrs": {}
+    },
+    "packedradius": {
+     "kind": "num",
+     "lo": 0.00625,
+     "hi": 0.038,
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.12065000000000001,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "striplength": {
+     "kind": "num",
+     "lo": 0.25,
+     "hi": 7.3152,
+     "attrs": {}
+    },
+    "stripwidth": {
+     "kind": "num",
+     "lo": 0.009524999999999999,
+     "hi": 0.3,
+     "attrs": {}
+    }
+   }
+  },
+  "subcomponents": {
+   "parents": [
+    "bodytube",
+    "innertube",
+    "nosecone",
+    "parallelstage",
+    "podset",
+    "rocket",
+    "stage",
+    "transition",
+    "tubecoupler"
+   ],
+   "attrs": {},
+   "fields": {
+    "stage": {
+     "none": true,
+     "kind": "enum",
+     "values": [],
+     "attrs": {}
+    }
+   }
+  },
+  "transition": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "aftradius": {
+     "kind": "num",
+     "lo": 0.0038099999999999996,
+     "hi": 0.19304,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "aftshouldercapped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "aftshoulderlength": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.15239999999999998,
+     "attrs": {}
+    },
+    "aftshoulderradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.146,
+     "attrs": {}
+    },
+    "aftshoulderthickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.08,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth"
+     ],
+     "attrs": {}
+    },
+    "foreradius": {
+     "kind": "num",
+     "lo": 6.350000000000001e-07,
+     "hi": 0.15,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "foreshouldercapped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "foreshoulderlength": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.18,
+     "attrs": {}
+    },
+    "foreshoulderradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.146,
+     "attrs": {}
+    },
+    "foreshoulderthickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.08,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.001397,
+     "hi": 1.21287,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Aluminum",
+      "Balsa",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "PETG-CF",
+      "PVC",
+      "Paper",
+      "Paper (office)",
+      "Polycarbonate (Lexan)",
+      "Polypropylene, bulk",
+      "Polystyrene",
+      "Polystyrene PS",
+      "RS: Urethane",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 64.074,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Metals",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "shape": {
+     "kind": "enum",
+     "values": [
+      "conical",
+      "ellipsoid",
+      "haack",
+      "ogive"
+     ],
+     "attrs": {}
+    },
+    "shapeclipped": {
+     "kind": "bool",
+     "attrs": {}
+    },
+    "shapeparameter": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 2.0,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 1.2699999999999999e-07,
+     "hi": 0.15,
+     "words": [
+      "filled"
+     ],
+     "attrs": {}
+    }
+   }
+  },
+  "trapezoidfinset": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": -225.00000000000006,
+     "hi": 300.00000000000006,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "relative"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": -0.4190999999999999,
+     "hi": 4.9158143999999995,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "cant": {
+     "kind": "num",
+     "lo": -5.972927315268968,
+     "hi": 8.0,
+     "attrs": {}
+    },
+    "crosssection": {
+     "kind": "enum",
+     "values": [
+      "airfoil",
+      "rounded",
+      "square"
+     ],
+     "attrs": {}
+    },
+    "filletmaterial": {
+     "kind": "enum",
+     "values": [
+      "ABS - 100% infill",
+      "Aluminum",
+      "Balsa",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "PETG - 100% infill",
+      "PVC"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 85.0,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Metals",
+        "PaperProducts",
+        "Plastics",
+        "Woods"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 200000000.0,
+       "hi": 800000000.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "filletradius": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0508,
+     "attrs": {}
+    },
+    "fincount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 12.0,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal",
+      "polished",
+      "rough",
+      "smooth"
+     ],
+     "attrs": {}
+    },
+    "height": {
+     "kind": "num",
+     "lo": 0.0048259999999999996,
+     "hi": 0.54,
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 12.0,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "ABS",
+      "Aircraft plywood (Birch)",
+      "Aircraft plywood (LOC)",
+      "Balsa",
+      "Basswood",
+      "Birch",
+      "Birch plywood",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiberglass",
+      "G10 fiberglass",
+      "Lexan",
+      "PETG - 100% infill",
+      "PETG-CF",
+      "PVC",
+      "Plywood (birch)",
+      "RS: Balsa",
+      "RS: G10 fiberglass",
+      "RS: G10 phenolic",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 64.073852,
+       "hi": 3810.47197844
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "PaperProducts",
+        "Plastics",
+        "Woods"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 306500000.0,
+       "hi": 1226000000.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": -0.4190999999999999,
+     "hi": 4.9158143999999995,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "top"
+       ]
+      }
+     }
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "surface"
+       ]
+      }
+     }
+    },
+    "rootchord": {
+     "kind": "num",
+     "lo": 0.0015,
+     "hi": 0.99,
+     "attrs": {}
+    },
+    "rotation": {
+     "kind": "num",
+     "lo": -225.00000000000006,
+     "hi": 300.00000000000006,
+     "attrs": {}
+    },
+    "sweeplength": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.7112092747724119,
+     "attrs": {}
+    },
+    "tabheight": {
+     "kind": "num",
+     "lo": 0.003175,
+     "hi": 0.136525,
+     "attrs": {}
+    },
+    "tablength": {
+     "kind": "num",
+     "lo": 0.0127,
+     "hi": 0.5588,
+     "attrs": {}
+    },
+    "tabposition": {
+     "kind": "num",
+     "lo": -0.070485,
+     "hi": 0.30988000000000004,
+     "attrs": {
+      "relativeto": {
+       "kind": "enum",
+       "values": [
+        "bottom",
+        "center",
+        "end",
+        "front",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 5e-05,
+     "hi": 0.018740000000000003,
+     "attrs": {}
+    },
+    "tipchord": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.4,
+     "attrs": {}
+    }
+   }
+  },
+  "tubecoupler": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "axialoffset": {
+     "kind": "num",
+     "lo": -1.5135,
+     "hi": 1.7018,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.00732028,
+     "hi": 0.9144,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "ABS",
+      "ABS - 100% infill",
+      "Aluminum",
+      "Carbon fiber",
+      "Cardboard",
+      "Fiber, bulk",
+      "Fiberglass",
+      "G10 fiberglass",
+      "Kraft phenolic",
+      "PETG - 100% infill",
+      "Paper",
+      "Paper, kraft, LOC coupler avg",
+      "Paper, kraft, LOC coupler stiffener avg",
+      "Paper, spiral kraft glassine, Estes avg, bulk",
+      "Polystyrene",
+      "RS: Kraft phenolic",
+      "Spiral/Glassine",
+      "Vulcanized Fiber",
+      "[material:Kraft phenolic]",
+      "kompozit"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 301.65,
+       "hi": 5400.0
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Composites",
+        "Custom",
+        "Other",
+        "PaperProducts",
+        "Plastics"
+       ]
+      },
+      "shearModulus": {
+       "kind": "num",
+       "lo": 0.0,
+       "hi": 0.0
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "outerradius": {
+     "kind": "num",
+     "lo": 0.006026149999999999,
+     "hi": 0.1900682,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "position": {
+     "kind": "num",
+     "lo": -1.5620999999999998,
+     "hi": 1.7018,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "absolute",
+        "bottom",
+        "middle",
+        "top"
+       ]
+      }
+     }
+    },
+    "radialdirection": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "radialposition": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.01999999999999999,
+     "attrs": {}
+    }
+   }
+  },
+  "tubefinset": {
+   "parents": [
+    "subcomponents"
+   ],
+   "attrs": {},
+   "fields": {
+    "angleoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 59.99999999999999,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "fixed"
+       ]
+      }
+     }
+    },
+    "axialoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "fincount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 12.0,
+     "attrs": {}
+    },
+    "finish": {
+     "kind": "enum",
+     "values": [
+      "normal"
+     ],
+     "attrs": {}
+    },
+    "instancecount": {
+     "kind": "num",
+     "lo": 0.5,
+     "hi": 12.0,
+     "attrs": {}
+    },
+    "length": {
+     "kind": "num",
+     "lo": 0.035559999999999994,
+     "hi": 0.15239999999999998,
+     "attrs": {}
+    },
+    "material": {
+     "kind": "enum",
+     "values": [
+      "Cardboard",
+      "Paper, spiral kraft glassine, Estes avg, bulk"
+     ],
+     "attrs": {
+      "density": {
+       "kind": "num",
+       "lo": 340.0,
+       "hi": 1788.8
+      },
+      "group": {
+       "kind": "enum",
+       "values": [
+        "Custom"
+       ]
+      },
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bulk"
+       ]
+      }
+     }
+    },
+    "position": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "type": {
+       "kind": "enum",
+       "values": [
+        "bottom"
+       ]
+      }
+     }
+    },
+    "radius": {
+     "kind": "num",
+     "lo": 0.006197599999999999,
+     "hi": 0.024790399999999997,
+     "words": [
+      "auto"
+     ],
+     "attrs": {}
+    },
+    "radiusoffset": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 0.0,
+     "attrs": {
+      "method": {
+       "kind": "enum",
+       "values": [
+        "coaxial"
+       ]
+      }
+     }
+    },
+    "rotation": {
+     "kind": "num",
+     "lo": 0.0,
+     "hi": 59.99999999999999,
+     "attrs": {}
+    },
+    "thickness": {
+     "kind": "num",
+     "lo": 0.00016509999999999875,
+     "hi": 0.0006603999999999985,
+     "attrs": {}
+    }
+   }
+  }
+ },
+ "materials": {
+  "bulk|1/4 Aircraft Plywood": 344.269,
+  "bulk|1/8 Aircraft Plywood": 337.541,
+  "bulk|ABS": 1070.0,
+  "bulk|ABS - 100% infill": 1050.0,
+  "bulk|Acrylic": 1190.0,
+  "bulk|Aircraft plywood": 630.0,
+  "bulk|Aircraft plywood (Birch)": 724.996,
+  "bulk|Aircraft plywood (LOC)": 724.996,
+  "bulk|Aluminum": 2700.0,
+  "bulk|Balsa": 170.0,
+  "bulk|Balsa, bulk, 7lb/ft3": 112.0,
+  "bulk|Balsa, bulk, Estes typical": 160.2,
+  "bulk|Basswood": 500.0,
+  "bulk|Birch": 680.8,
+  "bulk|Birch plywood": 630.0,
+  "bulk|Blue tube": 1300.0,
+  "bulk|Carbon fiber": 1780.0,
+  "bulk|Cardboard": 680.0,
+  "bulk|Cellulose Acetate Propionate": 1199.78,
+  "bulk|Delrin": 1420.0,
+  "bulk|Delrin Plastic": 1410.0,
+  "bulk|Fenolico": 1300.0,
+  "bulk|Fiber": 656.756999,
+  "bulk|Fiber, bulk": 657.0,
+  "bulk|Fiberglass": 1850.0,
+  "bulk|Fiberglass, G10, bulk": 1800.0,
+  "bulk|Fiberglass, G12, filament wound tube, bulk": 1820.0,
+  "bulk|Firm Balsa": 216.249255,
+  "bulk|G10 Fiberglass Filament Wound Tube": 1820.0,
+  "bulk|G10 fiberglass": 1905.24,
+  "bulk|Kraft phenolic": 950.0,
+  "bulk|Lexan": 1218.0,
+  "bulk|Maple": 755.0,
+  "bulk|Masking Tape": 680.0,
+  "bulk|Mylar, bulk": 1390.0,
+  "bulk|PETG - 100% infill": 1250.0,
+  "bulk|PETG-CF": 600.0,
+  "bulk|PLA": 900.0,
+  "bulk|PLA - 100% infill": 1250.0,
+  "bulk|PLA Plastic": 1300.0,
+  "bulk|PVC": 1390.0,
+  "bulk|Paper": 1121.29,
+  "bulk|Paper (office)": 820.0,
+  "bulk|Paper, bulk": 0.0011,
+  "bulk|Paper, kraft glassine, LOC tube avg": 855.2,
+  "bulk|Paper, kraft, 29mm, heavy, bulk": 850.3,
+  "bulk|Paper, kraft, LOC coupler avg": 789.6,
+  "bulk|Paper, kraft, LOC coupler stiffener avg": 603.3,
+  "bulk|Paper, spiral kraft glassine, BMS avg, bulk": 894.4,
+  "bulk|Paper, spiral kraft glassine, Estes avg, bulk": 894.4,
+  "bulk|Paper, spiral kraft glassine, bulk": 798.85,
+  "bulk|Paper, spiral kraft, Motor Mount, 29mm, 8\", bulk": 824.08,
+  "bulk|Plywood (birch)": 630.0,
+  "bulk|Plywood, Baltic birch, bulk": 680.0,
+  "bulk|Polycarbonate": 1199.78,
+  "bulk|Polycarbonate (Lexan)": 1200.0,
+  "bulk|Polyethylene, HIPS, bulk": 438.406016,
+  "bulk|Polypropylene, bulk": 946.0,
+  "bulk|Polystyrene": 1050.0,
+  "bulk|Polystyrene PS": 1049.21,
+  "bulk|Polystyrene, cast, bulk": 1050.0,
+  "bulk|RS: Aircraft plywood (Birch)": 724.995635,
+  "bulk|RS: Balsa": 128.147704,
+  "bulk|RS: Birch": 680.784678,
+  "bulk|RS: Brass": 8553.859242,
+  "bulk|RS: Copper (rolled)": 8906.265428,
+  "bulk|RS: Fiber": 656.756983,
+  "bulk|RS: Fiberglass": 128.147704,
+  "bulk|RS: G10 (PML 0.093)": 0.007136,
+  "bulk|RS: G10 fiberglass": 1905.235989,
+  "bulk|RS: G10 phenolic": 1905.235989,
+  "bulk|RS: Kraft phenolic": 958.705011,
+  "bulk|RS: Lite Plywood": 352.406186,
+  "bulk|RS: Paper": 608.701594,
+  "bulk|RS: Polystyrene PS": 1049.209327,
+  "bulk|RS: Quantum Tubing": 1100.0,
+  "bulk|RS: Urethane": 847.056323,
+  "bulk|Rocketwood": 529.09,
+  "bulk|Spiral/Glassine": 849.0,
+  "bulk|Steel": 7850.0,
+  "bulk|Styrene Plastic": 1300.0,
+  "bulk|Vulcanized Fiber": 1250.0,
+  "bulk|[material:Aircraft plywood (LOC)]": 724.995653,
+  "bulk|[material:Kraft phenolic]": 958.705034,
+  "bulk|kompozit": 1500.0,
+  "bulk|lite ply": 352.406195,
+  "bulk|paper": 1121.29241,
+  "line|#100 Kevlar": 0.0005,
+  "line|0555 Nylon webbing #440 [flat 1/2 x 3/64 in (12.7 x 1 mm)]": 0.00409,
+  "line|1/16 In. braided nylon": 0.00102,
+  "line|1/2 In. flat elastic": 0.003125,
+  "line|1/4 In. flat elastic": 0.00402,
+  "line|1/8 In. flat elastic": 0.00205,
+  "line|1050 lb Emmakites": 0.0045,
+  "line|3/4 In. flat elastic": 0.012277,
+  "line|3/8 inch Flat Elastic": 0.0038,
+  "line|30 Lb. kevlar": 0.000178,
+  "line|9/16 In. tubular nylon": 0.016742,
+  "line|Braided nylon": 0.0018,
+  "line|Braided nylon (2 mm, 1/16 in)": 0.001,
+  "line|Braided nylon (3 mm, 1/8 in)": 0.0035,
+  "line|Carpet String": 0.00033,
+  "line|Carpet String (Apogee 29500)": 0.00033,
+  "line|Carpet Thread": 0.00033,
+  "line|Elastic braided cord (flat 13 mm, 1/2 in)": 0.005512,
+  "line|Elastic braided cord (flat 3.2 mm, 1/8 in)": 0.00106,
+  "line|Elastic braided cord (flat 4 mm, 5/32 in)": 0.002,
+  "line|Elastic braided cord (flat 6.4 mm, 1/4 in)": 0.00254,
+  "line|Elastic cord (flat  6mm, 1/4 in)": 0.0043,
+  "line|Elastic cord (flat 12 mm, 1/2 in)": 0.008,
+  "line|Elastic cord (flat 25mm, 1 in)": 0.0016,
+  "line|Elastic cord (flat 6 mm, 1/4 in)": 0.0043,
+  "line|Elastic cord (round 2 mm, 1/16 in)": 0.0018,
+  "line|Elastic cord (round 2mm, 1/16 in)": 0.0018,
+  "line|Elastic rubber band (flat 3.2 mm, 1/8 in)": 0.002976,
+  "line|Elastic rubber band (flat 6.4 mm, 1/4 in)": 0.006131,
+  "line|Kevlar 12-strand (10 mm, 3/8 in)": 0.059527,
+  "line|Kevlar 12-strand (13 mm, 1/2 in)": 0.116077,
+  "line|Kevlar 12-strand (3.2 mm, 1/8 in)": 0.009673,
+  "line|Kevlar thread 138  (0.4 mm, 1/64 in)": 0.000148,
+  "line|Kevlar thread 415  (0.8 mm, 1/32 in)": 0.000551,
+  "line|Kevlar thread 800 (1.1 mm, 3/64 in)": 0.000992,
+  "line|MIL-C-5040 Type IA paraline 1/16 in (1.6 mm)": 0.00142,
+  "line|Nylon #200 IIa Paraline [flat 4.0 mm, 5/32 in]": 0.002953,
+  "line|Nylon IIIa Paraline [flat 6.4 mm, 1/4 in]": 0.0,
+  "line|Nylon Paracord, 110 lb, 1/16 in. dia.": 0.0016,
+  "line|Nylon Paracord, 275 lb, 2.38 mm dia.": 0.0035,
+  "line|Nylon thread, rod wrapping, size D": 5.8e-05,
+  "line|RS:": 0.0,
+  "line|RS: 1/16 in. Braided Nylon": 0.032678,
+  "line|RS: Heavy poly": 0.0,
+  "line|RS: Medium poly": 0.0,
+  "line|RS: Thin poly": 0.0,
+  "line|Spectra #200 [Round 1.5 mm, 1/16 in]": 0.000656,
+  "line|Spectra #400 [Oval 2.55 mm, 3/32in]": 0.001203,
+  "line|Thread (heavy-duty)": 0.0003,
+  "line|Tubular nylon": 0.0025,
+  "line|Tubular nylon (11 mm, 7/16 in)": 0.013,
+  "line|Tubular nylon (14 mm, 9/16 in)": 0.016,
+  "line|Tubular nylon (25 mm, 1 in)": 0.029,
+  "surface|1.9 oz. Ripstop Nylon (SkyAngle)": 0.0,
+  "surface|Mylar": 0.021,
+  "surface|Mylar polyester film, 0.50 mil": 0.0167,
+  "surface|Nomex": 0.18,
+  "surface|Nylon fabric, ripstop, 1.1 oz actual": 0.0341,
+  "surface|Nylon fabric, ripstop, 1.7 oz actual": 0.05764,
+  "surface|Nylon fabric, ripstop, 1.9 oz actual": 0.0589,
+  "surface|Polyethylene (heavy)": 0.04,
+  "surface|Polyethylene (thin)": 0.015,
+  "surface|Polyethylene LDPE": 0.0,
+  "surface|Polyethylene film, HDPE, 1.0 mil, bare": 0.0235,
+  "surface|RS: 1.1 oz. Rip Stop Nylon": 2.1e-05,
+  "surface|RS: Rip stop nylon": 0.06685,
+  "surface|Rip stop nylon": 0.06685,
+  "surface|Ripstop Nylon, 1.9 oz 5 mil": 0.058906,
+  "surface|Ripstop Nylon, ultra-lightweight 66 oz 1 mil": 0.020462,
+  "surface|Ripstop nylon": 0.067,
+  "surface|Ripstop nylon thin": 0.04,
+  "surface|Ripstop nylon, lightweight, 3 mil": 0.035654,
+  "surface|Ripstop nylon, ultra lightweight, 2 mil": 0.035654
+ }
+}

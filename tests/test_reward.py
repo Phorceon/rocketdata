@@ -1,103 +1,208 @@
-"""Fast checks for scripts/reward.py (no OpenRocket, no cadquery needed)."""
+"""Checks for scripts/reward.py. The flight test needs Java + lib/OpenRocket.jar and is skipped without them;
+everything else runs in milliseconds."""
+import copy
+import json
 import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "scripts"))
 import reward as R  # noqa: E402
 
-
-# ---------------------------------------------------------------- prompt parsing
-def test_landing_limit_cannot_go_above_hard_max():
-    assert R.landing_limit("about 300 m, landing under 15 m/s") == R.HARD_MAX_LANDING_MS
+FIX = json.loads((REPO / "tests" / "fixtures" / "reward_design.json").read_text())
+LOOKUP = FIX["lookup"]
 
 
-def test_landing_limit_ignores_wind():
-    p = "Reach 300 m in wind under 3 m/s"
-    assert R.landing_limit(p) == R.LIMITS["default_max_landing_ms"]
-    assert R.asked_wind(p) == 3.0
+def answer(design):
+    return "<thought>sizing...</thought><design>" + json.dumps(design) + "</design>"
 
 
-def test_landing_limit_and_wind_in_one_prompt():
-    p = ("Requirements: apogee 441 m; wind 4.5 m/s; touchdown at most 6 m/s; flight time 105 s")
-    assert R.landing_limit(p) == 6.0
-    assert R.asked_wind(p) == 4.5
-    p = "2,560 ft is my target, with a 2 m/s breeze and a landing no faster than 8.0 m/s."
-    assert R.landing_limit(p) == 8.0
-    assert R.asked_wind(p) == 2.0
+def run(design, req=None, **kw):
+    return R.score(answer(design), req or {}, lookup=LOOKUP, flight=False, **kw)
 
 
-def test_stricter_prompt_limit_is_kept():
-    assert R.landing_limit("touches down under 3.2 m/s, launched in about 2 m/s wind") == 3.2
+def nodes(d, tag):
+    """Every {tag: body} body in a v5 design dict."""
+    out, stack = [], [d["openrocket"]]
+    while stack:
+        b = stack.pop()
+        for c in b.get("children") or []:
+            for k, v in c.items():
+                if isinstance(v, dict):
+                    if k == tag:
+                        out.append(v)
+                    if "children" in v:
+                        stack.append(v)
+    return out
 
 
-def test_every_apogee_goal_is_kept():
-    goals = R.asked_apogees("Stay below 500 ft apogee, about 120 m")
-    assert [(round(v), k) for v, k in goals] == [(152, "max"), (120, "about")]
+def field(body, name):
+    return next(c[name] for c in body["children"] if name in c)
 
 
-@pytest.mark.parametrize("prompt,want", [
-    ("land safely within 25 seconds under $35", (25.0, "max")),
-    ("with total flight time under 117.3 s, launched in about 2 m/s wind", (117.3, "max")),
-    ("keep the flight near four minutes", (240.0, "about")),
-    ("Flight should stay under 2.2 min, body 110 mm", (132.0, "max")),
-    ("motor C6-5 with a 5 s delay", None),
+def design():
+    return copy.deepcopy(FIX["design"])
+
+
+# ------------------------------------------------------------------ the reference design passes
+def test_reference_design_clears_every_gate_before_flight():
+    r = run(design())
+    assert r["gate"] == "not flown", r["reasons"]
+
+
+# ------------------------------------------------------------------ format and parts (-1.0)
+@pytest.mark.parametrize("text,why", [
+    ("no design here", "no complete"),
+    ("<design>{oops</design>", "does not parse"),
+    ('<design>{"rocket": {}}</design>', "openrocket"),
+    ('<design>{"openrocket": {"children": []}, "simulations": {}}</design>', "extra keys"),
+    ('<design>{"openrocket": {"children": [{"rocket": []}]}}</design>', "is not {attrs"),
+    ('<design>{"openrocket": {"children": [{"bad tag!": {}}]}}</design>', "bad tag name"),
 ])
-def test_flight_time(prompt, want):
-    got = R.asked_flight_time(prompt)
-    assert (got if got is None else (round(got[0], 3), got[1])) == want
+def test_format_gate(text, why):
+    r = R.score(text, {}, lookup=LOOKUP, flight=False)
+    assert (r["score"], r["gate"]) == (-1.0, "format") and why in r["reasons"][0]
 
 
-# ---------------------------------------------------------------- scoring
+def test_unfinished_answer_is_format_fail():
+    assert R.score(answer(design()), {}, lookup=LOOKUP, finish="length")["gate"] == "format"
+
+
+def test_very_deep_tree_does_not_crash():
+    deep = '{"openrocket": {"children": [' + '{"x": {"children": [' * 3000 + "]}}" * 3000 + "]}}"
+    assert R.score("<design>" + deep + "</design>", {}, lookup=LOOKUP, flight=False)["gate"] == "format"
+
+
+def test_missing_parachute_is_parts_fail():
+    d = design()
+    for b in nodes(d, "subcomponents"):
+        b["children"] = [c for c in b["children"] if "parachute" not in c and "streamer" not in c]
+    r = run(d)
+    assert r["gate"] == "parts" and "parachute" in r["reasons"][0]
+
+
+def test_made_up_motor_is_motors_fail():
+    d = design()
+    field(nodes(d, "motor")[0], "motor_id")["value"] = "Estes-Z9999"
+    assert run(d)["gate"] == "motors"
+
+
+# ------------------------------------------------------------------ geometry (-0.8)
+@pytest.mark.parametrize("bad", ["NaN", "Infinity", "abc", -0.2, 50.0])
+def test_bad_numbers_fail_geometry(bad):
+    d = design()
+    field(nodes(d, "bodytube")[0], "length")["value"] = bad
+    r = run(d)
+    assert r["gate"] == "geometry" and r["score"] == -0.8
+
+
+def test_unknown_field_and_unknown_part_fail_geometry():
+    d = design()
+    nodes(d, "bodytube")[0]["children"].append({"warpdrive": {"value": 1}})
+    assert "unknown field" in run(d)["reasons"][0]
+    d = design()
+    nodes(d, "subcomponents")[0]["children"].append({"antigravity": {"children": []}})
+    assert "unknown part" in run(d)["reasons"][0]
+
+
+def test_thin_fins_fail():
+    d = design()
+    field(nodes(d, "trapezoidfinset")[0], "thickness")["value"] = 0.0005
+    assert any("thick" in x for x in run(d)["reasons"])
+
+
+def test_duplicated_fin_set_clashes():
+    d = design()
+    for b in nodes(d, "subcomponents"):
+        fins = [c for c in b["children"] if "trapezoidfinset" in c]
+        if fins:
+            b["children"].append(copy.deepcopy(fins[0]))
+            break
+    assert any("clash" in x for x in run(d)["reasons"])
+
+
+def test_floating_fins_fail():
+    d = design()
+    f = nodes(d, "trapezoidfinset")[0]
+    for key in ("position", "axialoffset"):
+        if any(key in c for c in f["children"]):
+            field(f, key)["attrs"] = {"type" if key == "position" else "method": "bottom"}
+            field(f, key)["value"] = 0.5                     # 0.5 m behind the tail
+    assert any("off the airframe" in x for x in run(d)["reasons"])
+
+
+def test_unknown_material_fails():
+    d = design()
+    field(nodes(d, "bodytube")[0], "material")["value"] = "Unobtainium"
+    assert any("unknown material" in x for x in run(d)["reasons"])
+
+
+# ------------------------------------------------------------------ the model can not set physics
+def test_overrides_are_removed():
+    d = design()
+    nodes(d, "stage")[0]["children"] += [{"overridecg": {"value": 0.01}}, {"overridesubcomponentscg": {"value": True}}]
+    r = run(d)
+    assert r["gate"] == "not flown" and r["notes"]["overrides_removed"] >= 2
+
+
+def test_density_and_motor_come_from_tables():
+    d = design()
+    field(nodes(d, "bodytube")[0], "material")["attrs"]["density"] = 0.001
+    motor = nodes(d, "motor")[0]
+    field(motor, "diameter")["value"] = 0.5
+    root, _, _ = R.gate_format(answer(d), "stop")
+    stages = R.gate_parts(root)
+    R.gate_motors(root, LOOKUP)
+    R.gate_geometry(root, stages, R._load(R.SCHEMA_PATH, "schema"))
+    tube = next(n for n in root.walk() if n.tag == "bodytube")
+    assert tube.get("material").attrs["density"] > 100
+    m = next(n for n in root.walk() if n.tag == "motor" and not n.leaf)
+    assert m.num("diameter") == LOOKUP[m.text("motor_id")]["diameter_m"]
+
+
+# ------------------------------------------------------------------ scoring
 def test_closeness_is_graded():
     assert R.closeness(300, 300, "about", 0.05) == 1.0
-    assert R.closeness(314, 300, "about", 0.05) == 1.0          # inside 5 %
-    assert 0.0 < R.closeness(400, 300, "about", 0.05) < R.closeness(330, 300, "about", 0.05) < 1.0
+    assert R.closeness(314, 300, "about", 0.05) == 1.0
+    assert 0 < R.closeness(400, 300, "about", 0.05) < R.closeness(330, 300, "about", 0.05) < 1
     assert R.closeness(1000, 300, "about", 0.05) == 0.0
-    assert R.closeness(500, 300, "min", 0.05) == 1.0             # one-sided
-    assert R.closeness(280, 300, "min", 0.05) < 1.0
+    assert R.closeness(90, 100, "max", 0.0) == 1.0 and R.closeness(120, 100, "max", 0.0) < 1
 
 
-def test_tier4_weights_rescale_when_a_target_is_missing():
-    assert R.tier4_score({"apogee": 1.0, "landing": 1.0}) == 1.0
-    assert R.tier4_score({"apogee": 1.0, "landing": 0.0}) == round(0.40 / 0.55, 4)
+def test_targets_use_requirements_and_rescale_weights():
+    m = {"apogee_m": 300.0, "flight_time_s": 40.0, "landing_ms": [2.0], "landing_limit_ms": 6.0}
+    total, parts = R.targets({"target_apogee_m": 300, "apogee_tol_frac": 0.1}, m)
+    assert parts == {"apogee": 1.0, "landing": 1.0} and total == 1.0
+    total, parts = R.targets({"target_apogee_m": 600, "max_flight_time_s": 30}, m)
+    assert total < 0.5 and set(parts) == {"apogee", "flight_time", "landing"}
 
 
-def test_strip_overrides():
-    body = {"children": [{"rocket": {"children": [
-        {"overridecg": {"value": 0.05}},
-        {"stage": {"children": [{"overridemass": {"value": 1}}, {"overridecd": {"value": 0.1}},
-                                {"name": {"value": "s"}}]}}]}}]}
-    assert R.strip_overrides(body) == 3
-    assert "override" not in str(body)
-    assert "name" in str(body)
+def test_spec_gate():
+    m = {"max_velocity_ms": 150.0}
+    with pytest.raises(R.Reject):
+        R.gate_spec({"max_body_diameter_mm": 24}, 0.02, [], m)          # 40 mm body
+    with pytest.raises(R.Reject):
+        R.gate_spec({"max_motor_class": "G"}, 0.01, [{"total_impulse_ns": 200}], m)   # an H
+    R.gate_spec({"max_motor_class": "H"}, 0.01, [{"total_impulse_ns": 200}], m)
+    assert R.motor_class({"total_impulse_ns": 10}) == "C"
 
 
-# ---------------------------------------------------------------- ladder
-def test_bad_json_is_tier1():
-    assert R.reward("<design>{oops</design>", "about 300 m") == -1.0
-    assert R.reward("no design at all", "about 300 m") == -1.0
-    assert R.score_answer("<design>{}</design>", "x", finish="length")["score"] == -1.0
+def test_setup_problems_raise():
+    with pytest.raises(R.SetupError):
+        R._load(REPO / "no" / "such.json", "schema")
 
 
-def test_skipped_gates_give_no_score(monkeypatch):
-    # a stub design that clears gates 1-3, so the skip logic is what is tested
-    monkeypatch.setattr(R, "gate_format", lambda c, f: ({"openrocket": {"children": []}}, None))
-    monkeypatch.setattr(R, "gate_structure", lambda d: ([("m", "C6")], None))
-    monkeypatch.setattr(R, "gate_motors", lambda m, p, l: (True, None, "stub"))
-    monkeypatch.setattr(R, "fit_problems", lambda root: [])
-    r = R.score_answer("x", "about 300 m", cad=False, flight=False)
-    assert r["score"] is None
-    assert {u.split(":")[0] for u in r["unverified"]} == {"cad", "flight", "targets"}
-    with pytest.raises(RuntimeError):
-        R.reward("x", "about 300 m", cad=False, flight=False)
+# ------------------------------------------------------------------ OpenRocket (skipped without Java)
+def _have_openrocket():
+    import shutil
+    return R.JAR.exists() and (shutil.which("java") is not None or Path(R.OpenRocket._java("java")).exists())
 
 
-def test_failure_before_a_skipped_gate_still_scores(monkeypatch):
-    monkeypatch.setattr(R, "gate_format", lambda c, f: ({"openrocket": {"children": []}}, None))
-    monkeypatch.setattr(R, "gate_structure", lambda d: ([("m", "C6")], None))
-    monkeypatch.setattr(R, "gate_motors", lambda m, p, l: (True, None, "stub"))
-    monkeypatch.setattr(R, "fit_problems", lambda root: ["29.0 mm motor does not fit a 26.6 mm mount"])
-    r = R.score_answer("x", "about 300 m", cad=False, flight=False)
-    assert r["gate_failed"] == "cad" and r["score"] == -0.8
+@pytest.mark.skipif(not _have_openrocket(), reason="needs Java and lib/OpenRocket.jar")
+def test_flight_end_to_end():
+    r = R.score(answer(design()), {"target_apogee_m": 1000, "apogee_tol_frac": 0.1, "max_touchdown_ms": 6.9},
+                lookup=LOOKUP)
+    assert r["score"] is not None and r["metrics"].get("apogee_m") or r["gate"] == "flight"
+    assert -0.5 <= r["score"] <= 1.0

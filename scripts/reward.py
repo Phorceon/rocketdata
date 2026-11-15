@@ -1,60 +1,38 @@
-"""Reward ladder for sft_v5-style rocket answers (an OpenRocket tree written as JSON inside <design>).
+"""Reward for Rocket AI: one model answer + the prompt's requirements -> one number in [-1, 1].
 
-One answer goes down six gates, cheapest first, and stops at the first gate it fails. Everything here
-comes from what is in the repo today: sft/eval_test.py (format and parts checks), sftgen/contract.py
-(the safety limits and the 5% "about" tolerance), scripts/json_to_cad.py (CAD) and
-scripts/or_headless.py (OpenRocket). There are no weights from the plan document.
+    from scripts.reward import reward
+    r = reward(completion, requirements)    # requirements = the "requirements" dict of a data/splits row
 
-  gate            passes when
-  1 format        the answer finished, the <design> JSON parses, one "openrocket" root, every node is
-                  {tag: {attrs?, value?, children?}}                      (eval_test.v5_tree)
-  2 structure     stage, nosecone, bodytube, a fin set, a motormount with a motor are where OpenRocket
-                  puts them, and there is a parachute or streamer         (eval_test.v5_tree)
-  3 motors        every motor_id is a real motor file, and every motor the prompt names is used
-  4 cad           diameters line up, the motor fits its mount, inner tubes fit their parent, fins sit on
-                  a body tube, and (needs cadquery) every solid is valid, fins touch the airframe and
-                  fin sets do not overlap
-  5 flight        OpenRocket loads and flies it; recovery deploys in every section; landing is at most
-                  6 m/s (or the prompt's limit); stability at the rail is at least 1 cal and above 0 in
-                  the burn; rail exit is at least 15 m/s                    (contract.GATES)
-  6 targets       apogee is within the tolerance of the apogee the prompt asks for (5% for "about",
-                  one-sided for "at least"/"at most"; skipped when the prompt gives none)
+The ladder (CLAUDE.md). The first gate that fails sets the score:
 
-Gate 4 thresholds were set on 249 real .ork designs from ork/ (converted to the v5 tree shape) so reference
-designs mostly pass: motor wider than its mount by >5%, inner tube >10% wider than the body bore, nose-to-body
-or body-to-body step >1 mm (transitions and "auto" radii are exempt). About 4% of those real designs still
-fail gate 4, and they are real mismatches (e.g. a 29 mm motor in a 26.6 mm mount).
+    gate       fails when                                                              score
+    format     no closed <design> block, bad JSON, a node that is not {attrs?, value?,  -1.0
+               children?}
+    parts      no stage, nose cone, body tube, fin set, motor mount with a motor, or    -1.0
+               parachute/streamer
+    motors     a motor_id is not in the motor lookup                                    -1.0
+    geometry   a part, field or value unlike every real design (schema), an unknown     -0.8
+               material, or parts that do not fit (diameter steps, motor in mount,
+               inner tubes, fins on their tube, fin sets that clash, fins < 1.5 mm)
+    flight     OpenRocket: recovery does not deploy, never lands, lands too fast,       -0.5
+               stability < 1 cal at the rail or <= 0 in the burn, rail exit < 15 m/s
+    spec       flew safely but broke a hard requirement (body diameter, motor class,    0.0
+               max velocity)
+    targets    graded: apogee .40, flight time .25, landing speed .15                   0..1
+               (cost .20 is not scored yet: there is no price data)
 
-Override tags (<overridemass>, <overridecg>, <overridecd>, <overridesubcomponents*>) are removed from the
-model's tree before gates 4-6, so mass, CG and drag come from the geometry and materials. Without this a
-model could set its own CG (fake stability) or its own drag (fake apogee). The count is in
-"stripped_overrides".
-
-Score (the reward ladder in CLAUDE.md):
-  -1.0  failed format, structure or motors (bad JSON, missing parts, made-up motor)
-  -0.8  failed cad
-  -0.5  failed flight (unsafe: stability, landing speed, rail exit, recovery)
-  0..1  flew safely: weighted closeness to the prompt's targets. Weights: apogee 0.40, flight time 0.25,
-        cost 0.20, landing speed 0.15. A target the prompt does not give is left out and the other
-        weights are scaled up. Cost is never scored yet (no price data; see "not_scored").
-        Inside the tolerance (5% apogee, 10% time, one-sided for "at least"/"at most") a target scores 1;
-        outside it the score falls linearly to 0 at TARGET_FALLOFF past the tolerance. Landing speed
-        scores 1 at or below half the limit and 0 at the limit.
-The "targets" gate is "pass" when every given target is inside its tolerance, else "miss"; a miss is
-not slop, it only lowers the 0..1 score.
-
-A gate that could not run (no cadquery, no OpenRocket, --no-cad, --no-flight) is listed in "unverified"
-and the score is None (the would-be number is in "provisional_score"), because a skipped gate could
-have failed. reward() raises on None unless allow_unverified=True, so training never gets a fake number.
-"slop" = the answer failed a gate it could be checked on (format to flight).
-
-Usage (from the repo root):
-    python scripts/reward.py --results RESULTS.json --test VAL.jsonl --motor-lookup LOOKUP.json
-    python scripts/reward.py --answer answer.txt --prompt "Design a rocket to about 900 m ..."
-    add --no-flight / --no-cad to skip the slow gates; --out FILE to choose the output file.
-Python:
-    from scripts.reward import score_answer
-    r = score_answer(content, prompt, lookup=lookup, finish="stop")
+How it stays robust
+  * Whitelist, not blacklist. CAD mistakes have no end, so the geometry gate does not hunt for them one
+    by one. Every part, field and value must look like the real designs in sft_v5
+    (data/reward_schema.json, made by --build-schema); then a few physical fit rules run.
+  * The model does not set physics. Override tags and the model's <simulations> are removed, every
+    material density is replaced by the real density for that material name, and the motor's
+    name, size and digest come from the motor lookup.
+  * Requirements are data (data/splits rows). Nothing is parsed out of the prompt text.
+  * OpenRocket runs in its own Java process (scripts/or_batch/OrBatch.java), one per Python process,
+    with a timeout. A hung or dead sim is killed and restarted, so it can not stop training.
+  * A problem in the design always gives a score. A problem in the setup (no Java, no OpenRocket jar,
+    no schema or lookup file) raises SetupError, so training never gets a made-up number.
 """
 from __future__ import annotations
 
@@ -64,800 +42,794 @@ import json
 import math
 import os
 import re
-import sqlite3
-import sys
+import selectors
+import statistics
+import subprocess
 import tempfile
+import threading
+import xml.etree.ElementTree as ET
 from pathlib import Path
-from xml.sax.saxutils import escape, quoteattr
 
 REPO = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "scripts"))
+_spec = importlib.util.spec_from_file_location("reward_contract", REPO / "sftgen" / "contract.py")
+contract = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(contract)
 
-GATES = ["format", "structure", "motors", "cad", "flight", "targets"]
+SCHEMA_PATH = REPO / "data" / "reward_schema.json"
+LOOKUP_PATH = Path(os.environ.get("MOTOR_LOOKUP", REPO / "new_results" / "sft_v4_motor_lookup.json"))
+JAR = Path(os.environ.get("OPENROCKET_JAR", REPO / "lib" / "OpenRocket.jar"))
+OR_BATCH_SRC = REPO / "scripts" / "or_batch" / "OrBatch.java"
+OR_BATCH_CLASSES = REPO / "lib" / "or_batch_classes"
 
-
-def _load_module(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-ev = _load_module("eval_test_for_reward", REPO / "sft" / "eval_test.py")   # the repo's own v5 checks
-contract = _load_module("contract_for_reward", REPO / "sftgen" / "contract.py")  # safety limits
-LIMITS = contract.GATES
-ABOUT_TOL = contract.TOLERANCES["about_rel"]
-DEFAULT_COND = {"rail_length_m": contract.DEFAULT_SIM_CONDITIONS["rail_length_m"],
-                "wind_ms": contract.DEFAULT_SIM_CONDITIONS["wind_ms"],
-                "wind_turbulence": contract.DEFAULT_SIM_CONDITIONS["wind_turbulence"],
-                "launch_angle_deg": 0.0, "site_altitude_m": 0.0, "time_step_s": 0.05}
-
-STEP_TOL_M = 0.001      # diameter step between neighbouring body parts
-MOTOR_RATIO = 1.05      # motor wider than its mount bore by more than 5% does not fit (18 mm in 16.9 mm = 6.5%)
-INNER_TUBE_RATIO = 1.10  # inner tube wider than the body bore by more than 10% (real files go up to ~9.6%)
-FIN_GAP_MM = 0.5        # a fin farther than this from the airframe is floating
-FIN_CLASH_MM3 = 1.0     # fin sets overlapping by more than this clash
-
-TIER = {"format": -1.0, "structure": -1.0, "motors": -1.0, "cad": -0.8, "flight": -0.5}
+LIM = contract.GATES
+SIM = contract.DEFAULT_SIM_CONDITIONS
+HARD_LANDING_MS = 8.0            # CLAUDE.md Tier 3 limit: a prompt can make it stricter, never looser
 WEIGHTS = {"apogee": 0.40, "flight_time": 0.25, "cost": 0.20, "landing": 0.15}
-TARGET_FALLOFF = 0.50       # past the tolerance, a target's score reaches 0 this far off (50% of the target)
-HARD_MAX_LANDING_MS = 8.0   # Tier 3 limit in CLAUDE.md; a prompt can make it stricter, never looser
-ABOUT_TOL_TIME = contract.TOLERANCES["about_rel_time"]
-MAX_WIND_MS = LIMITS["max_wind_ms"]
-sys.setrecursionlimit(max(sys.getrecursionlimit(), 5000))   # deep trees: to_node / tree_to_xml recurse
+FALLOFF = 0.50                   # past its tolerance, a target's score reaches 0 this far off (50 %)
+MIN_FIN_THICKNESS_M = 0.0015     # CLAUDE.md week 8 ("razor fin" patch)
+STEP_TOL_M = 0.001               # nose -> body and body -> body diameter step
+MOTOR_FIT = 1.05                 # motor up to 5 % wider than its mount bore (as Shamik measured on 249 .ork)
+TUBE_FIT = 1.10                  # inner tube up to 10 % wider than its parent's bore
+FIN_ON_AIRFRAME = 0.5            # at least this share of a fin's root must sit on the stage's airframe
+FIN_CLASH_DEG = 3.0              # two fin sets on one tube with fins closer than this, and overlapping
+SIM_TIMEOUT_S, BOOT_TIMEOUT_S = 60, 300
+MAX_DEPTH = 64
+
+AIRFRAME = {"nosecone", "bodytube", "transition"}
+FINS = {"trapezoidfinset", "ellipticalfinset", "freeformfinset", "tubefinset"}
+RECOVERY = {"parachute", "streamer"}
+MATERIAL_TAGS = {"material", "filletmaterial", "linematerial"}
+NOT_IN_ORK = {"motor_id"}                       # v5 bookkeeping tag that OpenRocket does not know
+FROM_LOOKUP = {"motor_id", "manufacturer", "designation", "diameter", "length", "digest"}  # motor fields: lookup
+CLASSES = "ABCDEFGHIJKLMNO"
+_TAG = re.compile(r"^[A-Za-z_][\w.-]{0,63}$")
 
 
-# ============================================================================ tree helpers
+class Reject(Exception):
+    """The design failed a gate."""
+
+    def __init__(self, gate, reasons):
+        super().__init__(gate)
+        self.gate, self.reasons = gate, list(reasons)[:6]
+
+
+class SetupError(RuntimeError):
+    """The machine is not set up (Java, jar, schema, lookup). Never caught: it must stop training."""
+
+
+SCORE = {"format": -1.0, "parts": -1.0, "motors": -1.0, "geometry": -0.8, "flight": -0.5, "spec": 0.0}
+
+
+# ====================================================================================== tree
 class Node:
-    def __init__(self, tag, attrs=None, text=None, kids=None):
-        self.tag, self.attrs, self.text, self.kids = tag, attrs or {}, text, kids or []
+    """One element of the design. A leaf is a field (<length>0.3</length>); a container is a part."""
+    __slots__ = ("tag", "attrs", "value", "kids", "parent", "leaf")
 
-    def find(self, tag):
-        return next((k for k in self.kids if k.tag == tag), None)
+    def __init__(self, tag, attrs, value, leaf, parent):
+        self.tag, self.attrs, self.value, self.leaf, self.parent, self.kids = tag, dict(attrs), value, leaf, parent, []
 
-    def findall(self, tag):
-        return [k for k in self.kids if k.tag == tag]
+    def get(self, name):
+        return next((k for k in self.kids if k.leaf and k.tag == name), None)
 
-    def num(self, tag, default=None, auto=False):
-        """Number in a child tag. "auto 0.0125" (OpenRocket follows the neighbour; the number can be stale)
-        is None unless auto=True."""
-        k = self.find(tag)
-        if k is None or k.text is None:
-            return default
-        v = k.text.strip().split()
-        if v and v[0] == "auto" and not auto:
-            return default
-        try:
-            return float(v[-1]) if v else default
-        except ValueError:
-            return default
+    def num(self, name, auto=False):
+        """The field as a float. "auto 0.025" gives None, or 0.025 when auto=True."""
+        f = self.get(name)
+        return None if f is None else to_float(f.value, auto)
 
-    def val(self, tag, default=None):
-        k = self.find(tag)
-        return default if k is None or k.text is None else k.text.strip()
+    def text(self, name):
+        f = self.get(name)
+        return None if f is None or f.value is None else str(f.value)
 
     def parts(self):
-        sub = self.find("subcomponents")
-        return sub.kids if sub is not None else []
-
-
-def to_node(tag, body):
-    if not isinstance(body, dict):
-        return Node(tag, text=str(body))
-    ch = body.get("children") or []
-    if isinstance(ch, dict):
-        ch = [{k: v} for k, v in ch.items()]
-    kids = [to_node(k, v) for c in (ch if isinstance(ch, list) else []) if isinstance(c, dict) for k, v in c.items()]
-    val = body.get("value")
-    attrs = body.get("attrs") if isinstance(body.get("attrs"), dict) else {}
-    return Node(tag, attrs, None if val is None else str(val), kids)
-
-
-def tree_to_xml(node: Node) -> str:
-    attrs = "".join(f" {k}={quoteattr(str(v))}" for k, v in node.attrs.items())
-    if not node.kids and node.text is None:
-        return f"<{node.tag}{attrs}/>"
-    inner = escape(node.text) if node.text is not None else ""
-    return f"<{node.tag}{attrs}>{inner}{''.join(tree_to_xml(k) for k in node.kids)}</{node.tag}>"
-
-
-def _inner_r(n: Node):
-    """(outer radius, inner radius) of a body tube or inner tube, None when unknown."""
-    r = n.num("radius") if n.tag == "bodytube" else n.num("outerradius")
-    if not r:
-        return None, None
-    t = n.val("thickness")
-    if t == "filled":
-        return r, 0.0
-    try:
-        return r, r - float(t or 0.0)
-    except ValueError:
-        return r, r
-
-
-# ============================================================================ gates 1-2 (format, structure)
-def last_design(content):
-    return ev.last_design(content or "")
-
-
-def gate_format(content, finish):
-    """Returns (design_dict or None, reason or None)."""
-    if finish == "length":
-        return None, "ran out of tokens (looped or never finished)"
-    if finish == "error":
-        return None, "the request itself failed"
-    body = last_design(content)
-    if body is None:
-        return None, "no complete <design>...</design> block (cut off or missing closing tag)"
-    try:
-        design = json.loads(body)
-    except (ValueError, RecursionError) as e:
-        return None, f"design JSON does not parse: {str(e)[:80]}"
-    if not isinstance(design, dict):
-        return None, "design JSON is not an object"
-    if "openrocket" not in design:
-        return None, "no \"openrocket\" root (not the OpenRocket tree format)"
-    ok, _, _ = ev.v5_tree(design)
-    if not ok:
-        extra = [k for k in design if k != "openrocket"]
-        if extra:
-            return None, f"root closed early: {extra} sits next to \"openrocket\" instead of inside it"
-        return None, "tree is malformed: a node is not {tag: {attrs?, value?, children?}}"
-    try:
-        to_node("openrocket", design["openrocket"])
-    except RecursionError:
-        return None, "tree is nested too deep"
-    return design, None
-
-
-def strip_overrides(body) -> int:
-    """Remove every override* child from the v5 tree in place. Returns how many were removed.
-
-    Mass, CG and drag must come from the parts, not from numbers the model writes: an <overridecg> can
-    move the CG forward (fake stability) and an <overridecd> can tune the drag to hit the apogee."""
-    n = 0
-    stack = [body]
-    while stack:
-        b = stack.pop()
-        if not isinstance(b, dict):
-            continue
-        ch = b.get("children")
-        if isinstance(ch, dict):
-            ch = b["children"] = [{k: v} for k, v in ch.items()]
-        if not isinstance(ch, list):
-            continue
-        keep = []
-        for c in ch:
-            if isinstance(c, dict) and len(c) == 1 and next(iter(c)).lower().startswith("override"):
-                n += 1
+        """Child parts, looking through <subcomponents>."""
+        for k in self.kids:
+            if k.leaf:
                 continue
-            keep.append(c)
-            if isinstance(c, dict):
-                stack.extend(c.values())
-        b["children"] = keep
+            if k.tag == "subcomponents":
+                yield from (c for c in k.kids if not c.leaf)
+            else:
+                yield k
+
+    def owner(self):
+        """The part this part is attached to (skips <subcomponents>)."""
+        p = self.parent
+        while p is not None and p.tag == "subcomponents":
+            p = p.parent
+        return p
+
+    def walk(self):
+        stack = [self]
+        while stack:
+            n = stack.pop()
+            yield n
+            stack.extend(reversed(n.kids))
+
+
+def to_float(v, auto=False):
+    if isinstance(v, bool) or v is None:
+        return None
+    if isinstance(v, str):
+        bits = v.split()
+        if not bits:
+            return None
+        if bits[0] == "auto":
+            if not auto or len(bits) < 2:
+                return None
+            bits = bits[1:]
+        if len(bits) != 1:
+            return None
+        v = bits[0]
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    return x if math.isfinite(x) else None
+
+
+def parse(obj):
+    """{"openrocket": {...}} -> Node tree. Rejects anything that is not the v5 tree shape."""
+    if not (isinstance(obj, dict) and list(obj) == ["openrocket"]):
+        extra = [k for k in obj if k != "openrocket"] if isinstance(obj, dict) else []
+        raise Reject("format", [f"the design must be {{\"openrocket\": ...}} only; extra keys: {extra[:3]}"
+                                if extra else "the design has no \"openrocket\" root"])
+    root, stack = None, [("openrocket", obj["openrocket"], None, 0)]
+    while stack:
+        tag, body, parent, depth = stack.pop()
+        if depth > MAX_DEPTH:
+            raise Reject("format", ["the tree is nested too deep"])
+        if not _TAG.match(tag):
+            raise Reject("format", [f"bad tag name {tag[:30]!r}"])
+        if not isinstance(body, dict) or not set(body) <= {"attrs", "value", "children"}:
+            raise Reject("format", [f"<{tag}> is not {{attrs?, value?, children?}}"])
+        attrs, value, kids = body.get("attrs") or {}, body.get("value"), body.get("children")
+        if not isinstance(attrs, dict) or any(isinstance(v, (dict, list)) or not _TAG.match(str(k))
+                                              for k, v in attrs.items()):
+            raise Reject("format", [f"<{tag}> has bad attrs"])
+        if isinstance(value, (dict, list)):
+            raise Reject("format", [f"<{tag}> value is not a plain value"])
+        node = Node(tag, attrs, value, kids is None, parent)
+        if parent is None:
+            root = node
+        else:
+            parent.kids.append(node)
+        if kids is None:
+            continue
+        if isinstance(kids, dict):
+            kids = [{k: v} for k, v in kids.items()]
+        if not isinstance(kids, list) or not all(isinstance(c, dict) and len(c) == 1 for c in kids):
+            raise Reject("format", [f"<{tag}> children is not a list of {{tag: node}}"])
+        for c in reversed(kids):
+            (k, v), = c.items()
+            stack.append((str(k), v, node, depth + 1))
+    return root
+
+
+def drop(root, pred):
+    """Remove every node matching pred. Returns how many were removed."""
+    n = 0
+    for node in list(root.walk()):
+        keep = [k for k in node.kids if not pred(k)]
+        n += len(node.kids) - len(keep)
+        node.kids = keep
     return n
 
 
-def gate_structure(design):
-    ok, placed, motors = ev.v5_tree(design)
-    missing = sorted(ev.V5_REQUIRED - placed)
-    if not (placed & ev.V5_FINSETS):
+# ====================================================================================== gates 1-3
+def gate_format(completion, finish):
+    if finish in ("length", "error"):
+        raise Reject("format", ["the answer did not finish" if finish == "length" else "the request failed"])
+    i = completion.rfind("<design>")
+    j = completion.find("</design>", i) if i >= 0 else -1
+    if j < 0:
+        raise Reject("format", ["no complete <design>...</design> block"])
+    try:
+        obj = json.loads(completion[i + len("<design>"):j])
+    except (ValueError, RecursionError) as e:
+        raise Reject("format", [f"design JSON does not parse: {str(e)[:80]}"])
+    root = parse(obj)
+    removed = drop(root, lambda k: k.tag == "simulations" and k.parent is root)
+    overrides = drop(root, lambda k: k.tag.lower().startswith("override"))
+    return root, overrides, removed
+
+
+def gate_parts(root):
+    rocket = next((k for k in root.kids if k.tag == "rocket" and not k.leaf), None)
+    stages = [p for p in rocket.parts() if p.tag == "stage"] if rocket else []
+    have = {n.tag for s in stages for n in s.walk() if not n.leaf}
+    missing = [t for t in ("nosecone", "bodytube", "motormount", "motor") if t not in have]
+    if not have & FINS:
         missing.append("fin set")
+    if not have & RECOVERY:
+        missing.append("parachute or streamer")
+    if not stages:
+        missing.insert(0, "rocket > stage")
     if missing:
-        return None, "parts missing or in the wrong place: " + ", ".join(missing)
-    if not (placed & {"parachute", "streamer"}):
-        return None, "no parachute or streamer in the stage"
-    return motors, None
+        raise Reject("parts", ["missing: " + ", ".join(missing)])
+    for mm in (n for n in root.walk() if n.tag == "motormount" and not n.leaf):
+        if mm.owner() is None or mm.owner().tag not in ("bodytube", "innertube"):
+            raise Reject("parts", [f"a motor mount sits on <{mm.owner().tag if mm.owner() else None}>, "
+                                   "not a body or inner tube"])
+    return stages
 
 
-# ============================================================================ gate 3 (motors)
-_CATALOG = None
-
-
-def catalog_designations():
-    global _CATALOG
-    if _CATALOG is None:
-        db = REPO / "data" / "catalog.sqlite"
-        _CATALOG = set()
-        if db.exists():
-            with sqlite3.connect(db) as c:
-                _CATALOG = {r[0] for r in c.execute("select designation from motors")}
-    return _CATALOG
-
-
-def gate_motors(motors, prompt, lookup):
-    """motors: [(motor_id, designation)]. With a lookup the motor_id must be in it; without one only the
-    designation is checked against data/catalog.sqlite, which is weaker (and reported as such)."""
-    if not motors:
-        return None, "no motor in the design", "none"
-    bad = []
-    if lookup:
-        for mid, des in motors:
-            if mid not in lookup:
-                bad.append(mid or des or "?")
-        mode = "lookup"
-    else:
-        cat = catalog_designations()
-        for mid, des in motors:
-            if (des or "") not in cat:
-                bad.append(des or mid or "?")
-        mode = "catalog-designation (weak: pass --motor-lookup for the real check)"
-    if bad:
-        return None, "made-up or unknown motor(s): " + ", ".join(sorted(set(map(str, bad)))), mode
-    for w in ev.asked_motors(prompt):
-        used = any(w in (des, (lookup or {}).get(mid, {}).get("designation")) or (mid or "").endswith("-" + w)
-                   for mid, des in motors)
-        if not used:
-            return None, f"prompt asks for motor {w} but the design does not use it", mode
-    return True, None, mode
-
-
-# ============================================================================ gate 4 (cad)
-def fit_problems(root: Node):
-    """Numeric fit checks straight on the tree (no CAD library needed)."""
-    out = []
-    flown = _config_id(root)
-
-    def visit(n: Node):
-        items = n.parts()
-        struct = [c for c in items if c.tag in ("nosecone", "bodytube", "transition")]
-        for a, b in zip(struct, struct[1:]):
-            # nose cone -> body and body -> body only: transitions legitimately change diameter, and
-            # "auto" radii follow their neighbour, so they never step
-            if (a.tag, b.tag) not in (("nosecone", "bodytube"), ("bodytube", "bodytube")):
+def gate_motors(root, lookup):
+    """Every motor_id must be real. The motor's name, size and digest are then taken from the lookup."""
+    motors = [n for n in root.walk() if n.tag == "motor" and not n.leaf]
+    bad, used = [], []
+    for m in motors:
+        mid = m.text("motor_id")
+        if mid is None or mid not in lookup:
+            bad.append(mid or m.text("designation") or "?")
+            continue
+        info = lookup[mid]
+        used.append(info)
+        for field, key in (("manufacturer", "manufacturer"), ("designation", "designation"),
+                           ("diameter", "diameter_m"), ("length", "length_m"), ("digest", "digest")):
+            if info.get(key) is None:
                 continue
-            aft = a.num("aftradius") if a.tag == "nosecone" else a.num("radius")
-            fore = b.num("radius")
-            if aft and fore and abs(aft - fore) * 2 > STEP_TOL_M:
-                out.append(f"diameter step of {abs(aft - fore) * 2000:.1f} mm between {a.tag} and {b.tag}")
-        for c in items:
-            if c.tag in ev.V5_FINSETS:
-                if n.tag in ("parachute", "streamer", "masscomponent"):
-                    out.append(f"{c.tag} is attached to a {n.tag}, not a body tube")
-                if (c.num("fincount") or c.num("instancecount") or 0) < 1:
-                    out.append(f"{c.tag} has no fins")
-                if c.tag in ("trapezoidfinset", "ellipticalfinset") and ((c.num("height") or 0) <= 0 or (c.num("rootchord") or 0) <= 0):
-                    out.append(f"{c.tag} has zero height or root chord")
-            if c.tag == "innertube":
-                if n.tag == "bodytube":
-                    _, pin = _inner_r(n)
-                    cr, _ = _inner_r(c)
-                    if pin and cr and cr > pin * INNER_TUBE_RATIO:
-                        out.append(f"inner tube {cr * 2000:.1f} mm wider than its parent bore {pin * 2000:.1f} mm")
-        mm = n.find("motormount")
-        if mm is not None and n.tag in ("bodytube", "innertube"):
-            _, inner = _inner_r(n)
-            for m in mm.findall("motor"):
-                if flown and m.attrs.get("configid") not in (None, flown):
-                    continue        # leftover motor of a configuration that is not flown
-                d = m.num("diameter")
-                if d and inner and inner > 0.002 and d > inner * 2 * MOTOR_RATIO:
-                    out.append(f"{d * 1000:.1f} mm motor does not fit a {inner * 2000:.1f} mm mount")
-        for k in n.kids:
-            visit(k)
-
-    sys.setrecursionlimit(max(sys.getrecursionlimit(), 5000))
-    visit(root)
-    return sorted(set(out))
+            f = m.get(field)
+            if f is None:
+                m.kids.append(Node(field, {}, info[key], True, m))
+            else:
+                f.value = info[key]
+    if bad:
+        raise Reject("motors", ["unknown motor_id: " + ", ".join(sorted(set(map(str, bad)))[:5])])
+    return used
 
 
-def cad_problems(design_body):
-    """Solid checks with cadquery via scripts/json_to_cad.py. Returns (problems, skipped_reason)."""
-    try:
-        import json_to_cad as j2c  # needs cadquery
-    except Exception as e:  # ImportError, or a broken cadquery install
-        return [], f"cadquery not available ({type(e).__name__})"
-    probs = []
-    try:
-        d = j2c.normalise({"openrocket": design_body})
-        db_path = REPO / "data" / "catalog.sqlite"
-        db = sqlite3.connect(db_path) if db_path.exists() else None
-        b = j2c.Builder(db, None)
-        b.build_design(d)
-    except Exception as e:
-        return [f"CAD build failed: {type(e).__name__}: {str(e)[:100]}"], None
-    if not b.parts:
-        return ["design produced no geometry"], None
-    for w in b.warn:
-        if ": skipped (" in w:
-            probs.append(f"part failed to build: {w[:100]}")
-    for p in b.parts:
-        try:
-            if not p["shape"].isValid():
-                probs.append(f"invalid solid: {p['name']}")
-            elif p["shape"].Volume() <= 0:
-                probs.append(f"empty or inside-out solid: {p['name']}")
-        except Exception as e:
-            probs.append(f"could not check solid {p['name']}: {type(e).__name__}")
-    try:
-        import cadquery as cq
-        air = [p["shape"] for p in b.parts if p["cat"] in ("nosecone", "bodytube", "transition")]
-        fins = [p for p in b.parts if p["cat"] == "fin" and ":" not in p["name"]]   # pod fins sit on pods
-        if air and fins:
-            airframe = cq.Compound.makeCompound(air)
-            floating = {p["name"].rsplit(" ", 1)[0] for p in fins if p["shape"].distance(airframe) > FIN_GAP_MM}
-            probs += [f"fins not attached to the airframe: {n}" for n in sorted(floating)]
-        sets = {}
-        for p in fins:
-            sets.setdefault(p["name"].rsplit(" ", 1)[0], []).append(p["shape"])
-        names = sorted(sets)
-        for i, a in enumerate(names):
-            for c in names[i + 1:]:
-                if any(x.intersect(y).Volume() > FIN_CLASH_MM3 for x in sets[a] for y in sets[c]):
-                    probs.append(f"fin sets overlap: {a} and {c}")
-    except Exception as e:
-        return probs, f"fin checks skipped ({type(e).__name__}: {str(e)[:60]})" if not probs else None
-    return probs, None
+def motor_class(info):
+    i = info.get("total_impulse_ns") or 0
+    return CLASSES[min(len(CLASSES) - 1, max(0, math.ceil(math.log2(i / 2.5)) if i > 0 else 0))]
 
 
-# ============================================================================ gate 5 (flight)
-SIM_XML = (
-    '<simulations><simulation status="outdated"><name>reward</name><simulator>RK4Simulator</simulator>'
-    '<calculator>BarrowmanCalculator</calculator><conditions><configid>{cid}</configid>'
-    '<launchrodlength>{rail}</launchrodlength><launchrodangle>{ang}</launchrodangle>'
-    '<launchroddirection>90.0</launchroddirection><windaverage>{wind}</windaverage>'
-    '<windturbulence>{turb}</windturbulence><launchaltitude>{alt}</launchaltitude>'
-    '<launchlatitude>28.61</launchlatitude><launchlongitude>-80.6</launchlongitude>'
-    '<geodeticmethod>spherical</geodeticmethod><atmosphere model="isa"/><timestep>{dt}</timestep>'
-    '</conditions></simulation></simulations>')
-
-
-def _config_id(root: Node):
-    found = []
-
-    def walk(n):
-        if n.tag in ("motorconfiguration", "motor") and n.attrs.get("configid"):
-            found.append((n.tag == "motorconfiguration" and n.attrs.get("default") == "true",
-                          n.tag == "motorconfiguration", n.attrs["configid"]))
-        for k in n.kids:
-            walk(k)
-    walk(root)
-    if found:                       # the default flight configuration, else the first one written
-        return sorted(found, key=lambda f: (not f[0], not f[1]))[0][2]
-    sims = root.find("simulations")           # fall back to the model's own simulation block
-    if sims is not None:
-        for s in sims.findall("simulation"):
-            c = s.find("conditions")
-            if c is not None and c.val("configid"):
-                return c.val("configid")
-    return None
-
-
-def design_to_ork_xml(design, cond):
-    """The model's tree, with its own simulation block thrown away and a standard one put in."""
-    root = to_node("openrocket", design["openrocket"])
-    cid = _config_id(root)
-    if not cid:
-        raise ValueError("no flight configuration id (no motor with a configid)")
-    root.kids = [k for k in root.kids if k.tag != "simulations"]
-    attrs = dict(root.attrs)
-    attrs.setdefault("version", "1.10")
-    attrs.setdefault("creator", "OpenRocket 24.12")
-    root.attrs = attrs
-    xml = tree_to_xml(root)
-    sim = SIM_XML.format(cid=escape(cid), rail=cond["rail_length_m"], ang=cond["launch_angle_deg"],
-                         wind=cond["wind_ms"], turb=cond["wind_turbulence"], alt=cond["site_altitude_m"],
-                         dt=cond["time_step_s"])
-    return "<?xml version='1.0' encoding='utf-8'?>\n" + xml[: -len("</openrocket>")] + sim + "</openrocket>"
-
-
-def run_openrocket(ork_path, seed=0, max_time_s=3600.0):
-    """Fly the first simulation in the file. Returns a dict shaped like sftgen.tools.simulate's output."""
-    import or_headless as orh
-    import jpype
-
-    orh._boot_or()
-    OrBatch = jpype.JClass("OrBatch")
-    Loader = jpype.JClass("info.openrocket.core.file.GeneralRocketLoader")
-    File = jpype.JClass("java.io.File")
-    T = jpype.JClass("info.openrocket.core.simulation.FlightDataType")
-    Ev = jpype.JClass("info.openrocket.core.simulation.FlightEvent$Type")
-    OrBatch.seedUUID(orh.UUID_SEED)
-    doc = Loader(File(str(ork_path))).load()
-    if doc.getSimulationCount() < 1:
-        raise ValueError("OpenRocket found no simulation in the file")
-    sim = doc.getSimulation(0)
-    OrBatch.reseed(sim.getOptions(), int(seed))
-    sim.getOptions().setMaxSimulationTime(float(max_time_s))
-    sim.simulate()
-    sd = sim.getSimulatedData()
-    main = sd.getBranch(0)
-    times, stab = list(main.get(T.TYPE_TIME)), list(main.get(T.TYPE_STABILITY))
-    rod_t = burn_t = None
-    for e in main.getEvents():
-        if e.getType() == Ev.LAUNCHROD and rod_t is None:
-            rod_t = float(e.getTime())
-        if e.getType() == Ev.BURNOUT:
-            burn_t = float(e.getTime())
-    rail_stab = next((float(s) for t, s in zip(times, stab) if rod_t is not None and t >= rod_t and math.isfinite(s)), None)
-    burn = [float(s) for t, s in zip(times, stab) if rod_t is not None and burn_t is not None
-            and rod_t <= t <= burn_t and math.isfinite(s)]
-    sections = []
-    for bi in range(sd.getBranchCount()):
-        br = sd.getBranch(bi)
-        vz = list(br.get(T.TYPE_VELOCITY_Z))
-        deployed = ground = False
-        for e in br.getEvents():
-            deployed |= e.getType() == Ev.RECOVERY_DEVICE_DEPLOYMENT
-            ground |= e.getType() == Ev.GROUND_HIT
-        sections.append({"name": str(br.getName()), "reached_ground": ground, "recovery_deployed": deployed,
-                         "landing_ms": abs(float(vz[-1])) if vz and math.isfinite(vz[-1]) else None})
-    return {"apogee_m": float(sd.getMaxAltitude()), "flight_time_s": float(sd.getFlightTime()),
-            "rail_exit_ms": float(sd.getLaunchRodVelocity()), "stability_rail_exit_cal": rail_stab,
-            "min_stability_burn_cal": min(burn) if burn else rail_stab, "sections": sections}
-
-
-_SPEED = re.compile(r"(\d+(?:\.\d+)?)\s*(m/s|mph|ft/s|fps)\b", re.I)
-_SPEED_UNIT = {"m/s": 1.0, "mph": 0.44704, "ft/s": 0.3048, "fps": 0.3048}
-_LANDING_WORDS = re.compile(r"land|touch|descen|impact|come[s]? (?:down|in)|ground|hit", re.I)
-_WIND_WORDS = re.compile(r"wind|breeze|gust", re.I)
-
-
-def _speeds(prompt):
-    """(m/s, text before, text after) for every speed in the prompt."""
-    for m in _SPEED.finditer(prompt):
-        yield (float(m.group(1)) * _SPEED_UNIT[m.group(2).lower()],
-               prompt[max(0, m.start() - 40): m.start()], prompt[m.end(): m.end() + 12])
-
-
-def _is_wind(before, after):
-    """A speed is a wind figure when a wind word is right after it, or is the last cue word before it."""
-    if _WIND_WORDS.match(after.strip()):
-        return True
-    cues = [(m.start(), "w") for m in _WIND_WORDS.finditer(before)] + \
-           [(m.start(), "l") for m in _LANDING_WORDS.finditer(before)]
-    return bool(cues) and max(cues)[1] == "w"
-
-
-def landing_limit(prompt):
-    """The landing speed limit: the prompt's limit when it gives one, else the contract default (6 m/s),
-    never above HARD_MAX_LANDING_MS. Only a speed near a landing word counts (not the wind speed)."""
-    asked = [v for v, before, after in _speeds(prompt)
-             if not _is_wind(before, after) and _LANDING_WORDS.search(before)]
-    lim = min(asked) if asked else LIMITS["default_max_landing_ms"]
-    return min(lim, HARD_MAX_LANDING_MS)
-
-
-def asked_wind(prompt):
-    """Wind speed the prompt gives (m/s, capped at the contract's 20 mph), else None."""
-    for v, before, after in _speeds(prompt):
-        if _is_wind(before, after):
-            return min(v, MAX_WIND_MS)
-    return None
-
-
-def flight_problems(sim, limit):
+# ====================================================================================== gate 4
+def schema_problems(root, schema):
     out = []
-    secs = sim.get("sections") or []
-    if not secs:
-        out.append("no flight sections")
-    for s in secs:
-        n = s["name"]
-        if not s["recovery_deployed"]:
-            out.append(f"{n}: recovery never deployed")
-        if not s["reached_ground"]:
-            out.append(f"{n}: never reached the ground in the simulated time")
-        elif s["landing_ms"] is None:
-            out.append(f"{n}: landing speed unavailable")
-        elif s["landing_ms"] > limit:
-            out.append(f"{n}: lands at {s['landing_ms']:.1f} m/s (limit {limit:g})")
-    st, bst = sim.get("stability_rail_exit_cal"), sim.get("min_stability_burn_cal")
-    if st is None or st < LIMITS["min_launch_margin_cal"]:
-        out.append(f"stability at the rail is {'unknown' if st is None else f'{st:.2f}'} cal (needs >= {LIMITS['min_launch_margin_cal']:g})")
-    if bst is not None and bst <= LIMITS["min_burn_margin_cal"]:
-        out.append(f"stability drops to {bst:.2f} cal during the burn")
-    if sim["rail_exit_ms"] < LIMITS["min_rail_exit_ms"]:
-        out.append(f"rail exit {sim['rail_exit_ms']:.1f} m/s (needs >= {LIMITS['min_rail_exit_ms']:g})")
+    for n in root.walk():
+        if n.leaf or n is root:
+            continue
+        rule = schema["nodes"].get(n.tag)
+        if rule is None:
+            out.append(f"unknown part <{n.tag}>")
+            continue
+        if n.parent.tag not in rule["parents"]:
+            out.append(f"<{n.tag}> can not sit inside <{n.parent.tag}>")
+        out += [f"<{n.tag} {a}=...>: {e}" for a, v in n.attrs.items()
+                for e in [value_problem(rule["attrs"].get(a), v)] if e]
+        for f in n.kids:
+            if not f.leaf or f.tag in MATERIAL_TAGS or (n.tag == "motor" and f.tag in FROM_LOOKUP):
+                continue
+            fr = rule["fields"].get(f.tag)
+            if fr is None:
+                out.append(f"<{n.tag}> has unknown field <{f.tag}>")
+                continue
+            if e := value_problem(fr, f.value):
+                out.append(f"<{n.tag}><{f.tag}>: {e}")
+            for a, v in f.attrs.items():
+                if e := value_problem(fr.get("attrs", {}).get(a), v):
+                    out.append(f"<{n.tag}><{f.tag} {a}=...>: {e}")
     return out
 
 
-# ============================================================================ gate 6 (targets)
-UNIT_M = {"m": 1.0, "meter": 1.0, "meters": 1.0, "metre": 1.0, "metres": 1.0, "km": 1000.0,
-          "ft": 0.3048, "foot": 0.3048, "feet": 0.3048}
+def value_problem(rule, v):
+    if rule is None:
+        return "not seen in any real design"
+    if v is None:
+        return None if rule.get("none") else "missing value"
+    kind = rule["kind"]
+    if kind == "num":
+        x = to_float(v, auto=True)
+        word = str(v).split()[0] if isinstance(v, str) and v.split() else None
+        if x is None:
+            return None if word in rule.get("words", []) else f"{str(v)[:20]!r} is not a number"
+        if word == "auto" and "auto" not in rule.get("words", []):
+            return "can not be auto"
+        if not rule["lo"] <= x <= rule["hi"]:
+            return f"{x:g} is outside {rule['lo']:g}..{rule['hi']:g}"
+        return None
+    if kind == "bool":
+        return None if str(v).lower() in ("true", "false") else f"{str(v)[:20]!r} is not true/false"
+    if kind == "enum":
+        return None if str(v) in rule["values"] else f"{str(v)[:20]!r} is not one of {rule['values'][:6]}"
+    s = str(v)
+    return None if len(s) <= 200 and s.isprintable() else "bad text"
 
 
-_LEN = re.compile(r"(?P<num>\d[\d,]*(?:\.\d+)?)\s*(?P<unit>km|meters?|metres?|feet|foot|ft|m)\b(?!/)", re.I)
-_NOT_ALTITUDE = re.compile(r"^\s*(?:rail|long|length|tall|wide|diameter|body|tube|payload|field|radius|of drift|drift)", re.I)
-_ALT_WORDS = re.compile(r"apogee|altitude|reach|clear|height|go up to|goes? to|get to|hit|up to|exceed", re.I)
+def material_problems(root, schema):
+    """Replace every density with the real one for that material name; unknown names fail."""
+    out = []
+    for f in root.walk():
+        if f.leaf and f.tag in MATERIAL_TAGS:
+            key = f"{f.attrs.get('type')}|{f.value}"
+            d = schema["materials"].get(key)
+            if d is None:
+                out.append(f"unknown material {key[:50]!r}")
+            else:
+                f.attrs["density"] = d
+    return out
 
 
-_TAIL = r"\s*(?:of |to |a |an |about |around )?$"     # the qualifier has to sit right in front of the number
-_MIN_Q = re.compile(r"(?:at least|minimum|min|clear|over|above|more than|longer than|exceed\w*)" + _TAIL)
-_MAX_Q = re.compile(r"(?:under|below|at most|no more than|max|maximum|within|less than|shorter than|"
-                    r"no longer than|up to)" + _TAIL)
+def extent(n):
+    """Length of a part along the rocket axis."""
+    if n.tag in ("trapezoidfinset", "ellipticalfinset"):
+        return n.num("rootchord") or 0.0
+    if n.tag == "freeformfinset":            # the root runs from the first point to the last one
+        xs = [to_float(p.attrs.get("x")) for fp in n.kids if fp.tag == "finpoints" for p in fp.kids]
+        return (xs[-1] - xs[0]) if len(xs) >= 2 and None not in (xs[0], xs[-1]) else 0.0
+    return n.num("length") or 0.0
 
 
-def _kind(before):
-    before = before.lower()
-    if _MIN_Q.search(before):
-        return "min"
-    if _MAX_Q.search(before):
-        return "max"
-    return "about"
+def fore(n):
+    """Fore end of a part, measured from its owner's fore end (OpenRocket axial methods)."""
+    L, own = extent(n), n.owner()
+    own_len = extent(own) if own is not None else 0.0
+    method, x = "top", 0.0
+    for key in ("axialoffset", "position"):
+        f = n.get(key)
+        if f is not None:
+            method = str(f.attrs.get("method") or f.attrs.get("type") or "top").lower()
+            x = to_float(f.value) or 0.0
+            break
+    return {"top": x, "middle": own_len / 2 - L / 2 + x, "bottom": own_len - L + x,
+            "after": own_len + x, "absolute": x - abs_fore(own)}.get(method, x)
 
 
-def asked_apogees(prompt):
-    """Every altitude goal in a prompt as [(metres, kind)], kind: about | min | max.
-
-    A length counts when an altitude word sits just before or after it. If no length has one, the first
-    length of 30 m or more that is not a rail/length/diameter figure counts. "Stay below 500 ft apogee,
-    about 120 m" gives both goals; the score takes the worst of them."""
-    near, far = [], []
-    for m in _LEN.finditer(prompt):
-        v = float(m.group("num").replace(",", "")) * UNIT_M[m.group("unit").lower()]
-        before, after = prompt[max(0, m.start() - 30): m.start()], prompt[m.end(): m.end() + 14]
-        if _NOT_ALTITUDE.match(after):
-            continue
-        is_near = bool(_ALT_WORDS.search(before) or re.match(r"\s*(?:apogee|altitude)", after, re.I))
-        if is_near and v >= 5:
-            near.append((v, _kind(before[-16:])))
-        elif v >= 30:
-            far.append((v, _kind(before[-16:])))
-    return near or far[:1]
+def abs_fore(n):
+    """Fore end of a part from the nose tip. Airframe parts stack in order inside their stage."""
+    if n is None or n.tag in ("rocket", "openrocket"):
+        return 0.0
+    own = n.owner()
+    if n.tag == "stage" or (own is not None and own.tag == "stage" and n.tag in AIRFRAME):
+        sibs = list(own.parts()) if own is not None else []
+        before = sibs[:sibs.index(n)] if n in sibs else []
+        if n.tag == "stage":
+            return sum(extent(p) for s in before for p in s.parts() if p.tag in AIRFRAME)
+        return abs_fore(own) + sum(extent(p) for p in before if p.tag in AIRFRAME)
+    return abs_fore(own) + fore(n)
 
 
-def asked_apogee(prompt):
-    """The first altitude goal, (metres, kind), else None (kept for callers of the old API)."""
-    a = asked_apogees(prompt)
-    return a[0] if a else None
+def radii(n):
+    """(outer, inner) radius of a tube, None when unknown or auto."""
+    r = n.num("radius") if n.tag == "bodytube" else n.num("outerradius")
+    if r is None:
+        return None, None
+    t = n.text("thickness")
+    if t == "filled":
+        return r, 0.0
+    return r, r - (to_float(t) or 0.0)
 
 
-_WORD_NUM = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
-             "nine": 9, "ten": 10, "a": 1, "half a": 0.5}
-_TIME = re.compile(r"(?P<num>\d+(?:\.\d+)?|half a|one|two|three|four|five|six|seven|eight|nine|ten|a)\s*"
-                   r"(?P<unit>minutes?|mins?|seconds?|secs?|s)\b(?!/)", re.I)
-_NOT_FLIGHT_TIME = re.compile(r"burn|delay|ejection|coast|thrust|to apogee", re.I)
+def fin_angles(n):
+    base = n.num("angleoffset")
+    base = n.num("rotation") if base is None else base
+    k = int(n.num("fincount") or n.num("instancecount") or 1)
+    return [((base or 0.0) + i * 360.0 / k) % 360 for i in range(max(k, 1))]
 
 
-def asked_flight_time(prompt):
-    """(seconds, kind) for the total flight time a prompt asks for, else None. kind: about | min | max."""
-    for m in _TIME.finditer(prompt):
-        raw = m.group("num").lower()
-        v = _WORD_NUM[raw] if raw in _WORD_NUM else float(raw)
-        if m.group("unit").lower().startswith("m"):
-            v *= 60.0
-        before, after = prompt[max(0, m.start() - 40): m.start()], prompt[m.end(): m.end() + 14]
-        if _NOT_FLIGHT_TIME.search(before[-20:]) or _NOT_FLIGHT_TIME.match(after.strip()):
-            continue
-        if raw == "a" and not re.search(r"(?:under|within|in|about|around|near) $", before.lower()):
-            continue                     # "a s..." or "a min..." in ordinary words
-        if v <= 0:
-            continue
-        return v, _kind(before[-20:])
-    return None
+def fit_problems(stages):
+    out, max_r = [], 0.0
+    for stage in stages:
+        air = [p for p in stage.parts() if p.tag in AIRFRAME]
+        span = (abs_fore(air[0]), abs_fore(air[-1]) + extent(air[-1])) if air else (0.0, 0.0)
+        for a, b in zip(air, air[1:]):
+            if (a.tag, b.tag) not in (("nosecone", "bodytube"), ("bodytube", "bodytube")):
+                continue
+            ra = a.num("aftradius") if a.tag == "nosecone" else a.num("radius")
+            rb = b.num("radius")
+            if ra and rb and abs(ra - rb) * 2 > STEP_TOL_M:
+                out.append(f"diameter step of {abs(ra - rb) * 2000:.1f} mm between {a.tag} and {b.tag}")
+        for n in stage.walk():
+            if n.leaf:
+                continue
+            own = n.owner()
+            for key in ("radius", "aftradius", "foreradius"):
+                if n.tag in AIRFRAME and (r := n.num(key, auto=True)):
+                    max_r = max(max_r, r)
+            if n.tag in AIRFRAME | {"innertube"}:
+                if n.tag != "nosecone" and n.tag != "transition":
+                    ro, ri = radii(n)
+                    if ro is not None and ro <= 0:
+                        out.append(f"{n.tag} has radius {ro:g}")
+                    elif ro is not None and ri is not None and ri < 0:
+                        out.append(f"{n.tag} wall is thicker than its radius")
+                if n.tag != "innertube" and extent(n) <= 0:
+                    out.append(f"{n.tag} has length {extent(n):g}")
+            if n.tag in FINS:
+                out += fin_problems(n, own, span)
+            if n.tag == "innertube" and own is not None and own.tag == "bodytube":
+                _, bore = radii(own)
+                r, _ = radii(n)
+                if bore and r and r > bore * TUBE_FIT:
+                    out.append(f"inner tube {r * 2000:.1f} mm in a {bore * 2000:.1f} mm bore")
+            if n.tag == "motor":
+                mount = n.parent.owner() if n.parent is not None else None
+                _, bore = radii(mount) if mount is not None else (None, None)
+                d = n.num("diameter")
+                if d and bore and bore > 0.002 and d > bore * 2 * MOTOR_FIT:
+                    out.append(f"{d * 1000:.1f} mm motor in a {bore * 2000:.1f} mm mount")
+        for own in stage.walk():
+            if own.leaf or own.tag == "subcomponents":
+                continue
+            sets = [f for f in own.parts() if f.tag in FINS]
+            for i, a in enumerate(sets):
+                for b in sets[i + 1:]:
+                    lo = max(fore(a), fore(b))
+                    hi = min(fore(a) + extent(a), fore(b) + extent(b))
+                    close = min(min(abs(x - y), 360 - abs(x - y)) for x in fin_angles(a) for y in fin_angles(b))
+                    if hi - lo > 0.001 and close < FIN_CLASH_DEG:
+                        out.append(f"fin sets clash on <{own.tag}> ({a.tag} and {b.tag})")
+    return out, max_r
+
+
+def fin_problems(n, own, span):
+    out = []
+    if own is None or own.tag not in AIRFRAME:
+        return [f"{n.tag} is on <{own.tag if own else None}>, not the airframe"]
+    if (n.num("fincount") or n.num("instancecount") or 0) < 1:
+        out.append(f"{n.tag} has no fins")
+    if n.tag != "tubefinset":
+        t = n.num("thickness")
+        if t is None or t < MIN_FIN_THICKNESS_M:
+            out.append(f"{n.tag} is {0 if t is None else t * 1000:.2f} mm thick (min {MIN_FIN_THICKNESS_M * 1000:g})")
+        if n.tag in ("trapezoidfinset", "ellipticalfinset") and not ((n.num("height") or 0) > 0 and extent(n) > 0):
+            out.append(f"{n.tag} has zero height or root chord")
+        if n.tag == "freeformfinset":
+            pts = [p for fp in n.kids if fp.tag == "finpoints" for p in fp.kids]
+            if len(pts) < 3 or extent(n) <= 0:
+                out.append("freeform fin has fewer than 3 points or no root")
+    a, L = abs_fore(n), extent(n)                   # from the nose tip
+    on = min(a + L, span[1]) - max(a, span[0])
+    if L > 0 and on < FIN_ON_AIRFRAME * L:
+        out.append(f"{n.tag} root ({a * 1000:.0f}..{(a + L) * 1000:.0f} mm from the tip) is mostly off "
+                   f"the airframe ({span[0] * 1000:.0f}..{span[1] * 1000:.0f} mm)")
+    return out
+
+
+def gate_geometry(root, stages, schema):
+    probs = schema_problems(root, schema)
+    if probs:
+        raise Reject("geometry", probs)
+    probs = material_problems(root, schema)
+    fit, max_r = fit_problems(stages)
+    if probs + fit:
+        raise Reject("geometry", probs + fit)
+    return max_r
+
+
+# ====================================================================================== gate 5
+def config_id(root):
+    found = []
+    for n in root.walk():
+        if n.tag in ("motorconfiguration", "motor") and n.attrs.get("configid"):
+            found.append((n.tag != "motorconfiguration" or str(n.attrs.get("default")).lower() != "true",
+                          n.tag != "motorconfiguration", str(n.attrs["configid"])))
+    return sorted(found, key=lambda f: f[:2])[0][2] if found else None
+
+
+def to_ork(root, req):
+    """The cleaned tree as .ork XML, with one standard simulation called "reward"."""
+    def el(n):
+        e = ET.Element(n.tag, {k: fmt(v) for k, v in n.attrs.items()})
+        if n.value is not None:
+            e.text = fmt(n.value)
+        e.extend(el(k) for k in n.kids if k.tag not in NOT_IN_ORK)
+        return e
+
+    cid = config_id(root)
+    if cid is None:
+        raise Reject("flight", ["no motor configuration id (configid) to fly"])
+    x = el(root)
+    x.set("version", x.get("version") or "1.10")
+    sim = ET.SubElement(ET.SubElement(x, "simulations"), "simulation", status="outdated")
+    ET.SubElement(sim, "name").text = "reward"
+    ET.SubElement(sim, "simulator").text = "RK4Simulator"
+    ET.SubElement(sim, "calculator").text = "BarrowmanCalculator"
+    c = ET.SubElement(sim, "conditions")
+    wind = min(float(req.get("wind_ms", SIM["wind_ms"])), LIM["max_wind_ms"])
+    for k, v in (("configid", cid), ("launchrodlength", SIM["rail_length_m"]), ("launchrodangle", SIM["launch_angle_deg"]),
+                 ("launchroddirection", 90.0), ("windaverage", wind), ("windturbulence", SIM["wind_turbulence"]),
+                 ("launchaltitude", SIM["site_altitude_m"]), ("launchlatitude", 28.61), ("launchlongitude", -80.6),
+                 ("geodeticmethod", "spherical"), ("timestep", SIM["time_step_s"])):
+        ET.SubElement(c, k).text = fmt(v)
+    ET.SubElement(c, "atmosphere", model="isa")
+    return ET.tostring(x, encoding="unicode", xml_declaration=True)
+
+
+def fmt(v):
+    return ("true" if v else "false") if isinstance(v, bool) else str(v)
+
+
+class OpenRocket:
+    """One OrBatch Java process. fly() sends one .ork path and reads one JSON line, with a timeout."""
+
+    def __init__(self):
+        self.p, self.answered, self.buf, self.lock = None, 0, b"", threading.Lock()
+
+    @staticmethod
+    def _java(tool):
+        for home in (os.environ.get("OPENROCKET_JAVA_HOME"), os.environ.get("JAVA_HOME"),
+                     Path.home() / ".jdks" / "jdk-17.0.20.1+1" / "Contents" / "Home"):
+            if home and (Path(home) / "bin" / tool).exists():
+                return str(Path(home) / "bin" / tool)
+        return tool
+
+    def _start(self):
+        if not JAR.exists():
+            raise SetupError(f"OpenRocket jar not found at {JAR} (scripts/fetch_openrocket.sh)")
+        stamp = OR_BATCH_CLASSES / "OrBatch.class"
+        if not stamp.exists() or stamp.stat().st_mtime < OR_BATCH_SRC.stat().st_mtime:
+            OR_BATCH_CLASSES.mkdir(parents=True, exist_ok=True)
+            r = subprocess.run([self._java("javac"), "--release", "17", "-nowarn", "-cp", str(JAR), "-d",
+                                str(OR_BATCH_CLASSES), str(OR_BATCH_SRC)], capture_output=True, text=True)
+            if r.returncode:
+                raise SetupError("could not compile OrBatch.java:\n" + r.stderr[-1000:])
+        cmd = [self._java("java"), "-Djava.awt.headless=true", "-Dfile.encoding=UTF-8", "-Dsun.jnu.encoding=UTF-8",
+               "-cp", os.pathsep.join([str(JAR), str(OR_BATCH_CLASSES)]), "OrBatch"]
+        self.p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                  bufsize=0, cwd=REPO)
+        self.answered, self.buf = 0, b""
+
+    def _kill(self):
+        if self.p is not None:
+            self.p.kill()
+            self.p.wait()
+        self.p = None
+
+    def fly(self, ork_path, seed=42):
+        with self.lock:
+            if self.p is None or self.p.poll() is not None:
+                self._start()
+            timeout = SIM_TIMEOUT_S + (BOOT_TIMEOUT_S if self.answered == 0 else 0)
+            try:
+                self.p.stdin.write(f"{ork_path}\treward\t{int(seed)}\t1\t42\n".encode())
+            except (BrokenPipeError, OSError):
+                self._kill()
+                raise SetupError("OpenRocket process would not take input")
+            sel = selectors.DefaultSelector()
+            sel.register(self.p.stdout, selectors.EVENT_READ)
+            try:
+                while True:
+                    if b"\n" in self.buf:
+                        line, self.buf = self.buf.split(b"\n", 1)
+                        if line.startswith(b"{"):
+                            self.answered += 1
+                            return json.loads(line.decode("utf-8", "replace"))
+                        continue
+                    if not sel.select(timeout):
+                        self._kill()
+                        raise Reject("flight", [f"OpenRocket did not finish in {SIM_TIMEOUT_S} s"])
+                    chunk = os.read(self.p.stdout.fileno(), 1 << 16)
+                    if not chunk:                                  # the Java process died
+                        booted = self.answered > 0
+                        self._kill()
+                        if not booted:
+                            raise SetupError("OpenRocket process died before its first answer (check Java)")
+                        raise Reject("flight", ["OpenRocket crashed on this design"])
+                    self.buf += chunk
+            finally:
+                sel.close()
+
+
+_OR = OpenRocket()
+
+
+def gate_flight(root, req, seed):
+    with tempfile.TemporaryDirectory(prefix="reward_") as d:
+        path = Path(d) / "design.ork"
+        path.write_text(to_ork(root, req), encoding="utf-8")
+        sim = _OR.fly(path, seed)
+    if sim.get("error"):
+        raise Reject("flight", [f"OpenRocket could not fly it: {sim['error'][:160]}"])
+    aborts = [e.get("data", "") for e in sim.get("events", []) if e.get("type") == "SIM_ABORT"]
+    limit = min(float(req.get("max_touchdown_ms", LIM["default_max_landing_ms"])), HARD_LANDING_MS)
+    out = [f"simulation aborted: {a[:100]}" for a in aborts]
+    for b in sim.get("branches") or []:
+        if not b["deployed"]:
+            out.append(f"{b['name']}: recovery never deployed")
+        if not b["ground"]:
+            out.append(f"{b['name']}: never reached the ground")
+        elif b["landing_ms"] is None or b["landing_ms"] > limit:
+            out.append(f"{b['name']}: lands at {b['landing_ms']} m/s (limit {limit:g})")
+    if not sim.get("branches"):
+        out.append("no flight data")
+    st, sb = sim.get("stability_rail_cal"), sim.get("stability_min_burn_cal")
+    if st is None or st < LIM["min_launch_margin_cal"]:
+        out.append(f"stability at the rail {st if st is None else round(st, 2)} cal (needs >= {LIM['min_launch_margin_cal']:g})")
+    if sb is not None and sb <= LIM["min_burn_margin_cal"]:
+        out.append(f"stability falls to {sb:.2f} cal in the burn")
+    if (sim.get("rail_exit_ms") or 0) < LIM["min_rail_exit_ms"]:
+        out.append(f"rail exit {sim.get('rail_exit_ms')} m/s (needs >= {LIM['min_rail_exit_ms']:g})")
+    metrics = {k: sim.get(k) for k in ("apogee_m", "flight_time_s", "max_velocity_ms", "rail_exit_ms",
+                                       "stability_rail_cal", "stability_min_burn_cal", "wind_ms")}
+    metrics["landing_ms"] = [b["landing_ms"] for b in sim.get("branches") or []]
+    metrics["landing_limit_ms"] = limit
+    if sim.get("load_warnings"):
+        metrics["load_warnings"] = sim["load_warnings"][:5]
+    if out:
+        raise Reject("flight", out)
+    return metrics
+
+
+# ====================================================================================== gates 6-7
+def gate_spec(req, max_r, motors, m):
+    out = []
+    if req.get("max_body_diameter_mm") and max_r * 2000 > req["max_body_diameter_mm"] + 0.5:
+        out.append(f"body {max_r * 2000:.1f} mm is wider than {req['max_body_diameter_mm']:g} mm")
+    if req.get("max_motor_class"):
+        worst = max((motor_class(i) for i in motors), key=CLASSES.index)
+        if CLASSES.index(worst) > CLASSES.index(req["max_motor_class"]):
+            out.append(f"motor class {worst} is above {req['max_motor_class']}")
+    if req.get("max_velocity_ms") and (m.get("max_velocity_ms") or 0) > req["max_velocity_ms"]:
+        out.append(f"max velocity {m['max_velocity_ms']:.0f} m/s is above {req['max_velocity_ms']:g}")
+    if out:
+        raise Reject("spec", out)
 
 
 def closeness(got, want, kind, tol):
-    """1 inside the tolerance, then linear down to 0 at TARGET_FALLOFF past it."""
-    if kind == "min":
-        off = max(0.0, (want - got) / want)
-    elif kind == "max":
-        off = max(0.0, (got - want) / want)
-    else:
-        off = max(0.0, abs(got - want) / want - tol)
-    return max(0.0, 1.0 - off / TARGET_FALLOFF)
+    """1 inside the tolerance, then a straight line down to 0 at FALLOFF past it."""
+    off = {"min": (want - got) / want, "max": (got - want) / want}.get(kind, abs(got - want) / want - tol)
+    return max(0.0, 1.0 - max(0.0, off) / FALLOFF)
 
 
-def target_scores(sim, prompt, limit):
-    """({component: 0..1}, problems, asked). Components the prompt does not give are left out."""
-    comps, probs, asked = {}, [], {}
-    got = sim["apogee_m"]
-    apos = asked_apogees(prompt)
-    if apos:
-        asked["apogee_m"] = apos
-        comps["apogee"] = min(closeness(got, v, k, ABOUT_TOL) for v, k in apos)
-        for v, k in apos:
-            if k == "min" and got < v:
-                probs.append(f"apogee {got:.0f} m is below the {v:.0f} m asked for")
-            elif k == "max" and got > v:
-                probs.append(f"apogee {got:.0f} m is above the {v:.0f} m limit")
-            elif k == "about" and abs(got - v) > ABOUT_TOL * v:
-                probs.append(f"apogee {got:.0f} m is {100 * (got - v) / v:+.0f}% from the {v:.0f} m asked for "
-                             f"(tolerance {ABOUT_TOL:.0%})")
-    ft = asked_flight_time(prompt)
-    if ft:
-        v, k = ft
-        t = sim["flight_time_s"]
-        asked["flight_time_s"] = ft
-        comps["flight_time"] = closeness(t, v, k, ABOUT_TOL_TIME)
-        if comps["flight_time"] < 1.0:
-            probs.append(f"flight time {t:.1f} s misses the {k} {v:g} s asked for")
-    lands = [s["landing_ms"] for s in sim["sections"] if s["landing_ms"] is not None]
+def targets(req, m):
+    parts = {}
+    if req.get("target_apogee_m"):
+        parts["apogee"] = closeness(m["apogee_m"], req["target_apogee_m"], "about", req.get("apogee_tol_frac", 0.05))
+    if req.get("max_flight_time_s"):
+        parts["flight_time"] = closeness(m["flight_time_s"], req["max_flight_time_s"], "max", 0.0)
+    lands = [v for v in m["landing_ms"] if v is not None]
     if lands:
-        comps["landing"] = max(0.0, min(1.0, (limit - max(lands)) / (0.5 * limit)))
-    return comps, probs, asked
+        lim = m["landing_limit_ms"]
+        parts["landing"] = max(0.0, min(1.0, (lim - max(lands)) / (0.5 * lim)))
+    total = sum(WEIGHTS[k] for k in parts)
+    return round(sum(v * WEIGHTS[k] for k, v in parts.items()) / total, 4) if total else 0.0, parts
 
 
-def tier4_score(comps):
-    """Weighted mean of the components present, weights rescaled to sum to 1."""
-    w = {k: WEIGHTS[k] for k in comps}
-    tot = sum(w.values())
-    return round(sum(comps[k] * w[k] for k in comps) / tot, 4) if tot else 0.0
+# ====================================================================================== ladder
+_CACHE = {}
 
 
-# ============================================================================ the ladder
-def score_answer(content, prompt, lookup=None, finish="stop", flight=True, cad=True, cond=None, seed=0):
-    """Run the ladder on one answer. cond overrides the sim conditions; the prompt's wind is used when the
-    prompt gives one and cond does not set wind_ms."""
-    cond = dict(cond or {})
-    if "wind_ms" not in cond and asked_wind(prompt) is not None:
-        cond["wind_ms"] = asked_wind(prompt)
-    cond = {**DEFAULT_COND, **cond}
-    res = {"gate_failed": None, "reasons": [], "gates": {g: "not reached" for g in GATES}, "unverified": [],
-           "score": None, "provisional_score": None, "tier": None, "components": {}, "not_scored": ["cost"],
-           "slop": False, "metrics": {}, "motor_check": None, "stripped_overrides": 0}
-    skipped = []                    # gates that could not run, in ladder order
+def _load(path, what):
+    if path not in _CACHE:
+        if not Path(path).exists():
+            raise SetupError(f"{what} not found at {path}")
+        _CACHE[path] = json.loads(Path(path).read_text(encoding="utf-8"))
+    return _CACHE[path]
 
-    def finish_up(score, tier):
-        res["tier"], res["provisional_score"] = tier, score
-        failed = res["gate_failed"]
-        # a failure before the first skipped gate is real; anything after a skipped gate is not verified
-        ok = not skipped or (failed is not None and GATES.index(failed) < GATES.index(skipped[0]))
-        res["score"] = score if ok else None
+
+def score(completion, requirements, finish="stop", lookup=None, schema=None, seed=42, flight=True):
+    """Run the ladder. Returns {"score", "gate", "reasons", "parts", "metrics", "notes"}.
+    gate is the gate that failed (None when the design reached the targets). flight=False stops after
+    the geometry gate with score None (for debugging only)."""
+    req = requirements or {}
+    lookup = lookup if lookup is not None else _load(LOOKUP_PATH, "motor lookup")
+    schema = schema if schema is not None else _load(SCHEMA_PATH, "reward schema (run --build-schema)")
+    res = {"score": None, "gate": None, "reasons": [], "parts": {}, "metrics": {}, "notes": {}}
+    if req.get("budget_usd"):
+        res["notes"]["not_scored"] = ["cost (no price data)"]
+    try:
+        try:
+            root, res["notes"]["overrides_removed"], _ = gate_format(completion or "", finish)
+            stages = gate_parts(root)
+            motors = gate_motors(root, lookup)
+            max_r = gate_geometry(root, stages, schema)
+            if not flight:
+                res["gate"] = "not flown"
+                return res
+            res["metrics"] = gate_flight(root, req, seed)
+            gate_spec(req, max_r, motors, res["metrics"])
+        except (Reject, SetupError):
+            raise
+        except Exception as e:                       # a bug in a check, never a reason to crash training
+            raise Reject("geometry", [f"checker error: {type(e).__name__}: {str(e)[:100]}"]) from e
+    except Reject as r:
+        res.update(score=SCORE[r.gate], gate=r.gate, reasons=r.reasons)
+        res["notes"]["checker_error"] = any(s.startswith("checker error") for s in r.reasons)
         return res
-
-    def fail(gate, reasons):
-        res["gate_failed"], res["reasons"], res["gates"][gate] = gate, list(reasons), "FAIL"
-        res["slop"] = True
-        return finish_up(TIER[gate], {"format": 1, "structure": 1, "motors": 1, "cad": 2, "flight": 3}[gate])
-
-    def skip(gate, why):
-        skipped.append(gate)
-        res["gates"][gate] = "skipped"
-        res["unverified"].append(f"{gate}: {why}")
-
-    design, why = gate_format(content, finish)
-    if why:
-        return fail("format", [why])
-    res["gates"]["format"] = "pass"
-
-    motors, why = gate_structure(design)
-    if why:
-        return fail("structure", [why])
-    res["gates"]["structure"] = "pass"
-
-    ok, why, mode = gate_motors(motors, prompt, lookup)
-    res["motor_check"] = mode
-    if why:
-        return fail("motors", [why])
-    res["gates"]["motors"] = "pass"
-
-    res["stripped_overrides"] = strip_overrides(design["openrocket"])
-    probs = fit_problems(to_node("openrocket", design["openrocket"]))
-    cad_skip = "skipped by --no-cad"
-    if cad:
-        cprobs, cad_skip = cad_problems(design["openrocket"])
-        probs += cprobs
-    if probs:
-        return fail("cad", probs)
-    if cad_skip:
-        skip("cad", f"solid checks not run ({cad_skip}); fit checks passed")
-    else:
-        res["gates"]["cad"] = "pass"
-
-    if not flight:
-        skip("flight", "skipped by --no-flight")
-        skip("targets", "needs the flight")
-        return finish_up(None, None)
-    try:
-        xml = design_to_ork_xml(design, cond)
-    except Exception as e:
-        return fail("flight", [f"cannot build an .ork from the tree: {e}"])
-    fd, path = tempfile.mkstemp(suffix=".ork", prefix="reward_")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            fh.write(xml)
-        try:
-            sim = run_openrocket(path, seed)
-        except (ImportError, FileNotFoundError) as e:
-            skip("flight", f"OpenRocket not available ({e})")
-            skip("targets", "needs the flight")
-            return finish_up(None, None)
-        except Exception as e:
-            return fail("flight", [f"OpenRocket could not load or fly it: {str(e).splitlines()[0][:160] if str(e) else type(e).__name__}"])
-    finally:
-        try:
-            os.unlink(path)
-        except OSError:
-            pass
-    res["metrics"] = {k: sim[k] for k in ("apogee_m", "flight_time_s", "rail_exit_ms", "stability_rail_exit_cal",
-                                           "min_stability_burn_cal")}
-    res["metrics"]["landing_ms"] = [s["landing_ms"] for s in sim["sections"]]
-    res["metrics"]["wind_ms"] = cond["wind_ms"]
-    limit = landing_limit(prompt)
-    res["metrics"]["landing_limit_ms"] = limit
-    fp = flight_problems(sim, limit)
-    if fp:
-        return fail("flight", fp)
-    res["gates"]["flight"] = "pass"
-
-    comps, tp, asked = target_scores(sim, prompt, limit)
-    res["components"], res["metrics"]["asked"] = comps, asked
-    res["gates"]["targets"] = "miss" if tp else "pass"
-    res["reasons"] = tp
-    return finish_up(tier4_score(comps), 4)
+    res["score"], res["parts"] = targets(req, res["metrics"])
+    return res
 
 
-def reward(content, prompt, allow_unverified=False, **kw) -> float:
-    """The single number for a training loop, in [-1, 1]. Raises when a gate could not run (no cadquery,
-    no OpenRocket), because then the number is not real; allow_unverified=True returns the provisional one."""
-    r = score_answer(content, prompt, **kw)
+def reward(completion, requirements, **kw) -> float:
+    """The number for GRPO, in [-1, 1]."""
+    r = score(completion, requirements, **kw)
     if r["score"] is None:
-        if allow_unverified:
-            return r["provisional_score"] if r["provisional_score"] is not None else 0.0
-        raise RuntimeError("reward not verified: " + "; ".join(r["unverified"]))
+        raise RuntimeError("no score (flight=False is for debugging only)")
     return r["score"]
 
 
-# ============================================================================ batch / CLI
-def summarize(results):
-    n = len(results)
-    by = {g: sum(1 for r in results if r["gate_failed"] == g) for g in GATES if g != "targets"}
-    flown = [r for r in results if r["tier"] == 4]
-    scored = [r["score"] for r in results if r["score"] is not None]
-    return {"n": n, "slop": sum(r["slop"] for r in results), "failed_at_gate": by,
-            "flew_safely": len(flown), "met_every_target": sum(1 for r in flown if r["gates"]["targets"] == "pass"),
-            "unverified": sum(1 for r in results if r["score"] is None),
-            "mean_score": round(sum(scored) / len(scored), 3) if scored else None}
+# ====================================================================================== schema
+def build_schema(sft_jsonl):
+    """Learn data/reward_schema.json from the reference designs: for every part, where it may sit and
+    which fields it may have; for every field, its type and range (the seen range, widened by 50 % down
+    and 100 % up; never below 0 when no real design went below 0); and every material's density (median)."""
+    nodes, mats = {}, {}
+    for line in open(sft_jsonl, encoding="utf-8"):
+        text = json.loads(line)["messages"][-1]["content"]
+        i = text.rfind("<design>")
+        root = parse(json.loads(text[i + 8:text.find("</design>", i)]))
+        drop(root, lambda k: k.tag == "simulations" and k.parent is root)
+        drop(root, lambda k: k.tag.lower().startswith("override"))
+        for n in root.walk():
+            if n.leaf or n is root:
+                continue
+            r = nodes.setdefault(n.tag, {"parents": set(), "attrs": {}, "fields": {}})
+            r["parents"].add(n.parent.tag)
+            for a, v in n.attrs.items():
+                r["attrs"].setdefault(a, []).append(v)
+            for f in n.kids:
+                if f.leaf:
+                    fr = r["fields"].setdefault(f.tag, {"values": [], "attrs": {}})
+                    fr["values"].append(f.value)
+                    for a, v in f.attrs.items():
+                        fr["attrs"].setdefault(a, []).append(v)
+                    if f.tag in MATERIAL_TAGS and to_float(f.attrs.get("density")) is not None:
+                        mats.setdefault(f"{f.attrs.get('type')}|{f.value}", []).append(float(f.attrs["density"]))
+    out = {"_source": f"built by scripts/reward.py --build-schema from {Path(sft_jsonl).name}", "nodes": {},
+           "materials": {k: round(statistics.median(v), 6) for k, v in sorted(mats.items())}}
+    for tag, r in sorted(nodes.items()):
+        out["nodes"][tag] = {
+            "parents": sorted(r["parents"]),
+            "attrs": {a: rule_for(v) for a, v in sorted(r["attrs"].items())},
+            "fields": {f: {**rule_for(fr["values"]), "attrs": {a: rule_for(v) for a, v in sorted(fr["attrs"].items())}}
+                       for f, fr in sorted(r["fields"].items())}}
+    return out
 
 
-def print_summary(s):
-    print(f"\n{s['n']} answers, slop (failed a gate): {s['slop']}")
-    for g, k in s["failed_at_gate"].items():
-        print(f"  fails at {g:<10} {k}")
-    print(f"  flew safely: {s['flew_safely']}  (met every target: {s['met_every_target']})")
-    print(f"  mean score: {s['mean_score']}  (-1 / -0.8 / -0.5 / 0..1 ladder; {s['unverified']} unverified "
-          f"answers left out)")
+def rule_for(values):
+    seen = [v for v in values if v is not None]
+    rule = {"none": len(seen) < len(values)} if len(seen) < len(values) else {}
+    nums = [x for x in (to_float(v, auto=True) for v in seen) if x is not None]
+    words = sorted({str(v).split()[0] for v in seen if to_float(v, auto=True) is None or str(v).startswith("auto")
+                    if str(v).split()})
+    if nums and len(words) <= 10:
+        lo, hi = min(nums), max(nums)
+        return {**rule, "kind": "num", "lo": lo * 1.5 if lo < 0 else lo * 0.5, "hi": hi * 2 if hi > 0 else hi * 0.5,
+                **({"words": words} if words else {})}
+    strs = sorted({str(v) for v in seen})
+    if strs and all(s.lower() in ("true", "false") for s in strs):
+        return {**rule, "kind": "bool"}
+    if len(strs) <= 40:
+        return {**rule, "kind": "enum", "values": strs}
+    return {**rule, "kind": "text"}
 
 
+# ====================================================================================== CLI
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--results", help="results_<label>.json written by sft/eval_test.py")
-    ap.add_argument("--test", help="the prompts file those answers were generated from (jsonl)")
-    ap.add_argument("--answer", help="one raw model answer (text file)")
-    ap.add_argument("--prompt", help="the prompt for --answer")
-    ap.add_argument("--motor-lookup", help="new_results/sft_v4_motor_lookup.json (branch sft-v5-data)")
-    ap.add_argument("--no-flight", action="store_true")
-    ap.add_argument("--no-cad", action="store_true")
-    ap.add_argument("--wind", type=float, help="wind m/s (default: the prompt's wind, else 2.0)")
-    ap.add_argument("--rail", type=float, help="rail length m (default 1.5)")
-    ap.add_argument("--limit", type=int, default=0)
-    ap.add_argument("--out", help="where to write the per-answer results (json)")
+    ap.add_argument("--build-schema", metavar="SFT_JSONL", help="write data/reward_schema.json from these designs")
+    ap.add_argument("--answer", help="one model answer (text file)")
+    ap.add_argument("--requirements", help="requirements JSON for --answer")
+    ap.add_argument("--answers", help="jsonl rows {id, completion[, finish]}")
+    ap.add_argument("--prompts", help="data/splits/*.jsonl rows {id, requirements}")
+    ap.add_argument("--no-flight", action="store_true", help="stop after the geometry gate (debug)")
+    ap.add_argument("--out", help="write per-answer results here (json)")
     a = ap.parse_args()
-    lookup = json.loads(Path(a.motor_lookup).read_text(encoding="utf-8")) if a.motor_lookup else None
-    cond = {k: v for k, v in (("wind_ms", a.wind), ("rail_length_m", a.rail)) if v is not None}
-    kw = dict(lookup=lookup, flight=not a.no_flight, cad=not a.no_cad, cond=cond)
-
-    results = []
+    if a.build_schema:
+        s = build_schema(a.build_schema)
+        SCHEMA_PATH.write_text(json.dumps(s, indent=1, sort_keys=False) + "\n", encoding="utf-8")
+        print(f"wrote {SCHEMA_PATH}: {len(s['nodes'])} part types, {len(s['materials'])} materials")
+        return
+    kw = dict(flight=not a.no_flight)
     if a.answer:
-        r = score_answer(Path(a.answer).read_text(encoding="utf-8"), a.prompt or "", **kw)
-        r["id"] = Path(a.answer).name
-        results.append(r)
-    elif a.results and a.test:
-        rows = {row["id"]: row for row in ev.load_rows(a.test)}
-        saved = json.loads(Path(a.results).read_text(encoding="utf-8"))["results"]
-        for old in saved[: a.limit or None]:
-            _, content = ev.split_output(old)
-            finish = old.get("finish") or ("error" if old.get("error") else ("length" if old.get("truncated") else "stop"))
-            r = score_answer(content, rows[old["id"]]["messages"][1]["content"], finish=finish, **kw)
-            r["id"] = old["id"]
-            results.append(r)
-            print(f"{r['id']:<22} {'ok' if not r['slop'] else 'SLOP at ' + r['gate_failed']:<18} "
-                  f"{'unverified' if r['score'] is None else format(r['score'], '+.2f'):>10}  "
-                  f"{'; '.join(r['reasons'])[:110]}", flush=True)
+        rows = [("answer", Path(a.answer).read_text(encoding="utf-8"), json.loads(a.requirements or "{}"), "stop")]
+    elif a.answers and a.prompts:
+        req = {r["id"]: r.get("requirements", {}) for r in map(json.loads, open(a.prompts, encoding="utf-8"))}
+        rows = [(r["id"], r["completion"], req[r["id"]], r.get("finish", "stop"))
+                for r in map(json.loads, open(a.answers, encoding="utf-8"))]
     else:
-        ap.error("give --answer (with --prompt) or --results and --test")
-    s = summarize(results)
-    print_summary(s)
-    uv = sorted({u for r in results for u in r["unverified"]})
-    if uv:
-        print("not verified:", "; ".join(uv))
-    if a.out or a.results:
-        out = a.out or str(Path(a.results).with_name("reward_" + Path(a.results).name))
-        Path(out).write_text(json.dumps({"summary": s, "results": results}, indent=1), encoding="utf-8")
-        print("wrote", out)
+        ap.error("give --answer (with --requirements), --answers with --prompts, or --build-schema")
+    results, tally = [], {}
+    for rid, text, rq, finish in rows:
+        r = {"id": rid, **score(text, rq, finish=finish, **kw)}
+        results.append(r)
+        tally[r["gate"] or "flew"] = tally.get(r["gate"] or "flew", 0) + 1
+        s = "-" if r["score"] is None else f"{r['score']:+.2f}"
+        print(f"{rid:<14} {s:>6}  {r['gate'] or 'targets':<9} {'; '.join(r['reasons'])[:100]}", flush=True)
+    scored = [r["score"] for r in results if r["score"] is not None]
+    print(f"\n{len(results)} answers  {tally}  mean {sum(scored) / len(scored):+.3f}" if scored else tally)
+    if a.out:
+        Path(a.out).write_text(json.dumps(results, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":
