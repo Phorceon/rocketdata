@@ -57,7 +57,7 @@ def test_reference_design_clears_every_gate_before_flight():
     ("no design here", "no complete"),
     ("<design>{oops</design>", "does not parse"),
     ('<design>{"rocket": {}}</design>', "openrocket"),
-    ('<design>{"openrocket": {"children": []}, "simulations": {}}</design>', "extra keys"),
+    ('<design>{"openrocket": {"children": []}, "notes": {}}</design>', "extra keys"),
     ('<design>{"openrocket": {"children": [{"rocket": []}]}}</design>', "is not {attrs"),
     ('<design>{"openrocket": {"children": [{"bad tag!": {}}]}}</design>', "bad tag name"),
 ])
@@ -98,10 +98,11 @@ def test_bad_numbers_fail_geometry(bad):
     assert r["gate"] == "geometry" and r["score"] == -0.8
 
 
-def test_unknown_field_and_unknown_part_fail_geometry():
+def test_unknown_field_is_dropped_but_unknown_part_fails():
     d = design()
     nodes(d, "bodytube")[0]["children"].append({"warpdrive": {"value": 1}})
-    assert "unknown field" in run(d)["reasons"][0]
+    r = run(d)
+    assert r["gate"] == "not flown" and "bodytube.warpdrive" in r["notes"]["ignored_fields"]
     d = design()
     nodes(d, "subcomponents")[0]["children"].append({"antigravity": {"children": []}})
     assert "unknown part" in run(d)["reasons"][0]
@@ -152,7 +153,7 @@ def test_density_and_motor_come_from_tables():
     field(nodes(d, "bodytube")[0], "material")["attrs"]["density"] = 0.001
     motor = nodes(d, "motor")[0]
     field(motor, "diameter")["value"] = 0.5
-    root, _, _ = R.gate_format(answer(d), "stop")
+    root, _ = R.gate_format(answer(d), "stop")
     stages = R.gate_parts(root)
     R.gate_motors(root, LOOKUP)
     R.gate_geometry(root, stages, R._load(R.SCHEMA_PATH, "schema"))
@@ -206,3 +207,50 @@ def test_flight_end_to_end():
                 lookup=LOOKUP)
     assert r["score"] is not None and r["metrics"].get("apogee_m") or r["gate"] == "flight"
     assert -0.5 <= r["score"] <= 1.0
+
+
+def test_simulations_next_to_the_root_is_tolerated_and_dropped():
+    d = design()
+    text = "<design>" + json.dumps({"openrocket": d["openrocket"], "simulations": {"children": []}}) + "</design>"
+    assert R.score(text, {}, lookup=LOOKUP, flight=False)["gate"] == "not flown"
+
+
+def test_material_names_fall_back_to_their_family():
+    schema = R._load(R.SCHEMA_PATH, "schema")
+    d = design()
+    field(nodes(d, "bodytube")[0], "material")["value"] = "Paper, spiral kraft glassine, made-up grade, bulk"
+    root, _ = R.gate_format(answer(d), "stop")
+    assert R.material_problems(root, schema) == []
+    tube = next(n for n in root.walk() if n.tag == "bodytube")
+    assert 500 < tube.get("material").attrs["density"] < 1500
+
+
+def test_no_bulk_material_is_lighter_than_foam():
+    schema = R._load(R.SCHEMA_PATH, "schema")
+    assert min(v for k, v in schema["materials"].items() if k.startswith("bulk|")) >= 10
+
+
+def test_motor_id_without_version_suffix_is_accepted():
+    lk = {"AeroTech-F50T-v1": {**next(iter(LOOKUP.values())), "designation": "F50T"}}
+    d = design()
+    field(nodes(d, "motor")[0], "motor_id")["value"] = "AeroTech-F50T"
+    assert R.score(answer(d), {}, lookup=lk, flight=False)["gate"] != "motors"
+
+
+def _fake_flight(warn):
+    return {"apogee_m": 300.0, "flight_time_s": 40.0, "max_velocity_ms": 90.0, "rail_exit_ms": 20.0,
+            "stability_rail_cal": 2.0, "stability_min_burn_cal": 2.0, "deployment_velocity_ms": 5.0,
+            "branches": [{"name": "Stage", "deployed": True, "ground": True, "landing_ms": 4.0}],
+            "events": [{"branch": 0, "type": "SIM_WARN", "t": 1.2, "data": warn}] if warn else []}
+
+
+@pytest.mark.parametrize("warn,ok", [
+    (None, True),
+    ('Recovery device deployment at high speed (38.2 m/s):  "Parachute"', True),     # normal for hobby rockets
+    ('Recovery device deployment at high speed (262 m/s):  "Parachute"', False),     # shreds the chute
+])
+def test_fast_deployment_fails_flight(monkeypatch, warn, ok):
+    monkeypatch.setattr(R._OR, "fly", lambda path, seed=42: _fake_flight(warn))
+    r = R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)
+    assert (r["gate"] is None) == ok, r["reasons"]
+    assert r["metrics"]["apogee_m"] == 300.0          # metrics are kept even when the flight fails

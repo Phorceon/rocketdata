@@ -73,6 +73,8 @@ TUBE_FIT = 1.10                  # inner tube up to 10 % wider than its parent's
 FIN_ON_AIRFRAME = 0.5            # at least this share of a fin's root must sit on the stage's airframe
 FIN_CLASH_DEG = 3.0              # two fin sets on one tube with fins closer than this, and overlapping
 SIM_TIMEOUT_S, BOOT_TIMEOUT_S = 60, 300
+MAX_DEPLOY_MS = 50.0             # parachute/streamer opening faster than this fails. OpenRocket warns at 20 m/s,
+                                 # but most real designs open at 20-35 m/s (6 % of sft_v5 above 50)
 MAX_DEPTH = 64
 
 AIRFRAME = {"nosecone", "bodytube", "transition"}
@@ -88,9 +90,9 @@ _TAG = re.compile(r"^[A-Za-z_][\w.-]{0,63}$")
 class Reject(Exception):
     """The design failed a gate."""
 
-    def __init__(self, gate, reasons):
+    def __init__(self, gate, reasons, metrics=None):
         super().__init__(gate)
-        self.gate, self.reasons = gate, list(reasons)[:6]
+        self.gate, self.reasons, self.metrics = gate, list(reasons)[:6], metrics or {}
 
 
 class SetupError(RuntimeError):
@@ -168,6 +170,8 @@ def to_float(v, auto=False):
 
 def parse(obj):
     """{"openrocket": {...}} -> Node tree. Rejects anything that is not the v5 tree shape."""
+    if isinstance(obj, dict) and "openrocket" in obj:
+        obj = {"openrocket": obj["openrocket"]} if set(obj) <= {"openrocket", "simulations"} else obj
     if not (isinstance(obj, dict) and list(obj) == ["openrocket"]):
         extra = [k for k in obj if k != "openrocket"] if isinstance(obj, dict) else []
         raise Reject("format", [f"the design must be {{\"openrocket\": ...}} only; extra keys: {extra[:3]}"
@@ -227,9 +231,8 @@ def gate_format(completion, finish):
     except (ValueError, RecursionError) as e:
         raise Reject("format", [f"design JSON does not parse: {str(e)[:80]}"])
     root = parse(obj)
-    removed = drop(root, lambda k: k.tag == "simulations" and k.parent is root)
-    overrides = drop(root, lambda k: k.tag.lower().startswith("override"))
-    return root, overrides, removed
+    drop(root, lambda k: k.tag == "simulations")
+    return root, drop(root, lambda k: k.tag.lower().startswith("override"))
 
 
 def gate_parts(root):
@@ -258,6 +261,9 @@ def gate_motors(root, lookup):
     bad, used = [], []
     for m in motors:
         mid = m.text("motor_id")
+        if mid is not None and mid not in lookup and f"{mid}-v1" in lookup:
+            mid = f"{mid}-v1"                       # a real motor written without its version suffix
+            m.get("motor_id").value = mid
         if mid is None or mid not in lookup:
             bad.append(mid or m.text("designation") or "?")
             continue
@@ -284,7 +290,9 @@ def motor_class(info):
 
 # ====================================================================================== gate 4
 def schema_problems(root, schema):
-    out = []
+    """Problems with parts and values. Fields and attributes no real design has are removed (OpenRocket
+    never sees them) and listed in the second return value; unknown parts are problems."""
+    out, ignored = [], set()
     for n in root.walk():
         if n.leaf or n is root:
             continue
@@ -294,20 +302,32 @@ def schema_problems(root, schema):
             continue
         if n.parent.tag not in rule["parents"]:
             out.append(f"<{n.tag}> can not sit inside <{n.parent.tag}>")
-        out += [f"<{n.tag} {a}=...>: {e}" for a, v in n.attrs.items()
-                for e in [value_problem(rule["attrs"].get(a), v)] if e]
+        out += check_attrs(n, rule["attrs"], f"<{n.tag}", ignored)
+        keep = []
         for f in n.kids:
             if not f.leaf or f.tag in MATERIAL_TAGS or (n.tag == "motor" and f.tag in FROM_LOOKUP):
+                keep.append(f)
                 continue
             fr = rule["fields"].get(f.tag)
             if fr is None:
-                out.append(f"<{n.tag}> has unknown field <{f.tag}>")
+                ignored.add(f"{n.tag}.{f.tag}")
                 continue
+            keep.append(f)
             if e := value_problem(fr, f.value):
                 out.append(f"<{n.tag}><{f.tag}>: {e}")
-            for a, v in f.attrs.items():
-                if e := value_problem(fr.get("attrs", {}).get(a), v):
-                    out.append(f"<{n.tag}><{f.tag} {a}=...>: {e}")
+            out += check_attrs(f, fr.get("attrs", {}), f"<{n.tag}><{f.tag}", ignored)
+        n.kids = keep
+    return out, sorted(ignored)
+
+
+def check_attrs(n, rules, where, ignored):
+    out = []
+    for a in list(n.attrs):
+        if a not in rules:
+            ignored.add(f"{n.tag}@{a}")
+            del n.attrs[a]
+        elif e := value_problem(rules[a], n.attrs[a]):
+            out.append(f"{where} {a}=...>: {e}")
     return out
 
 
@@ -335,15 +355,24 @@ def value_problem(rule, v):
     return None if len(s) <= 200 and s.isprintable() else "bad text"
 
 
+def material_family(name):
+    """"RS: Paper, spiral kraft glassine, PK IIIa, bulk" -> "paper"; "1/16 In. braided nylon" -> "braided"."""
+    words = re.findall(r"[a-z]+", str(name).lower().replace("rs:", "").split(",")[0])
+    return next((w for w in words if w not in ("in", "mm", "cm", "oz", "lb", "ft", "flat", "round")), "")
+
+
 def material_problems(root, schema):
-    """Replace every density with the real one for that material name; unknown names fail."""
-    out = []
+    """Replace every density with the real one for that material: the exact name (sft_v5 designs, then
+    OpenRocket's own parts library), else the median of its family. A material of no known family fails."""
+    out, mats, fams = [], schema["materials"], schema["material_families"]
     for f in root.walk():
         if f.leaf and f.tag in MATERIAL_TAGS:
-            key = f"{f.attrs.get('type')}|{f.value}"
-            d = schema["materials"].get(key)
+            t, name = f.attrs.get("type"), str(f.value)
+            clean = re.sub(r"^RS:\s*|,\s*bulk$", "", name)
+            d = next((x for x in (mats.get(f"{t}|{name}"), mats.get(f"{t}|{clean}"),
+                                  fams.get(f"{t}|{material_family(name)}")) if x is not None), None)
             if d is None:
-                out.append(f"unknown material {key[:50]!r}")
+                out.append(f"unknown material {t}|{name[:40]!r}")
             else:
                 f.attrs["density"] = d
     return out
@@ -486,14 +515,14 @@ def fin_problems(n, own, span):
 
 
 def gate_geometry(root, stages, schema):
-    probs = schema_problems(root, schema)
+    probs, ignored = schema_problems(root, schema)
     if probs:
         raise Reject("geometry", probs)
     probs = material_problems(root, schema)
     fit, max_r = fit_problems(stages)
     if probs + fit:
         raise Reject("geometry", probs + fit)
-    return max_r
+    return max_r, ignored
 
 
 # ====================================================================================== gate 5
@@ -621,8 +650,15 @@ def gate_flight(root, req, seed):
     if sim.get("error"):
         raise Reject("flight", [f"OpenRocket could not fly it: {sim['error'][:160]}"])
     aborts = [e.get("data", "") for e in sim.get("events", []) if e.get("type") == "SIM_ABORT"]
+    unsafe = set()
+    for e in sim.get("events", []):
+        w = e.get("data", "") if e.get("type") == "SIM_WARN" else ""
+        fast = re.search(r"deployment at high speed \(([\d.]+) m/s", w)
+        if (fast and float(fast.group(1)) > MAX_DEPLOY_MS) or re.search(r"while (the )?motor", w, re.I):
+            unsafe.add(w[:90])
+    unsafe = sorted(unsafe)
     limit = min(float(req.get("max_touchdown_ms", LIM["default_max_landing_ms"])), HARD_LANDING_MS)
-    out = [f"simulation aborted: {a[:100]}" for a in aborts]
+    out = [f"simulation aborted: {a[:100]}" for a in aborts] + [f"OpenRocket: {w}" for w in unsafe]
     for b in sim.get("branches") or []:
         if not b["deployed"]:
             out.append(f"{b['name']}: recovery never deployed")
@@ -640,13 +676,14 @@ def gate_flight(root, req, seed):
     if (sim.get("rail_exit_ms") or 0) < LIM["min_rail_exit_ms"]:
         out.append(f"rail exit {sim.get('rail_exit_ms')} m/s (needs >= {LIM['min_rail_exit_ms']:g})")
     metrics = {k: sim.get(k) for k in ("apogee_m", "flight_time_s", "max_velocity_ms", "rail_exit_ms",
-                                       "stability_rail_cal", "stability_min_burn_cal", "wind_ms")}
+                                       "stability_rail_cal", "stability_min_burn_cal", "deployment_velocity_ms",
+                                       "wind_ms")}
     metrics["landing_ms"] = [b["landing_ms"] for b in sim.get("branches") or []]
     metrics["landing_limit_ms"] = limit
     if sim.get("load_warnings"):
         metrics["load_warnings"] = sim["load_warnings"][:5]
     if out:
-        raise Reject("flight", out)
+        raise Reject("flight", out, metrics)
     return metrics
 
 
@@ -709,10 +746,10 @@ def score(completion, requirements, finish="stop", lookup=None, schema=None, see
         res["notes"]["not_scored"] = ["cost (no price data)"]
     try:
         try:
-            root, res["notes"]["overrides_removed"], _ = gate_format(completion or "", finish)
+            root, res["notes"]["overrides_removed"] = gate_format(completion or "", finish)
             stages = gate_parts(root)
             motors = gate_motors(root, lookup)
-            max_r = gate_geometry(root, stages, schema)
+            max_r, res["notes"]["ignored_fields"] = gate_geometry(root, stages, schema)
             if not flight:
                 res["gate"] = "not flown"
                 return res
@@ -724,6 +761,7 @@ def score(completion, requirements, finish="stop", lookup=None, schema=None, see
             raise Reject("geometry", [f"checker error: {type(e).__name__}: {str(e)[:100]}"]) from e
     except Reject as r:
         res.update(score=SCORE[r.gate], gate=r.gate, reasons=r.reasons)
+        res["metrics"] = r.metrics or res["metrics"]
         res["notes"]["checker_error"] = any(s.startswith("checker error") for s in r.reasons)
         return res
     res["score"], res["parts"] = targets(req, res["metrics"])
@@ -742,13 +780,14 @@ def reward(completion, requirements, **kw) -> float:
 def build_schema(sft_jsonl):
     """Learn data/reward_schema.json from the reference designs: for every part, where it may sit and
     which fields it may have; for every field, its type and range (the seen range, widened by 50 % down
-    and 100 % up; never below 0 when no real design went below 0); and every material's density (median)."""
+    and 100 % up; never below 0 when no real design went below 0); and every material's density: the
+    median in the designs, plus OpenRocket's own parts library (the .orc files in lib/OpenRocket.jar)."""
     nodes, mats = {}, {}
     for line in open(sft_jsonl, encoding="utf-8"):
         text = json.loads(line)["messages"][-1]["content"]
         i = text.rfind("<design>")
         root = parse(json.loads(text[i + 8:text.find("</design>", i)]))
-        drop(root, lambda k: k.tag == "simulations" and k.parent is root)
+        drop(root, lambda k: k.tag == "simulations")
         drop(root, lambda k: k.tag.lower().startswith("override"))
         for n in root.walk():
             if n.leaf or n is root:
@@ -765,14 +804,54 @@ def build_schema(sft_jsonl):
                         fr["attrs"].setdefault(a, []).append(v)
                     if f.tag in MATERIAL_TAGS and to_float(f.attrs.get("density")) is not None:
                         mats.setdefault(f"{f.attrs.get('type')}|{f.value}", []).append(float(f.attrs["density"]))
-    out = {"_source": f"built by scripts/reward.py --build-schema from {Path(sft_jsonl).name}", "nodes": {},
-           "materials": {k: round(statistics.median(v), 6) for k, v in sorted(mats.items())}}
+    table = {k: d for k, d in {**library_materials(), **{k: round(statistics.median(v), 6) for k, v in mats.items()}}
+             .items() if DENSITY_RANGE.get(k.split("|")[0], (0, 0))[0] <= d <= DENSITY_RANGE.get(k.split("|")[0], (0, 0))[1]}
+    fams = {}
+    for k, d in table.items():
+        t, name = k.split("|", 1)
+        fams.setdefault(f"{t}|{material_family(name)}", []).append(d)
+    out = {"_source": f"built by scripts/reward.py --build-schema from {Path(sft_jsonl).name} + OpenRocket parts "
+                      "library", "nodes": {}, "materials": dict(sorted(table.items())),
+           "material_families": {k: round(statistics.median(v), 6) for k, v in sorted(fams.items()) if k[-1] != "|"}}
     for tag, r in sorted(nodes.items()):
         out["nodes"][tag] = {
             "parents": sorted(r["parents"]),
             "attrs": {a: rule_for(v) for a, v in sorted(r["attrs"].items())},
             "fields": {f: {**rule_for(fr["values"]), "attrs": {a: rule_for(v) for a, v in sorted(fr["attrs"].items())}}
                        for f, fr in sorted(r["fields"].items())}}
+        for f, vocab in OR_METHODS.items():          # every method OpenRocket knows, not only the ones seen
+            for a in ("method", "type"):
+                rule = out["nodes"][tag]["fields"].get(f, {}).get("attrs", {}).get(a)
+                if rule and rule["kind"] == "enum":
+                    rule["values"] = sorted(set(rule["values"]) | vocab)
+    return out
+
+
+DENSITY_RANGE = {"bulk": (10.0, 25000.0), "surface": (0.0, 5.0), "line": (0.0, 1.0)}   # kg/m3, kg/m2, kg/m:
+# anything outside is a mislabeled entry (e.g. an elastic cord typed "bulk"), never a real material
+OR_METHODS = {"position": {"top", "middle", "bottom", "after", "absolute"},
+              "axialoffset": {"top", "middle", "bottom", "after", "absolute"},
+              "radiusoffset": {"relative", "surface", "coaxial", "free"},
+              "angleoffset": {"relative", "fixed", "mirror"}}
+
+
+def library_materials():
+    """{"bulk|Balsa, bulk, Estes typical": 160.2, ...} from the .orc parts files inside the OpenRocket jar."""
+    import zipfile
+    out, to_si = {}, {"kg/m3": 1.0, "kg/m2": 1.0, "kg/m": 1.0, "g/m2": 0.001, "g/cm3": 1000.0}
+    if not JAR.exists():
+        return out
+    with zipfile.ZipFile(JAR) as z:
+        for name in z.namelist():
+            if not name.lower().endswith(".orc"):
+                continue
+            for m in ET.fromstring(z.read(name)).iter():
+                if m.tag.split("}")[-1] != "Material":
+                    continue
+                get = {c.tag.split("}")[-1]: (c.text or "").strip() for c in m}
+                d, k = to_float(get.get("Density")), to_si.get(m.attrib.get("UnitsOfMeasure", "kg/m3"))
+                if d and k and get.get("Name") and get.get("Type"):
+                    out.setdefault(f"{get['Type'].lower()}|{get['Name']}", round(d * k, 6))
     return out
 
 
