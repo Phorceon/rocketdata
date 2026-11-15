@@ -1,2 +1,0 @@
-1. Understand: 3,750 m is the apogee target, read as about 3,750 m. The band is 3750 * 0.95 = 3560 m to 3750 * 1.05 = 3940 m. Nothing else is stated. I assume one stage, a 1.5 m rail, 2 m/s wind, vertical, sea level, and a 6 m/s landing. The rocket has to reach the ground.
-2. Feasibility: 3,750 m with no drag is sqrt(2 * 9.81 * 3750) = 271 m/s. A large L is the class that can do it, and a single chute at about 5 m/s still lands inside the time cap. Looking up L850 and L2200.

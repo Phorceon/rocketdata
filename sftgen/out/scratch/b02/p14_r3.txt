@@ -1,3 +1,0 @@
-4. Check: The simulator rejected the design before a flight. The chute material "Polyethylene" is not in the allowed list. No apogee, no margin, no landing came back.
-
-5. Fix: One change: chute material to Polyethylene (thin). Tube, motor, fins and the 2 m rail stay the same.

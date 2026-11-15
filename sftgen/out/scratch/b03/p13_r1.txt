@@ -1,2 +1,0 @@
-1. Understand: the rocket has to clear at least 2,000 ft, land softer than 5.5 m/s, and the airframe cannot be wider than 2 inches. No motor class, no wind, no rail length. Defaults are a 1.5 m rail and 2 m/s of wind.
-2. Feasibility: 2,000 * 0.3048 = 610 m, so the floor is 610 m, not a band. 2 * 0.0254 = 0.0508 m, so the outer diameter stays at or under 0.0508 m. A 38 mm motor needs a mount near 0.041 m and still fits. Vacuum speed for 610 m is sqrt(2 * 9.81 * 610) = 109 m/s, and with drag I want roughly 80 to 120 N*s. I will look up an F and a G in that range.

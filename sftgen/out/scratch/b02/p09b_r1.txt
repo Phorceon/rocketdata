@@ -1,3 +1,0 @@
-1. Understand: Two-stage. Booster motor fixed as a Cesaroni O3400, sustainer fixed as a Cesaroni M2045. Apogee about 8,000 m, within 5%. Each section lands under 5 m/s (maximum). Wind about 2 m/s, so the flight is run at 2 m/s. Rail not stated: 1.5 m, vertical, sea level.
-
-2. Feasibility: A drag-free coast to 8,000 m needs sqrt(2 * 9.81 * 8000) = 396 m/s, and a real rocket gives a lot of that back to drag. An O-class booster is also heavy, so fin area has to be large or the margin will sit under 1 caliber. I need both motors before I can tell whether the pair even fits under the 40,960 N*s impulse ceiling.

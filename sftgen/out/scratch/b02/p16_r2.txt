@@ -1,5 +1,0 @@
-2. Feasibility: H128W is an AeroTech H, 178 N*s, 153 N average, burn 1.16 s, diameter 0.029 m, length 0.194 m, mass 0.202 kg, delay 14 s. That is the smaller motor. The I200W is 327 N*s and only lists a 0 s delay, so I leave it. Drag-free speed is sqrt(2 * 9.81 * 1,250) = 157 m/s. A 38 mm tube is just over the 29 mm motor.
-
-3. Size: Liftoff guess 0.32 kg. Thrust-to-weight is 153 / (0.32 * 9.81) = 48.6. Weight is 0.32 * 9.81 = 3.14 N, rail acceleration (153 - 3.14) / 0.32 = 468 m/s^2, exit speed sqrt(2 * 468 * 1.5) = 37.5 m/s. Chute for about 0.25 kg at 5 m/s: area 2 * 0.25 * 9.81 / (1.225 * 0.8 * 25) = 0.200 m^2, diameter sqrt(4 * 0.200 / pi) = 0.50 m. I will fly 0.60 m. Delay 14 s, ejection. Burn plus delay is about 15 s, which should be near apogee if the flight is in the 1,300 to 1,800 m range.
-
-4. Draft: 38 mm cardboard, tube 0.55 m, ogive nose, four plywood fins, AeroTech H128W with a 14 s delay, 0.60 m chute. Default rail and 2 m/s wind.

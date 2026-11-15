@@ -1,2 +1,0 @@
-4. Check: Bigger fins only got the margin to 0.78 cal, still under 1, and apogee fell to 272.5 m. The burn minimum is 0.78 cal too. Rail exit 21.6 m/s, thrust-to-weight 7.4, and landing 5.0 m/s pass. Mass 0.143 kg. The chute is at 8.7 s, after the 7.1 s apogee. Adding fin area is mostly adding drag. The CG is the problem.
-5. Fix: 0.78 cal is still the failure, and 272.5 m comes with it. Last pass: 0.012 kg in the tube at 0.02 m from the top, so the CG moves forward without another fin. Fins, D12-7, chute, and the 300 m site stay.

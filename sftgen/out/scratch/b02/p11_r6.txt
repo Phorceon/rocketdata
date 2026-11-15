@@ -1,5 +1,0 @@
-4. Check: Larger fins did not fix either miss. The simulator gives 312.6 m, still (312.6 - 229) / 229 = 36% above about 229 m. Margin is 0.75 cal, slightly worse than the 0.76 cal before the fin growth, so the extra balsa mass cancelled the CP move. Landing is 5.2 m/s, under 6 m/s. Rail exit is 22.7 m/s, thrust-to-weight is 7.5. Impulse is 35.2 N*s across four C motors.
-
-5. Fix: both failures remain. Apogee 312.6 m is still over the band, and margin 0.75 cal is still under 1.0. This was the third revision. More fin area just added tail weight. I am stopping rather than guessing at a nose weight that would have to fix the margin without being heavy enough to throw away the altitude I still have too much of.
-
-6. Uncertainty: The cluster is Mach 0.29, so drag is not the wild supersonic kind, but fin mass versus fin area is clearly not what I assumed. Liftoff mass is 0.261 kg. A lighter fin material might have raised the margin without the altitude drop I wanted, or the reverse. Chute Cd is 0.8. Four C6 motors are also a lot of aft mass in a 56 mm tube, which is why the margin is stubborn.

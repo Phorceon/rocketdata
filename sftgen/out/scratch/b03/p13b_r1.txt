@@ -1,2 +1,0 @@
-1. Understand: clear at least 2,000 ft, land under 5.5 m/s, and keep the airframe at or under 2 inches wide. No motor class and no stated wind or rail, so the defaults are a 1.5 m rail and 2 m/s of wind.
-2. Feasibility: 2000 * 0.3048 = 610 m is a floor, not a target band. 2 * 0.0254 = 0.0508 m is the diameter cap. Vacuum speed for that altitude is sqrt(2 * 9.81 * 610) = 109 m/s, so with drag I want on the order of 80 to 120 N*s in a 29 mm case that fits the cap. Looking up an E, an F and a G.

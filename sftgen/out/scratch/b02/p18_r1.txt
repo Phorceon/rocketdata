@@ -1,3 +1,0 @@
-1. Understand: Apogee about 800 m, within 5%, so 760 to 840 m. Motor class I at most. No wind, rail, diameter or landing speed stated. Defaults: 1.5 m vertical rail, 2 m/s wind, sea level, landing under 6 m/s. One stage.
-
-2. Feasibility: 800 m is a mid high-power altitude, not an I. Drag-free speed is sqrt(2 * 9.81 * 800) = 125 m/s. A G in a modest tube, or an H if the tube is fatter, should land in the band. An I would overshoot unless the rocket were huge. Looking up a G and an H, both under the I ceiling.

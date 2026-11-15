@@ -1,5 +1,0 @@
-4. Check: The floor is cleared and the gates pass. The simulator gives 943.2 m, above 750 m. Margin is 1.62 cal at rail exit and through the burn. Landing is 3.7 m/s, under 6 m/s. Rail exit is 47.5 m/s on the 2 m rail. Thrust-to-weight is 48.9. Impulse is 177.8 N*s, class H. The section reached the ground. The chute opened at 15.3 s, after apogee at 10.13 s, at 37.5 m/s. The output warns about that opening speed. It is not a gate, and the landing speed still passes. Peak Mach is 1.12, with the supersonic body-calc warning.
-
-5. Fix: nothing left that fails the floor or a gate.
-
-6. Uncertainty: Liftoff mass is 0.318 kg. The 14 s delay is the only one this motor lists, and it is about 5 s after apogee, which is why the canopy opens at 37.5 m/s. An apogee deploy would be gentler and would not change the altitude much. I left the motor charge because the request is altitude, rail and class, and those pass. Chute Cd is 0.8.

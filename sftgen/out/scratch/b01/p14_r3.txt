@@ -1,2 +1,0 @@
-4. Check: The simulator gives 161.0 m, just under the 166 m floor of about 175 m. The rest passes: rail exit 21.9 m/s, thrust-to-weight 8.9, margin 1.8 cal at the rail and through the burn, landing 3.9 m/s, chute at 5.7 s. Mass 0.0594 kg. There is margin to spare, so a little fin drag can come off.
-5. Fix: 161.0 m is the miss. Span goes from 0.04 m to 0.032 m and root from 0.055 m to 0.048 m, tip 0.022 m. Motor, tube, and chute stay.

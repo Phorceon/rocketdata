@@ -1,5 +1,0 @@
-2. Feasibility: The D12 is 16.8 N*s, 10.4 N average, 1.61 s burn, 24 mm, mass 0.043 kg, delays up to 7 s. The C11 is only 8.8 N*s, the same impulse class as a C6, which is light for 457 m. The E12 is 27.1 N*s and would need a heavy airframe to stay near 1,500 ft. The D9W is close to the D12 but a reload with less propellant mass. A D12-7 in a 42 mm sport rocket is the draft.
-
-3. Size: Liftoff mass guess 0.12 kg. Thrust-to-weight is 10.4 / (0.12 * 9.81) = 8.83. Weight is 0.12 * 9.81 = 1.18 N, rail acceleration (10.4 - 1.18) / 0.12 = 76.8 m/s^2, rail exit sqrt(2 * 76.8 * 1.5) = 15.2 m/s on average thrust. The D12 spike above that average should clear 15 m/s. Burnout mass is 0.12 - 0.021 = 0.099 kg. For a 4.1 m/s sink, canopy area is 2 * 0.099 * 9.81 / (1.225 * 0.8 * 4.1^2) = 0.118 m^2, diameter sqrt(4 * 0.118 / 3.1416) = 0.388 m. I will use 0.39 m. A 7 s delay puts ejection near 9 s, which is about when a flight this high should top out.
-
-4. Draft: 42 mm cardboard tube, 0.40 m long, short polystyrene ogive, three balsa fins, 24 mm mount and a D12-7. Default rail and 2 m/s wind.

@@ -1,2 +1,0 @@
-1. Understand: Stay under 1,500 ft. 1500 * 0.3048 = 457 m, and that is a ceiling, so lower is legal and over is not. Low power, D class at most, and the motor itself no wider than 24 mm. The rail is at 5 degrees, so every run gets launch angle 5. Wind, rail length, and site are not stated: 2 m/s, 1.5 m, sea level. Landing at or under 6 m/s.
-2. Feasibility: A D12 is 24 mm and class D, so it sits on both caps. A C is the fallback if the D busts 457 m. I need the motor card before drawing the tube.

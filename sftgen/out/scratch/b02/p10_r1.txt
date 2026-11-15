@@ -1,3 +1,0 @@
-1. Understand: Motor is fixed, an M1545, for an L3 flight. No numeric apogee: as much altitude as is reasonable, so light and narrow rather than a heavy sport rocket. It has to be stable (margin at least 1 caliber, and I will aim nearer 2 because of the wind). Landing under 5.5 m/s (maximum). Wind 4 m/s (stated). Rail 2.5 m (stated). Launch angle and site not stated: vertical, sea level. Single stage.
-
-2. Feasibility: An M is plenty of impulse for a high flight. The 2.5 m rail is long enough that thrust-to-weight should be easy, and the design problem is keeping the rocket stable in 4 m/s wind without hanging so much fin on it that the altitude collapses. I need the M1545's diameter, mass, thrust and delays.

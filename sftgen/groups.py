@@ -1,7 +1,7 @@
 """Source-design grouping, dedup and split assignment (DATA_SPEC.md section 8).
 
 Reads the old SFT file (new_results/sft_all.jsonl) only as a list of source
-designs plus reference facts, resolves each row's source .ork in ork/, merges
+designs plus reference facts, resolves each row's source .ork in meta/ork/, merges
 exact duplicates and renamed copies into one group, summarises what each design
 is known to achieve, and assigns a deterministic train/val/test split per
 design family.
@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SFT_ALL = ROOT / "new_results" / "sft_all.jsonl"
-ORK_DIR = ROOT / "ork"
+ORK_DIR = ROOT / "meta" / "ork"
 CATALOG = ROOT / "data" / "catalog.sqlite"
 OUT = Path(__file__).resolve().parent / "out" / "groups.json"
 
@@ -73,7 +73,7 @@ def read_ork_xml(path: Path) -> str:
 # ---------------------------------------------------------------- name handling
 
 def base_name(file: str) -> str:
-    """'ork/APEX 30.08.2021__10a283.ork' -> 'APEX 30.08.2021'."""
+    """'meta/ork/APEX 30.08.2021__10a283.ork' -> 'APEX 30.08.2021'."""
     stem = Path(file).name
     stem = stem[:-4] if stem.lower().endswith(".ork") else stem
     return HASH_SUFFIX.sub("", stem)

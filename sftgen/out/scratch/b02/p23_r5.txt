@@ -1,3 +1,0 @@
-4. Check: The altitude and the rail both made it. The simulator gives 499.6 m, above 450 m. Rail exit is 19.4 m/s on the 1 m rail, better than the average-thrust estimate, and thrust-to-weight is 4.1. Landing is 4.0 m/s. The outer diameter is 0.018 m, under 0.020 m. Margin is 0.01 cal, under 1.0. Wind is 6 m/s. The chute opened at 10.2 s, at apogee, at 7.7 m/s. The section reached the ground.
-
-5. Fix: The failing value is margin 0.01 cal. One change: 0.006 kg of clay at the top of the tube. There is about 50 m of room above 450 m, so I am not growing the fins. The C2, the 18 mm tube and the chute stay.

@@ -1,3 +1,0 @@
-4. Check: The simulator rejected the slimmer tube before a flight. The mount OD is 0.057 m and the new tube ID is 0.056 m, so the mount does not fit. No new apogee came back.
-
-5. Fix: The 58 mm tube stays. One change: mount OD to 0.055 m and wall to 0.0005 m, so the mount fits the tube and the 0.054 m motor still fits the mount. Fins and both chutes stay.

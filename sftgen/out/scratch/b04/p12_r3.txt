@@ -1,2 +1,0 @@
-4. Check: the tool rejected the draft before any flight. It only accepts nosecone and bodytube on the outside, and the fins have to sit inside the tube as trapezoidal_fins. Nothing flew, so there is no apogee to judge.
-5. Fix: same motors, 0.120 m fiberglass bodies, 4.0 m chutes and the same fin sizes, rewritten with those tags. The O stays plugged and the booster still separates at burnout. Rail 2.5 m.

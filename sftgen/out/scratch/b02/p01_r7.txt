@@ -1,5 +1,0 @@
-4. Check: The simulator gives 2658.4 m, so 2658.4 - 2500 = 158 m above the 2,500 m minimum. Rail exit is 19.8 m/s against 15 m/s, thrust-to-weight is 10.1 against 3, and the margin is 1.15 cal at rail exit and through the burn, against 1.0 cal. Landing is 4.4 m/s against 6 m/s, with the chute out at 18.8 s. Peak Mach is 1.04 and there is no supersonic warning this time. Motor is a K, inside the M ceiling.
-
-5. Fix: no further change; every gate and the altitude minimum passed.
-
-6. Uncertainty: 1.04 Mach is still transonic, so the drag model is the soft number, and 158 m of margin can disappear if the real rocket is heavier than the 1.94 kg liftoff mass. Rail exit is only 19.8 - 15 = 4.8 m/s above the gate, so a heavier build or a slower start would miss it before it missed altitude. The chute opens at 10.7 m/s, which is a hard opening for a 1.2 m canopy even though touchdown itself is 4.4 m/s. Drift is 1840 m in the 4 m/s wind because the descent from this altitude takes most of the 580.7 s flight; the prompt does not limit drift, but the field has to be large. Fin thickness and phenolic wall are on the thin side of what I would actually build.

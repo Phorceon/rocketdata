@@ -1,3 +1,0 @@
-4. Check: The simulator gives 417.4 m. About 375 m allows 5%, and (417.4 - 375) / 375 = 11% high, above the 394 m top of the band. Margin is 0.67 cal at rail exit and through the burn, under 1.0. Landing is 3.9 m/s, under 6 m/s. Rail exit is 27.5 m/s on the 2 m rail, thrust-to-weight 8.6. Impulse is 27.1 N*s, class E, inside G or smaller. The chute opened at 8.4 s, just after apogee at 7.99 s.
-
-5. Fix: Failing values are apogee 417.4 m and margin 0.67 cal. Both want more fin. One change: span to 0.10 m and root to 0.13 m. The extra drag should pull the apogee down while the extra area pulls the margin up. Motor, tube and chute stay.

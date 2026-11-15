@@ -1,2 +1,0 @@
-4. Check: the simulator gives apogee 2684.9 m. The band top is 2,520 m, and 2684.9 - 2520 = 165 m over it. Flight time is 195.2 s, under 200. Landing is 5.0 m/s, the section reached the ground, and the chute opened. Rail exit is 28.1 m/s, thrust-to-weight is 20.4, and margin is 1.67 cal. The only miss is altitude. There is a supersonic warning.
-5. Fix: add 0.20 kg at the front of the tube. The time window and the landing already pass, so the drogue and the main stay. The extra mass should pull the apogee down into the band.

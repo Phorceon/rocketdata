@@ -226,6 +226,6 @@ if __name__ == "__main__":
     import json
     import sys
 
-    path = sys.argv[1] if len(sys.argv) > 1 else "ork/ESTES Alpha 3.ork"
+    path = sys.argv[1] if len(sys.argv) > 1 else "meta/ork/ESTES Alpha 3.ork"
     name = sys.argv[2] if len(sys.argv) > 2 else None
     print(json.dumps(simulate(path, name), indent=2))

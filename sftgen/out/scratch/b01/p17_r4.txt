@@ -1,2 +1,0 @@
-4. Check: Altitude is fixed. The simulator gives 773.5 m, under 850 m. The rail margin is still 0.47 cal, and the burn minimum is 0.47 cal. Bigger fins added drag and barely moved CP. Rail exit 27.2 m/s, thrust-to-weight 16.8, landing 3.7 m/s, and it reached the ground. Mass 0.282 kg. Chute at 12.3 s, after the 9.97 s apogee.
-5. Fix: 0.47 cal is the remaining failure. I am adding 0.025 kg at 0.04 m from the top of the tube so the CG comes forward. Fins stay. Another fin growth would mostly buy drag. Wind stays 2.78 m/s.

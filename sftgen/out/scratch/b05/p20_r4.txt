@@ -1,2 +1,0 @@
-4. Check: the simulator gives thrust-to-weight 3.6, over 3, and landing 4.0 m/s, under 5.5. The section reached the ground and the chute opened. Margin is 5.84 cal. The failure is rail exit at 12.4 m/s, under 15. The 0.08 kg payload is still heavy for a C6 on a 1.5 m rail. A 0.50 kg payload remains impossible: it weighs more than the motor's average thrust.
-5. Fix: cut the payload from 0.08 kg to 0.02 kg so the rail exit can clear 15 m/s. Motor, chute, and fins stay. This is the closest mass that might still fly, not the 500 g that was asked for.

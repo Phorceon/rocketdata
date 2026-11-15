@@ -1,2 +1,0 @@
-1. Understand: apogee is about 175 m, so the band is 175 * 0.95 = 166 m to 175 * 1.05 = 184 m. Touchdown has to be under 6 m/s, and the only recovery is one main chute that opens at apogee. Rail, wind, and motor are not stated. I assume a 1.5 m rail, 2 m/s wind, vertical, sea level, single stage.
-2. Feasibility: 175 m with no drag is sqrt(2 * 9.81 * 175) = 59 m/s. That is a small motor, an A or a B, on a short rocket. A chute at apogee means the motor should be plugged, or have no useful delay. Looking up A8 and B6.

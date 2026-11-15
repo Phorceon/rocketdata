@@ -212,8 +212,8 @@ def build_all(paths):
 
 
 if __name__ == "__main__":
-    ORK = os.path.join(REPO, "ork")
-    paths = sorted("ork/" + f for f in os.listdir(ORK) if f.lower().endswith(".ork"))
+    ORK = os.path.join(REPO, "meta", "ork")
+    paths = sorted("meta/ork/" + f for f in os.listdir(ORK) if f.lower().endswith(".ork"))
     fam, members = build_all(paths)
     multi = {f: ms for f, ms in members.items() if len(ms) > 1}
     print(f"files: {len(paths)}  families: {len(members)}  multi-file families: {len(multi)}")

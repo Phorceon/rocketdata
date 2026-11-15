@@ -1,2 +1,0 @@
-1. Understand: the airframe has to be 3 inches or smaller. 3 * 0.0254 = 0.0762 m, so that is a maximum outer diameter. Motor class is G or smaller. Apogee has to clear 700 m, a minimum. Landing speed, rail, and wind are not stated. I assume 6 m/s, a 1.5 m rail, 2 m/s wind, vertical, sea level, one stage.
-2. Feasibility: 700 m with no drag is sqrt(2 * 9.81 * 700) = 117 m/s. An F on a slim tube can fall short of 700 m, and a G has more room while staying inside the class cap. Looking up F50 and G80.

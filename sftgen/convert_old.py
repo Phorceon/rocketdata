@@ -196,8 +196,8 @@ def _resolve_ork(file_key: str, repo_root: Path, ork_xml_dir: Path | None, notes
     ork_path = Path(file_key)
     if not ork_path.is_absolute():
         ork_path = repo_root / file_key
-    if not ork_path.exists() and (repo_root / "ork" / name).exists():
-        ork_path = repo_root / "ork" / name
+    if not ork_path.exists() and (repo_root / "meta" / "ork" / name).exists():
+        ork_path = repo_root / "meta" / "ork" / name
     if ork_path.exists():
         return _load_ork_bytes(ork_path), ork_path
 
@@ -207,7 +207,7 @@ def _resolve_ork(file_key: str, repo_root: Path, ork_xml_dir: Path | None, notes
             return ET.parse(x).getroot(), x
     if "__" in name:
         base = name.split("__")[0] + ".ork"
-        for cand in (repo_root / "ork" / base,
+        for cand in (repo_root / "meta" / "ork" / base,
                      (ork_xml_dir / (base + ".xml")) if ork_xml_dir else None):
             if cand is not None and cand.exists():
                 notes.append(

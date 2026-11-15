@@ -1,2 +1,0 @@
-1. Understand: The whole brief is 1,200 m. No "about" and no "at least", and the wording is terse, so I will aim for the middle of the about-band, 1,140 to 1,260 m, which also clears 1,200 m if it is a floor. Nothing else is stated: landing at or under 6 m/s, wind 2 m/s, rail 1.5 m, sea level. Drag-free speed is sqrt(2 * 9.81 * 1200) = 153 m/s.
-2. Feasibility: A G on a small tube has been nearer 800 m. I want an H, or a light G if the H is too much. Single stage, one chute.

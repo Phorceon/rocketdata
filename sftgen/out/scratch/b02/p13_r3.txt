@@ -1,5 +1,0 @@
-4. Check: The simulator gives 3612.5 m. Landing is 3.6 m/s, under the 4.57 m/s limit. Margin is 1.0 cal at rail exit and through the burn, on the 1.0 cal floor. Rail exit is 51.1 m/s on the 2.5 m rail. Thrust-to-weight is 46.5. The chute opened at apogee, 20.5 s, at 1.1 m/s, and the section reached the ground in 946 s. Outer diameter is 0.060 m, under 0.110 m. The sim warns that body calculations may be off at supersonic speed. Peak Mach is 2.19. That warning is not a gate.
-
-5. Fix: nothing left that fails.
-
-6. Uncertainty: Liftoff mass is 2.61 kg, heavier than the 2.3 kg guess, and the 1.8 m chute still landed at 3.6 m/s. Margin sitting on 1.0 cal at Mach 2.19 is the thin part. More fin would be calmer and lower. I left it because the request is altitude and the floor is met. Chute Cd is 0.8. The motor's 16 s delay was not used.

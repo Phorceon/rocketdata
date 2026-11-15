@@ -1,5 +1,0 @@
-4. Check: The simulator gives 7860.9 m. Against about 8,000 m that is (8000 - 7860.9) / 8000 = 1.74% low, inside the 5% band. Margin is 1.75 cal at rail exit and through the burn. Rail exit is 18.5 m/s, thrust-to-weight is 9.5. Sustainer descent is 4.7 m/s and booster descent is 4.7 m/s, both under 5 m/s. The booster reached the ground. The sustainer is still airborne when the run stops at 1199.8 s, chute open since 33.1 s, so 4.7 m/s is the rate at cutoff. Total impulse in the result is 28368.6 N*s. Mach 2.24 still draws the supersonic warning, and the booster tube still warns that its forward end is open.
-
-5. Fix: no further change; altitude, both descent rates and the gates pass.
-
-6. Uncertainty: Mach 2.24 makes the drag model the main doubt in 7860.9 m. Liftoff mass is 36.8 kg, and a heavier layup drops the apogee toward the bottom of the band. Both 4.7 m/s rates sit close to the 5 m/s cap if the real canopy Cd is under 0.8. The sustainer still has a long way to fall at 1,200 s, so the clock stops before touchdown; the rate should stay near 4.7 m/s if the chute stays open. The open booster nose is extra drag the warning is flagging.

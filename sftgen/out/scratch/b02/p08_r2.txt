@@ -1,5 +1,0 @@
-2. Feasibility: D21T is 19.6 N*s, the closest of the set to the 20 N*s cap, at 22.2 N average and 32.1 N peak, 18 mm, mass 0.025 kg, delays 4 and 7 s. D12 is 16.8 N*s but only 10.4 N, weak on a 1 m rod and it leaves altitude on the table. D20W and D16 are 13.5 and 12.5 N*s. For a minimum of 250 m with a request to go higher, the D21T is the motor.
-
-3. Size: Keep the airframe narrow so the 19.6 N*s goes into altitude. Liftoff guess 0.055 kg. Thrust-to-weight is 22.2 / (0.055 * 9.81) = 41.1. Weight is 0.055 * 9.81 = 0.540 N, rail acceleration (22.2 - 0.54) / 0.055 = 394 m/s^2, exit speed sqrt(2 * 394 * 1) = 28.1 m/s. Burnout mass is about 0.045 kg. A 0.30 m chute lands that well under 6 m/s. Delay 7 s, because burnout is under a second and the coast on a light D should run several seconds past that.
-
-4. Draft: 28 mm cardboard tube, 0.32 m long, small ogive, three balsa fins, 18 mm mount, D21T-7, 0.30 m chute. Simulated on the 1 m rail.

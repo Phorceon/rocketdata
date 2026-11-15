@@ -1,3 +1,0 @@
-4. Check: The clay overshot the trade. The simulator gives 434.0 m, under the 450 m floor, while the margin is now 1.25 cal. Rail exit is 17.6 m/s, thrust-to-weight 3.5, landing 4.5 m/s. The 0.006 kg was enough margin and too much mass. The no-clay flight was 499.6 m at 0.01 cal, so the altitude and the margin are trading almost one for one.
-
-5. Fix: The failing value is apogee 434.0 m. One change: clay from 0.006 kg down to 0.0035 kg. I want the margin to stay over 1.0 cal and the apogee to climb back over 450 m. Fins, motor and tube stay.

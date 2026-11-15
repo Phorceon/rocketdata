@@ -1,2 +1,0 @@
-4. Check: The simulator gives 658.2 m, over the 610 m ceiling, and the rail margin is 0.84 cal, with the burn minimum also 0.84 cal. Landing 4.1 m/s, rail exit 30.8 m/s, and thrust-to-weight 19.8 pass, and it reached the ground. Mass 0.176 kg. Impulse is 56.7 N*s, under 250 N*s. Bigger fins would pull the peak down and the CP back, which is what both misses want.
-5. Fix: 658.2 m and 0.84 cal are the failures. Fins grow to root 0.11 m, tip 0.045 m, span 0.085 m, sweep 0.045 m. Motor, wind 4.47 m/s, and the 3 degree rail stay.

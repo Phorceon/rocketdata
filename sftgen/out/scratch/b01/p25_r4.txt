@@ -1,2 +1,0 @@
-4. Check: Very close, and still both short. The simulator gives 615.2 m, just over 610 m, and the margin is 0.99 cal at the rail and through the burn. Landing 4.2 m/s, rail exit 30.0 m/s, and thrust-to-weight 18.4 pass. It reached the ground. Mass 0.19 kg. Another fin growth would mostly add drag. A little more nose mass moves the CG and also takes a few metres off the peak.
-5. Fix: 615.2 m and 0.99 cal are the misses. Nose mass goes from 0.012 kg to 0.020 kg. Fins, motor, wind 4.47 m/s, and the 3 degree rail stay.

@@ -38,7 +38,7 @@ def main():
 
     # copy .orc/.ORC out of repo
     n = 0
-    for f in sorted((repo_dir / "orc").glob("*")):
+    for f in sorted((repo_dir / "meta" / "orc").glob("*")):
         if f.is_file() and f.suffix.lower() == ".orc":
             dest = ORC_DIR / f.name
             dest.write_bytes(f.read_bytes())

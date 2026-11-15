@@ -1,3 +1,0 @@
-4. Check: The simulator gives 833.5 m, over the 427 m floor. Margin 1.09 cal at the rail and through the burn. Rail exit 27.4 m/s, thrust-to-weight 16.9, landing 4.0 m/s, chute at 12.3 s, and it reached the ground. Mass 0.279 kg. The motor is a G.
-5. Fix: 833.5 m clears the floor and the gates pass, so this is the rocket.
-6. Uncertainty: 1.09 cal is a thin reserve in 2.24 m/s of wind. If the 0.02 kg nose mass sits farther forward than drawn, the margin goes up and the altitude comes down, and 833.5 m still has room over 427 m. The 10 s delay opens at 12.3 s, after the 10.42 s apogee. Cd 0.8 is what makes 4.0 m/s.

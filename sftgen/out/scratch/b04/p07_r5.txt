@@ -1,3 +1,0 @@
-4. Check: the simulator gives 94.9 m. Against 95 m that is 95 - 94.9 = 0.1 m, inside the 5% band. Landing is 4.1 m/s, under 5.49. Rail exit 17.4 m/s, thrust-to-weight 6.5, margin 1.77 cal at rail exit and through the burn. Two C11 motors, total impulse 17.6 N*s, both under class D. The chute opens at 5.8 s, just after apogee at 4.68 s.
-5. Fix: no further change; altitude, landing and margin all pass.
-6. Uncertainty: 94.9 m is close to the middle of the band, but it is there because of 0.13 kg of nose weight on a 0.353 kg rocket. A lighter build climbs back toward the 172 m the bare airframe flew. Weigh it. The chute Cd is a model value; 4.1 m/s has room under 5.49 m/s. Drift at 2 m/s was only 32 m.
