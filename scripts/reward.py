@@ -25,10 +25,28 @@ designs mostly pass: motor wider than its mount by >5%, inner tube >10% wider th
 or body-to-body step >1 mm (transitions and "auto" radii are exempt). About 4% of those real designs still
 fail gate 4, and they are real mismatches (e.g. a 29 mm motor in a 26.6 mm mount).
 
-Result per answer: the first gate it failed (None if it cleared all), the reasons, per-gate status, and
-score = gates passed / 6. A gate that could not run (no cadquery, no OpenRocket) is marked "skipped",
-counts as not passed, and is listed in "unverified" so a partial score is never read as a full one.
-"slop" = the answer failed a gate it could be checked on.
+Override tags (<overridemass>, <overridecg>, <overridecd>, <overridesubcomponents*>) are removed from the
+model's tree before gates 4-6, so mass, CG and drag come from the geometry and materials. Without this a
+model could set its own CG (fake stability) or its own drag (fake apogee). The count is in
+"stripped_overrides".
+
+Score (the reward ladder in CLAUDE.md):
+  -1.0  failed format, structure or motors (bad JSON, missing parts, made-up motor)
+  -0.8  failed cad
+  -0.5  failed flight (unsafe: stability, landing speed, rail exit, recovery)
+  0..1  flew safely: weighted closeness to the prompt's targets. Weights: apogee 0.40, flight time 0.25,
+        cost 0.20, landing speed 0.15. A target the prompt does not give is left out and the other
+        weights are scaled up. Cost is never scored yet (no price data; see "not_scored").
+        Inside the tolerance (5% apogee, 10% time, one-sided for "at least"/"at most") a target scores 1;
+        outside it the score falls linearly to 0 at TARGET_FALLOFF past the tolerance. Landing speed
+        scores 1 at or below half the limit and 0 at the limit.
+The "targets" gate is "pass" when every given target is inside its tolerance, else "miss"; a miss is
+not slop, it only lowers the 0..1 score.
+
+A gate that could not run (no cadquery, no OpenRocket, --no-cad, --no-flight) is listed in "unverified"
+and the score is None (the would-be number is in "provisional_score"), because a skipped gate could
+have failed. reward() raises on None unless allow_unverified=True, so training never gets a fake number.
+"slop" = the answer failed a gate it could be checked on (format to flight).
 
 Usage (from the repo root):
     python scripts/reward.py --results RESULTS.json --test VAL.jsonl --motor-lookup LOOKUP.json
@@ -81,6 +99,14 @@ MOTOR_RATIO = 1.05      # motor wider than its mount bore by more than 5% does n
 INNER_TUBE_RATIO = 1.10  # inner tube wider than the body bore by more than 10% (real files go up to ~9.6%)
 FIN_GAP_MM = 0.5        # a fin farther than this from the airframe is floating
 FIN_CLASH_MM3 = 1.0     # fin sets overlapping by more than this clash
+
+TIER = {"format": -1.0, "structure": -1.0, "motors": -1.0, "cad": -0.8, "flight": -0.5}
+WEIGHTS = {"apogee": 0.40, "flight_time": 0.25, "cost": 0.20, "landing": 0.15}
+TARGET_FALLOFF = 0.50       # past the tolerance, a target's score reaches 0 this far off (50% of the target)
+HARD_MAX_LANDING_MS = 8.0   # Tier 3 limit in CLAUDE.md; a prompt can make it stricter, never looser
+ABOUT_TOL_TIME = contract.TOLERANCES["about_rel_time"]
+MAX_WIND_MS = LIMITS["max_wind_ms"]
+sys.setrecursionlimit(max(sys.getrecursionlimit(), 5000))   # deep trees: to_node / tree_to_xml recurse
 
 
 # ============================================================================ tree helpers
@@ -179,7 +205,39 @@ def gate_format(content, finish):
         if extra:
             return None, f"root closed early: {extra} sits next to \"openrocket\" instead of inside it"
         return None, "tree is malformed: a node is not {tag: {attrs?, value?, children?}}"
+    try:
+        to_node("openrocket", design["openrocket"])
+    except RecursionError:
+        return None, "tree is nested too deep"
     return design, None
+
+
+def strip_overrides(body) -> int:
+    """Remove every override* child from the v5 tree in place. Returns how many were removed.
+
+    Mass, CG and drag must come from the parts, not from numbers the model writes: an <overridecg> can
+    move the CG forward (fake stability) and an <overridecd> can tune the drag to hit the apogee."""
+    n = 0
+    stack = [body]
+    while stack:
+        b = stack.pop()
+        if not isinstance(b, dict):
+            continue
+        ch = b.get("children")
+        if isinstance(ch, dict):
+            ch = b["children"] = [{k: v} for k, v in ch.items()]
+        if not isinstance(ch, list):
+            continue
+        keep = []
+        for c in ch:
+            if isinstance(c, dict) and len(c) == 1 and next(iter(c)).lower().startswith("override"):
+                n += 1
+                continue
+            keep.append(c)
+            if isinstance(c, dict):
+                stack.extend(c.values())
+        b["children"] = keep
+    return n
 
 
 def gate_structure(design):
@@ -431,10 +489,43 @@ def run_openrocket(ork_path, seed=0, max_time_s=3600.0):
             "min_stability_burn_cal": min(burn) if burn else rail_stab, "sections": sections}
 
 
+_SPEED = re.compile(r"(\d+(?:\.\d+)?)\s*(m/s|mph|ft/s|fps)\b", re.I)
+_SPEED_UNIT = {"m/s": 1.0, "mph": 0.44704, "ft/s": 0.3048, "fps": 0.3048}
+_LANDING_WORDS = re.compile(r"land|touch|descen|impact|come[s]? (?:down|in)|ground|hit", re.I)
+_WIND_WORDS = re.compile(r"wind|breeze|gust", re.I)
+
+
+def _speeds(prompt):
+    """(m/s, text before, text after) for every speed in the prompt."""
+    for m in _SPEED.finditer(prompt):
+        yield (float(m.group(1)) * _SPEED_UNIT[m.group(2).lower()],
+               prompt[max(0, m.start() - 40): m.start()], prompt[m.end(): m.end() + 12])
+
+
+def _is_wind(before, after):
+    """A speed is a wind figure when a wind word is right after it, or is the last cue word before it."""
+    if _WIND_WORDS.match(after.strip()):
+        return True
+    cues = [(m.start(), "w") for m in _WIND_WORDS.finditer(before)] + \
+           [(m.start(), "l") for m in _LANDING_WORDS.finditer(before)]
+    return bool(cues) and max(cues)[1] == "w"
+
+
 def landing_limit(prompt):
-    m = re.search(r"(?:under|below|less than|at most|no more than|max(?:imum)?(?: of)?|<)\s*(?:about |around )?"
-                  r"(\d+(?:\.\d+)?)\s*m/s", prompt, re.I)
-    return float(m.group(1)) if m else LIMITS["default_max_landing_ms"]
+    """The landing speed limit: the prompt's limit when it gives one, else the contract default (6 m/s),
+    never above HARD_MAX_LANDING_MS. Only a speed near a landing word counts (not the wind speed)."""
+    asked = [v for v, before, after in _speeds(prompt)
+             if not _is_wind(before, after) and _LANDING_WORDS.search(before)]
+    lim = min(asked) if asked else LIMITS["default_max_landing_ms"]
+    return min(lim, HARD_MAX_LANDING_MS)
+
+
+def asked_wind(prompt):
+    """Wind speed the prompt gives (m/s, capped at the contract's 20 mph), else None."""
+    for v, before, after in _speeds(prompt):
+        if _is_wind(before, after):
+            return min(v, MAX_WIND_MS)
+    return None
 
 
 def flight_problems(sim, limit):
@@ -472,61 +563,150 @@ _NOT_ALTITUDE = re.compile(r"^\s*(?:rail|long|length|tall|wide|diameter|body|tub
 _ALT_WORDS = re.compile(r"apogee|altitude|reach|clear|height|go up to|goes? to|get to|hit|up to|exceed", re.I)
 
 
-def asked_apogee(prompt):
-    """(metres, kind) for the altitude goal in a prompt, else None. kind: about | min | max.
+_TAIL = r"\s*(?:of |to |a |an |about |around )?$"     # the qualifier has to sit right in front of the number
+_MIN_Q = re.compile(r"(?:at least|minimum|min|clear|over|above|more than|longer than|exceed\w*)" + _TAIL)
+_MAX_Q = re.compile(r"(?:under|below|at most|no more than|max|maximum|within|less than|shorter than|"
+                    r"no longer than|up to)" + _TAIL)
 
-    A length counts when an altitude word sits just before or after it, or, failing that, when it is 30 m
-    or more and not a rail/length/diameter figure. Ambiguous prompts return None and skip the target gate."""
-    cands = []
+
+def _kind(before):
+    before = before.lower()
+    if _MIN_Q.search(before):
+        return "min"
+    if _MAX_Q.search(before):
+        return "max"
+    return "about"
+
+
+def asked_apogees(prompt):
+    """Every altitude goal in a prompt as [(metres, kind)], kind: about | min | max.
+
+    A length counts when an altitude word sits just before or after it. If no length has one, the first
+    length of 30 m or more that is not a rail/length/diameter figure counts. "Stay below 500 ft apogee,
+    about 120 m" gives both goals; the score takes the worst of them."""
+    near, far = [], []
     for m in _LEN.finditer(prompt):
         v = float(m.group("num").replace(",", "")) * UNIT_M[m.group("unit").lower()]
         before, after = prompt[max(0, m.start() - 30): m.start()], prompt[m.end(): m.end() + 14]
         if _NOT_ALTITUDE.match(after):
             continue
-        near = bool(_ALT_WORDS.search(before) or re.match(r"\s*(?:apogee|altitude)", after, re.I))
-        if near and v >= 5 or v >= 30:
-            cands.append((not near, m.start(), v, before[-14:].lower()))
-    if not cands:
-        return None
-    _, _, v, before = sorted(cands)[0]
-    tail = r"\s*(?:of |to |a |an )?$"            # the qualifier has to sit right in front of the number
-    if re.search(r"(?:at least|minimum|min|clear|over|above|more than|exceed\w*)" + tail, before):
-        return v, "min"
-    if re.search(r"(?:under|below|at most|no more than|max|maximum)" + tail, before):
-        return v, "max"
-    return v, "about"
+        is_near = bool(_ALT_WORDS.search(before) or re.match(r"\s*(?:apogee|altitude)", after, re.I))
+        if is_near and v >= 5:
+            near.append((v, _kind(before[-16:])))
+        elif v >= 30:
+            far.append((v, _kind(before[-16:])))
+    return near or far[:1]
 
 
-def target_problems(sim, prompt):
-    want = asked_apogee(prompt)
-    if not want:
-        return [], None
-    v, kind = want
+def asked_apogee(prompt):
+    """The first altitude goal, (metres, kind), else None (kept for callers of the old API)."""
+    a = asked_apogees(prompt)
+    return a[0] if a else None
+
+
+_WORD_NUM = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
+             "nine": 9, "ten": 10, "a": 1, "half a": 0.5}
+_TIME = re.compile(r"(?P<num>\d+(?:\.\d+)?|half a|one|two|three|four|five|six|seven|eight|nine|ten|a)\s*"
+                   r"(?P<unit>minutes?|mins?|seconds?|secs?|s)\b(?!/)", re.I)
+_NOT_FLIGHT_TIME = re.compile(r"burn|delay|ejection|coast|thrust|to apogee", re.I)
+
+
+def asked_flight_time(prompt):
+    """(seconds, kind) for the total flight time a prompt asks for, else None. kind: about | min | max."""
+    for m in _TIME.finditer(prompt):
+        raw = m.group("num").lower()
+        v = _WORD_NUM[raw] if raw in _WORD_NUM else float(raw)
+        if m.group("unit").lower().startswith("m"):
+            v *= 60.0
+        before, after = prompt[max(0, m.start() - 40): m.start()], prompt[m.end(): m.end() + 14]
+        if _NOT_FLIGHT_TIME.search(before[-20:]) or _NOT_FLIGHT_TIME.match(after.strip()):
+            continue
+        if raw == "a" and not re.search(r"(?:under|within|in|about|around|near) $", before.lower()):
+            continue                     # "a s..." or "a min..." in ordinary words
+        if v <= 0:
+            continue
+        return v, _kind(before[-20:])
+    return None
+
+
+def closeness(got, want, kind, tol):
+    """1 inside the tolerance, then linear down to 0 at TARGET_FALLOFF past it."""
+    if kind == "min":
+        off = max(0.0, (want - got) / want)
+    elif kind == "max":
+        off = max(0.0, (got - want) / want)
+    else:
+        off = max(0.0, abs(got - want) / want - tol)
+    return max(0.0, 1.0 - off / TARGET_FALLOFF)
+
+
+def target_scores(sim, prompt, limit):
+    """({component: 0..1}, problems, asked). Components the prompt does not give are left out."""
+    comps, probs, asked = {}, [], {}
     got = sim["apogee_m"]
-    if kind == "min" and got < v:
-        return [f"apogee {got:.0f} m is below the {v:.0f} m asked for"], want
-    if kind == "max" and got > v:
-        return [f"apogee {got:.0f} m is above the {v:.0f} m limit"], want
-    if kind == "about" and abs(got - v) > ABOUT_TOL * v:
-        return [f"apogee {got:.0f} m is {100 * (got - v) / v:+.0f}% from the {v:.0f} m asked for (limit {ABOUT_TOL:.0%})"], want
-    return [], want
+    apos = asked_apogees(prompt)
+    if apos:
+        asked["apogee_m"] = apos
+        comps["apogee"] = min(closeness(got, v, k, ABOUT_TOL) for v, k in apos)
+        for v, k in apos:
+            if k == "min" and got < v:
+                probs.append(f"apogee {got:.0f} m is below the {v:.0f} m asked for")
+            elif k == "max" and got > v:
+                probs.append(f"apogee {got:.0f} m is above the {v:.0f} m limit")
+            elif k == "about" and abs(got - v) > ABOUT_TOL * v:
+                probs.append(f"apogee {got:.0f} m is {100 * (got - v) / v:+.0f}% from the {v:.0f} m asked for "
+                             f"(tolerance {ABOUT_TOL:.0%})")
+    ft = asked_flight_time(prompt)
+    if ft:
+        v, k = ft
+        t = sim["flight_time_s"]
+        asked["flight_time_s"] = ft
+        comps["flight_time"] = closeness(t, v, k, ABOUT_TOL_TIME)
+        if comps["flight_time"] < 1.0:
+            probs.append(f"flight time {t:.1f} s misses the {k} {v:g} s asked for")
+    lands = [s["landing_ms"] for s in sim["sections"] if s["landing_ms"] is not None]
+    if lands:
+        comps["landing"] = max(0.0, min(1.0, (limit - max(lands)) / (0.5 * limit)))
+    return comps, probs, asked
+
+
+def tier4_score(comps):
+    """Weighted mean of the components present, weights rescaled to sum to 1."""
+    w = {k: WEIGHTS[k] for k in comps}
+    tot = sum(w.values())
+    return round(sum(comps[k] * w[k] for k in comps) / tot, 4) if tot else 0.0
 
 
 # ============================================================================ the ladder
 def score_answer(content, prompt, lookup=None, finish="stop", flight=True, cad=True, cond=None, seed=0):
-    cond = {**DEFAULT_COND, **(cond or {})}
+    """Run the ladder on one answer. cond overrides the sim conditions; the prompt's wind is used when the
+    prompt gives one and cond does not set wind_ms."""
+    cond = dict(cond or {})
+    if "wind_ms" not in cond and asked_wind(prompt) is not None:
+        cond["wind_ms"] = asked_wind(prompt)
+    cond = {**DEFAULT_COND, **cond}
     res = {"gate_failed": None, "reasons": [], "gates": {g: "not reached" for g in GATES}, "unverified": [],
-           "score": 0.0, "slop": False, "metrics": {}, "motor_check": None}
+           "score": None, "provisional_score": None, "tier": None, "components": {}, "not_scored": ["cost"],
+           "slop": False, "metrics": {}, "motor_check": None, "stripped_overrides": 0}
+    skipped = []                    # gates that could not run, in ladder order
+
+    def finish_up(score, tier):
+        res["tier"], res["provisional_score"] = tier, score
+        failed = res["gate_failed"]
+        # a failure before the first skipped gate is real; anything after a skipped gate is not verified
+        ok = not skipped or (failed is not None and GATES.index(failed) < GATES.index(skipped[0]))
+        res["score"] = score if ok else None
+        return res
 
     def fail(gate, reasons):
         res["gate_failed"], res["reasons"], res["gates"][gate] = gate, list(reasons), "FAIL"
         res["slop"] = True
-        return finish_up()
+        return finish_up(TIER[gate], {"format": 1, "structure": 1, "motors": 1, "cad": 2, "flight": 3}[gate])
 
-    def finish_up():
-        passed = sum(1 for g in GATES if res["gates"][g].startswith("pass"))
-        res["score"] = round(passed / len(GATES), 3)
-        return res
+    def skip(gate, why):
+        skipped.append(gate)
+        res["gates"][gate] = "skipped"
+        res["unverified"].append(f"{gate}: {why}")
 
     design, why = gate_format(content, finish)
     if why:
@@ -544,22 +724,23 @@ def score_answer(content, prompt, lookup=None, finish="stop", flight=True, cad=T
         return fail("motors", [why])
     res["gates"]["motors"] = "pass"
 
+    res["stripped_overrides"] = strip_overrides(design["openrocket"])
     probs = fit_problems(to_node("openrocket", design["openrocket"]))
+    cad_skip = "skipped by --no-cad"
     if cad:
-        cprobs, skipped = cad_problems(design["openrocket"])
+        cprobs, cad_skip = cad_problems(design["openrocket"])
         probs += cprobs
-        if skipped:
-            res["unverified"].append(f"cad solids: {skipped}")
-    else:
-        res["unverified"].append("cad solids: skipped by --no-cad")
     if probs:
         return fail("cad", probs)
-    res["gates"]["cad"] = "pass" if not any(u.startswith("cad solids") for u in res["unverified"]) else "pass (fit checks only)"
+    if cad_skip:
+        skip("cad", f"solid checks not run ({cad_skip}); fit checks passed")
+    else:
+        res["gates"]["cad"] = "pass"
 
     if not flight:
-        res["unverified"].append("flight: skipped by --no-flight")
-        res["gates"]["flight"] = res["gates"]["targets"] = "skipped"
-        return finish_up()
+        skip("flight", "skipped by --no-flight")
+        skip("targets", "needs the flight")
+        return finish_up(None, None)
     try:
         xml = design_to_ork_xml(design, cond)
     except Exception as e:
@@ -570,14 +751,10 @@ def score_answer(content, prompt, lookup=None, finish="stop", flight=True, cad=T
             fh.write(xml)
         try:
             sim = run_openrocket(path, seed)
-        except ImportError as e:
-            res["unverified"].append(f"flight: OpenRocket not available ({e})")
-            res["gates"]["flight"] = res["gates"]["targets"] = "skipped"
-            return finish_up()
-        except FileNotFoundError as e:
-            res["unverified"].append(f"flight: {e}")
-            res["gates"]["flight"] = res["gates"]["targets"] = "skipped"
-            return finish_up()
+        except (ImportError, FileNotFoundError) as e:
+            skip("flight", f"OpenRocket not available ({e})")
+            skip("targets", "needs the flight")
+            return finish_up(None, None)
         except Exception as e:
             return fail("flight", [f"OpenRocket could not load or fly it: {str(e).splitlines()[0][:160] if str(e) else type(e).__name__}"])
     finally:
@@ -588,42 +765,51 @@ def score_answer(content, prompt, lookup=None, finish="stop", flight=True, cad=T
     res["metrics"] = {k: sim[k] for k in ("apogee_m", "flight_time_s", "rail_exit_ms", "stability_rail_exit_cal",
                                            "min_stability_burn_cal")}
     res["metrics"]["landing_ms"] = [s["landing_ms"] for s in sim["sections"]]
-    fp = flight_problems(sim, landing_limit(prompt))
+    res["metrics"]["wind_ms"] = cond["wind_ms"]
+    limit = landing_limit(prompt)
+    res["metrics"]["landing_limit_ms"] = limit
+    fp = flight_problems(sim, limit)
     if fp:
         return fail("flight", fp)
     res["gates"]["flight"] = "pass"
 
-    tp, want = target_problems(sim, prompt)
-    res["metrics"]["asked_apogee_m"] = want[0] if want else None
-    if tp:
-        return fail("targets", tp)
-    res["gates"]["targets"] = "pass"
-    return finish_up()
+    comps, tp, asked = target_scores(sim, prompt, limit)
+    res["components"], res["metrics"]["asked"] = comps, asked
+    res["gates"]["targets"] = "miss" if tp else "pass"
+    res["reasons"] = tp
+    return finish_up(tier4_score(comps), 4)
 
 
-def reward(content, prompt, **kw) -> float:
-    """The single number for a training loop. Only comparable between runs with the same gates enabled."""
-    return score_answer(content, prompt, **kw)["score"]
+def reward(content, prompt, allow_unverified=False, **kw) -> float:
+    """The single number for a training loop, in [-1, 1]. Raises when a gate could not run (no cadquery,
+    no OpenRocket), because then the number is not real; allow_unverified=True returns the provisional one."""
+    r = score_answer(content, prompt, **kw)
+    if r["score"] is None:
+        if allow_unverified:
+            return r["provisional_score"] if r["provisional_score"] is not None else 0.0
+        raise RuntimeError("reward not verified: " + "; ".join(r["unverified"]))
+    return r["score"]
 
 
 # ============================================================================ batch / CLI
 def summarize(results):
     n = len(results)
-    by = {g: sum(1 for r in results if r["gate_failed"] == g) for g in GATES}
-    cleared = sum(1 for r in results if r["gate_failed"] is None)
-    unver = sum(1 for r in results if r["gate_failed"] is None and r["unverified"])
+    by = {g: sum(1 for r in results if r["gate_failed"] == g) for g in GATES if g != "targets"}
+    flown = [r for r in results if r["tier"] == 4]
+    scored = [r["score"] for r in results if r["score"] is not None]
     return {"n": n, "slop": sum(r["slop"] for r in results), "failed_at_gate": by,
-            "cleared_every_gate_that_ran": cleared, "of_which_not_fully_verified": unver,
-            "mean_score": round(sum(r["score"] for r in results) / n, 3) if n else None}
+            "flew_safely": len(flown), "met_every_target": sum(1 for r in flown if r["gates"]["targets"] == "pass"),
+            "unverified": sum(1 for r in results if r["score"] is None),
+            "mean_score": round(sum(scored) / len(scored), 3) if scored else None}
 
 
 def print_summary(s):
     print(f"\n{s['n']} answers, slop (failed a gate): {s['slop']}")
-    for g in GATES:
-        print(f"  fails at {g:<10} {s['failed_at_gate'][g]}")
-    print(f"  cleared every gate that ran: {s['cleared_every_gate_that_ran']}"
-          f"  (not fully verified: {s['of_which_not_fully_verified']})")
-    print(f"  mean score: {s['mean_score']}  (gates passed / {len(GATES)}; skipped gates count as not passed)")
+    for g, k in s["failed_at_gate"].items():
+        print(f"  fails at {g:<10} {k}")
+    print(f"  flew safely: {s['flew_safely']}  (met every target: {s['met_every_target']})")
+    print(f"  mean score: {s['mean_score']}  (-1 / -0.8 / -0.5 / 0..1 ladder; {s['unverified']} unverified "
+          f"answers left out)")
 
 
 def main():
@@ -635,7 +821,7 @@ def main():
     ap.add_argument("--motor-lookup", help="new_results/sft_v4_motor_lookup.json (branch sft-v5-data)")
     ap.add_argument("--no-flight", action="store_true")
     ap.add_argument("--no-cad", action="store_true")
-    ap.add_argument("--wind", type=float, help="wind m/s (default 2.0)")
+    ap.add_argument("--wind", type=float, help="wind m/s (default: the prompt's wind, else 2.0)")
     ap.add_argument("--rail", type=float, help="rail length m (default 1.5)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", help="where to write the per-answer results (json)")
@@ -659,7 +845,8 @@ def main():
             r["id"] = old["id"]
             results.append(r)
             print(f"{r['id']:<22} {'ok' if not r['slop'] else 'SLOP at ' + r['gate_failed']:<18} "
-                  f"{r['score']:.2f}  {'; '.join(r['reasons'])[:110]}", flush=True)
+                  f"{'unverified' if r['score'] is None else format(r['score'], '+.2f'):>10}  "
+                  f"{'; '.join(r['reasons'])[:110]}", flush=True)
     else:
         ap.error("give --answer (with --prompt) or --results and --test")
     s = summarize(results)
