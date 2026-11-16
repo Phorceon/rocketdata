@@ -13,7 +13,8 @@ The ladder (CLAUDE.md). The first gate that fails sets the score:
     motors     a motor_id is not in the motor lookup                                    -1.0
     geometry   a part, field or value unlike every real design (schema), an unknown     -0.8
                material, or parts that do not fit (diameter steps, motor in mount,
-               inner tubes, fins on their tube, fin sets that clash, fins < 1.5 mm)
+               inner tubes, fins on their tube, fin sets that clash, fins < 1.5 mm),
+               or OpenRocket can not build the rocket
     flight     OpenRocket: recovery does not deploy, never lands, lands too fast,       -0.5
                stability < 1 cal at the rail or <= 0 in the burn, rail exit < 15 m/s
     spec       flew safely but broke a hard requirement (body diameter, motor class,    0.0
@@ -647,8 +648,9 @@ def gate_flight(root, req, seed):
         path = Path(d) / "design.ork"
         path.write_text(to_ork(root, req), encoding="utf-8")
         sim = _OR.fly(path, seed)
-    if sim.get("error"):
-        raise Reject("flight", [f"OpenRocket could not fly it: {sim['error'][:160]}"])
+    if sim.get("error"):     # OpenRocket could not build it (parts that can not connect, NaN mass): a CAD
+        # fault, so -0.8. Scoring it as an unsafe flight (-0.5) would pay the model for crashing the sim.
+        raise Reject("geometry", [f"OpenRocket could not build it: {sim['error'][:160]}"])
     aborts = [e.get("data", "") for e in sim.get("events", []) if e.get("type") == "SIM_ABORT"]
     unsafe = set()
     for e in sim.get("events", []):
@@ -669,8 +671,10 @@ def gate_flight(root, req, seed):
     if not sim.get("branches"):
         out.append("no flight data")
     st, sb = sim.get("stability_rail_cal"), sim.get("stability_min_burn_cal")
-    if st is None or st < LIM["min_launch_margin_cal"]:
-        out.append(f"stability at the rail {st if st is None else round(st, 2)} cal (needs >= {LIM['min_launch_margin_cal']:g})")
+    if st is None:
+        out.append("no stability data after the rail (the rocket never left the rail, or OpenRocket could not compute it)")
+    elif st < LIM["min_launch_margin_cal"]:
+        out.append(f"stability at the rail {st:.2f} cal (needs >= {LIM['min_launch_margin_cal']:g})")
     if sb is not None and sb <= LIM["min_burn_margin_cal"]:
         out.append(f"stability falls to {sb:.2f} cal in the burn")
     if (sim.get("rail_exit_ms") or 0) < LIM["min_rail_exit_ms"]:
@@ -779,8 +783,8 @@ def reward(completion, requirements, **kw) -> float:
 # ====================================================================================== schema
 def build_schema(sft_jsonl):
     """Learn data/reward_schema.json from the reference designs: for every part, where it may sit and
-    which fields it may have; for every field, its type and range (the seen range, widened by 50 % down
-    and 100 % up; never below 0 when no real design went below 0); and every material's density: the
+    which fields it may have; for every field, its type and range (the seen range widened to x0.1 .. x3,
+    see TIGHT_HI and ZERO_RANGE; never below 0 when no real design went below 0); and every material's density: the
     median in the designs, plus OpenRocket's own parts library (the .orc files in lib/OpenRocket.jar)."""
     nodes, mats = {}, {}
     for line in open(sft_jsonl, encoding="utf-8"):
@@ -817,10 +821,10 @@ def build_schema(sft_jsonl):
         out["nodes"][tag] = {
             "parents": sorted(r["parents"]),
             "attrs": {a: rule_for(v) for a, v in sorted(r["attrs"].items())},
-            "fields": {f: {**rule_for(fr["values"]), "attrs": {a: rule_for(v) for a, v in sorted(fr["attrs"].items())}}
+            "fields": {f: {**rule_for(fr["values"], f), "attrs": {a: rule_for(v) for a, v in sorted(fr["attrs"].items())}}
                        for f, fr in sorted(r["fields"].items())}}
         for f, vocab in OR_METHODS.items():          # every method OpenRocket knows, not only the ones seen
-            for a in ("method", "type"):
+            for a in ("method", "type", "relativeto"):
                 rule = out["nodes"][tag]["fields"].get(f, {}).get("attrs", {}).get(a)
                 if rule and rule["kind"] == "enum":
                     rule["values"] = sorted(set(rule["values"]) | vocab)
@@ -832,7 +836,22 @@ DENSITY_RANGE = {"bulk": (10.0, 25000.0), "surface": (0.0, 5.0), "line": (0.0, 1
 OR_METHODS = {"position": {"top", "middle", "bottom", "after", "absolute"},
               "axialoffset": {"top", "middle", "bottom", "after", "absolute"},
               "radiusoffset": {"relative", "surface", "coaxial", "free"},
-              "angleoffset": {"relative", "fixed", "mirror"}}
+              "angleoffset": {"relative", "fixed", "mirror"},
+              # fin tabs: OpenRocket reads the old front/center/end and the new top/middle/bottom names
+              "tabposition": {"front", "center", "end", "top", "middle", "bottom", "absolute", "after"}}
+
+# Numeric ranges learned from ~580 reference designs are too narrow for fields the references
+# never vary (all 0.0) or vary little. Widen positive ranges to x0.1 .. x3 (drag coefficients only
+# to x2: a large Cd is the soft-landing cheat; wall thickness only to x0.5: paper-thin walls are the
+# light-rocket cheat). Fields that are always 0 in the references get a
+# physical range instead. A range only ever widens; the flight sim judges the result.
+TIGHT_HI = {"cd"}
+TIGHT_LO = {"thickness"}
+ZERO_RANGE = {"axialoffset": (-2.0, 2.0), "position": (-2.0, 2.0), "radiusoffset": (-0.2, 0.2),
+              "radialposition": (0.0, 0.2), "instanceseparation": (0.0, 1.0), "filletradius": (0.0, 0.02),
+              "screwheight": (0.0, 0.05), "deploydelay": (0.0, 30.0), "separationdelay": (0.0, 30.0),
+              "cant": (-10.0, 10.0), "angleoffset": (-360.0, 360.0), "rotation": (-360.0, 360.0),
+              "radialdirection": (-360.0, 360.0)}
 
 
 def library_materials():
@@ -855,7 +874,7 @@ def library_materials():
     return out
 
 
-def rule_for(values):
+def rule_for(values, field=None):
     seen = [v for v in values if v is not None]
     rule = {"none": len(seen) < len(values)} if len(seen) < len(values) else {}
     nums = [x for x in (to_float(v, auto=True) for v in seen) if x is not None]
@@ -863,8 +882,14 @@ def rule_for(values):
                     if str(v).split()})
     if nums and len(words) <= 10:
         lo, hi = min(nums), max(nums)
-        return {**rule, "kind": "num", "lo": lo * 1.5 if lo < 0 else lo * 0.5, "hi": hi * 2 if hi > 0 else hi * 0.5,
-                **({"words": words} if words else {})}
+        up = 2.0 if field in TIGHT_HI else 3.0
+        down = 0.5 if field in TIGHT_LO else 0.1
+        lo, hi = (lo * up if lo < 0 else lo * down), (hi * up if hi > 0 else hi * down)
+        if field in TIGHT_LO:                        # a 10 mm wall is always allowed (few tube-fin references)
+            hi = max(hi, 0.01)
+        if field in ZERO_RANGE and lo == hi == 0:
+            lo, hi = ZERO_RANGE[field]
+        return {**rule, "kind": "num", "lo": round(lo, 9), "hi": round(hi, 9), **({"words": words} if words else {})}
     strs = sorted({str(v) for v in seen})
     if strs and all(s.lower() in ("true", "false") for s in strs):
         return {**rule, "kind": "bool"}

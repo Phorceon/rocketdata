@@ -254,3 +254,45 @@ def test_fast_deployment_fails_flight(monkeypatch, warn, ok):
     r = R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)
     assert (r["gate"] is None) == ok, r["reasons"]
     assert r["metrics"]["apogee_m"] == 300.0          # metrics are kept even when the flight fails
+
+
+# ------------------------------------------------------------------ ranges are wide, but cheats stay closed
+def _schema_problem(tag, fld, value, attrs=None):
+    d = design()
+    body = nodes(d, tag)[0]
+    f = next((c for c in body["children"] if fld in c), None)
+    if f is None:
+        f = {fld: {}}
+        body["children"].append(f)
+    f[fld]["value"] = value
+    if attrs is not None:
+        f[fld]["attrs"] = attrs
+    return [x for x in run(d)["reasons"] if fld in x]
+
+
+def test_zero_only_fields_get_a_physical_range():
+    schema = R._load(R.SCHEMA_PATH, "schema")
+    rule = schema["nodes"]["tubefinset"]["fields"]["axialoffset"]
+    assert R.value_problem(rule, -0.002) is None and R.value_problem(rule, 50.0)
+
+
+def test_parachute_cd_upper_bound_still_blocks_the_drag_cheat():
+    assert _schema_problem("parachute", "cd", 50.0)
+
+
+def test_paper_thin_walls_still_fail():
+    schema = R._load(R.SCHEMA_PATH, "schema")
+    rule = schema["nodes"]["transition"]["fields"]["thickness"]
+    assert R.value_problem(rule, 1e-8) and R.value_problem(rule, 0.002) is None
+
+
+def test_fin_tab_bottom_is_accepted():
+    schema = R._load(R.SCHEMA_PATH, "schema")
+    rule = schema["nodes"]["freeformfinset"]["fields"]["tabposition"]["attrs"]["relativeto"]
+    assert R.value_problem(rule, "bottom") is None and R.value_problem(rule, "sideways")
+
+
+def test_openrocket_build_error_is_a_geometry_fail(monkeypatch):
+    monkeypatch.setattr(R._OR, "fly", lambda path, seed=42: {"error": "IllegalStateException: not compatible"})
+    r = R.score(answer(design()), {}, lookup=LOOKUP)
+    assert (r["gate"], r["score"]) == ("geometry", -0.8)
