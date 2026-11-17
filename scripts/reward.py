@@ -288,6 +288,17 @@ def gate_motors(root, lookup):
     return used
 
 
+# Launch rail length by the biggest motor, as at real launch sites: small rockets fly off a short rod,
+# high-power rockets off long rails. One short rail for all made 44 of 163 real reference rockets fail
+# "rail exit >= 15 m/s" only because big rockets need more rail to get up to speed.
+RAIL_M = [("F", 1.5), ("G", 1.8), ("I", 2.4), ("K", 3.0), ("O", 3.7)]   # up to and including that class
+
+
+def rail_length(motors):
+    worst = max((motor_class(i) for i in motors), key=CLASSES.index, default="A")
+    return next(m for c, m in RAIL_M if CLASSES.index(worst) <= CLASSES.index(c))
+
+
 def motor_class(info):
     i = info.get("total_impulse_ns") or 0
     return CLASSES[min(len(CLASSES) - 1, max(0, math.ceil(math.log2(i / 2.5)) if i > 0 else 0))]
@@ -550,7 +561,7 @@ def config_id(root):
     return sorted(found, key=lambda f: f[:2])[0][2] if found else None
 
 
-def to_ork(root, req):
+def to_ork(root, req, rail=None):
     """The cleaned tree as .ork XML, with one simulation per FLIGHTS wind: "reward0", "reward1", ..."""
     def el(n):
         e = ET.Element(n.tag, {k: fmt(v) for k, v in n.attrs.items()})
@@ -572,7 +583,7 @@ def to_ork(root, req):
         ET.SubElement(sim, "simulator").text = "RK4Simulator"
         ET.SubElement(sim, "calculator").text = "BarrowmanCalculator"
         c = ET.SubElement(sim, "conditions")
-        for key, v in (("configid", cid), ("launchrodlength", SIM["rail_length_m"]),
+        for key, v in (("configid", cid), ("launchrodlength", rail or SIM["rail_length_m"]),
                        ("launchrodangle", SIM["launch_angle_deg"]), ("launchroddirection", 90.0),
                        ("windaverage", min(base * k, LIM["max_wind_ms"])), ("windturbulence", SIM["wind_turbulence"]),
                        ("launchaltitude", SIM["site_altitude_m"]), ("launchlatitude", 28.61),
@@ -720,13 +731,13 @@ def flight_metrics(sim, limit):
     return m
 
 
-def gate_flight(root, req, seed):
+def gate_flight(root, req, seed, motors=()):
     """Check the fit on OpenRocket's geometry, then fly the design FLIGHTS times.
     Returns (metrics of every flight, fields OpenRocket ignored, widest body radius)."""
     limit = min(float(req.get("max_touchdown_ms", LIM["default_max_landing_ms"])), HARD_LANDING_MS)
     with tempfile.TemporaryDirectory(prefix="reward_") as d:
         path = Path(d) / "design.ork"
-        path.write_text(to_ork(root, req), encoding="utf-8")
+        path.write_text(to_ork(root, req, rail_length(motors)), encoding="utf-8")
         geo = _OR.fly(path, seed, "__geometry__")
         if geo.get("error"):
             raise Reject("geometry", [f"OpenRocket could not build it: {geo['error'][:160]}"], credit=0.0)
@@ -821,7 +832,7 @@ def score(completion, requirements, finish="stop", lookup=None, materials=None, 
             if not flight:
                 res["gate"] = "not flown"
                 return res
-            flights, res["notes"]["ignored_fields"], max_r = gate_flight(root, req, seed)
+            flights, res["notes"]["ignored_fields"], max_r = gate_flight(root, req, seed, motors)
             worst_v = max((m.get("max_velocity_ms") or 0) for m in flights)
             gate_spec(req, max_r, motors, {"max_velocity_ms": worst_v})
         except (Reject, SetupError):

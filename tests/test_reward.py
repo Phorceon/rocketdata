@@ -379,3 +379,10 @@ def test_three_simulations_in_three_winds():
     x = R.to_ork(root, {"wind_ms": 4.0})
     assert [f"reward{i}" for i in range(3)] == [n for n in __import__("re").findall(r"<name>(reward\d)</name>", x)]
     assert "<windaverage>2.0</windaverage>" in x and "<windaverage>6.0</windaverage>" in x
+
+
+def test_rail_length_grows_with_the_motor():
+    assert R.rail_length([{"total_impulse_ns": 10}]) == 1.5          # a C motor: short rod
+    assert R.rail_length([{"total_impulse_ns": 300}]) == 2.4         # an H motor
+    assert R.rail_length([{"total_impulse_ns": 2000}]) == 3.0        # a K motor
+    assert R.rail_length([]) == 1.5
