@@ -114,6 +114,56 @@ public class OrBatch {
     }
     sb.append("]");
   }
+  /** Every part as OpenRocket resolved it, for the fit checks in scripts/reward.py: absolute position of
+   *  its fore end (x0, from the nose tip), length, radii, and for fin sets count, rotation and thickness. */
+  static void geometry(StringBuilder sb, info.openrocket.core.rocketcomponent.Rocket rocket) {
+    List<info.openrocket.core.rocketcomponent.RocketComponent> all = new ArrayList<>();
+    Iterator<info.openrocket.core.rocketcomponent.RocketComponent> it = rocket.iterator(false);
+    while (it.hasNext()) all.add(it.next());
+    sb.append(",\"parts\":[");
+    for (int i = 0; i < all.size(); i++) {
+      info.openrocket.core.rocketcomponent.RocketComponent c = all.get(i);
+      double x0 = Double.NaN;
+      try { for (info.openrocket.core.util.Coordinate k : c.getComponentLocations()) x0 = Double.isNaN(x0) ? k.x : Math.min(x0, k.x); }
+      catch (Throwable t) {}
+      sb.append((i > 0 ? "," : "") + "{\"i\":" + i + ",\"parent\":" + all.indexOf(c.getParent()) + ",\"type\":" + q(c.getClass().getSimpleName())
+        + ",\"name\":" + q(String.valueOf(c.getName())) + ",\"x0\":" + num(x0) + ",\"len\":" + num(c.getLength())
+        + ",\"n\":" + c.getInstanceCount());
+      if (c instanceof info.openrocket.core.rocketcomponent.SymmetricComponent) {
+        info.openrocket.core.rocketcomponent.SymmetricComponent s = (info.openrocket.core.rocketcomponent.SymmetricComponent) c;
+        sb.append(",\"r_fore\":" + num(s.getForeRadius()) + ",\"r_aft\":" + num(s.getAftRadius())
+          + ",\"wall\":" + num(s.isFilled() ? -1 : s.getThickness())
+          + ",\"r_fore_auto\":" + s.isForeRadiusAutomatic() + ",\"r_aft_auto\":" + s.isAftRadiusAutomatic());
+      }
+      if (c instanceof info.openrocket.core.rocketcomponent.RingComponent) {
+        info.openrocket.core.rocketcomponent.RingComponent r = (info.openrocket.core.rocketcomponent.RingComponent) c;
+        sb.append(",\"r_out\":" + num(r.getOuterRadius()) + ",\"r_in\":" + num(r.getInnerRadius()) + ",\"r_pos\":" + num(r.getRadialPosition()));
+      }
+      if (c instanceof info.openrocket.core.rocketcomponent.MassObject) {
+        info.openrocket.core.rocketcomponent.MassObject m = (info.openrocket.core.rocketcomponent.MassObject) c;
+        sb.append(",\"r_out\":" + num(m.getRadius()) + ",\"r_pos\":" + num(m.getRadialPosition()));
+      }
+      if (c instanceof info.openrocket.core.rocketcomponent.MotorMount && ((info.openrocket.core.rocketcomponent.MotorMount) c).isMotorMount()) {
+        info.openrocket.core.rocketcomponent.MotorMount mm = (info.openrocket.core.rocketcomponent.MotorMount) c;
+        info.openrocket.core.motor.Motor mo = null;
+        // The editor's selected configuration need not be the one a simulation flies.
+        // Diameter fit must hold for every configured motor; report the widest.
+        for (info.openrocket.core.motor.MotorConfiguration mc : mm.getMotorConfigurationSet()) {
+          info.openrocket.core.motor.Motor candidate = mc.getMotor();
+          if (candidate != null && (mo == null || candidate.getDiameter() > mo.getDiameter())) mo = candidate;
+        }
+        if (mo != null) sb.append(",\"motor_d\":" + num(mo.getDiameter()) + ",\"motor_len\":" + num(mo.getLength())
+          + ",\"overhang\":" + num(mm.getMotorOverhang()));
+      }
+      if (c instanceof info.openrocket.core.rocketcomponent.FinSet) {
+        info.openrocket.core.rocketcomponent.FinSet f = (info.openrocket.core.rocketcomponent.FinSet) c;
+        sb.append(",\"fins\":" + f.getFinCount() + ",\"rot\":" + num(Math.toDegrees(f.getBaseRotation())) + ",\"span\":" + num(f.getSpan())
+          + ",\"thick\":" + num(f.getThickness()));
+      }
+      sb.append("}");
+    }
+    sb.append("]");
+  }
   public static void main(String[] a) throws Exception {
     PrintStream out = new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8");
     System.setOut(new PrintStream(OutputStream.nullOutputStream()));
@@ -132,6 +182,7 @@ public class OrBatch {
           OpenRocketDocument doc = loader.load();
           Simulation sim=null; List<String> names=new ArrayList<>();
           for (Simulation s: doc.getSimulations()) { names.add(s.getName()); if (s.getName().equals(name)) sim=s; }
+          if (name.equals("__geometry__")) { geometry(sb, doc.getRocket()); sb.append("}"); out.println(sb); continue; }
           if (sim==null) throw new RuntimeException("simulation not found; available: "+names);
           reseed(sim.getOptions(), seed);
           sim.simulate();

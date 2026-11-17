@@ -13,9 +13,10 @@ partial credit, so GRPO still sees which of 8 failing answers was closer; a tier
                parachute/streamer                                                       (share of parts there)
     motors     a motor_id is not in the motor lookup                                    -1.0
     geometry   a number no real rocket can have (physical and catalog LIMITS), an       -0.8 .. -0.68
-               unknown material, parts that do not fit (diameter steps, motor in mount, (fewer problems,
-               fins on the airframe, fin sets that clash, fins < 1.5 mm), or            more credit)
-               OpenRocket can not build the rocket or skips a part or value
+               unknown material, fins < 1.5 mm, OpenRocket can not build the rocket or  (fewer problems,
+               skips a part or value, or - on OpenRocket's own resolved geometry -      more credit)
+               parts do not fit: shell not one piece, fins off the shell, a part
+               outside the rocket or wider than its bore, two solids in one place
     flight     in ANY of 3 flights (0.5x, 1x, 1.5x wind): recovery does not deploy,     -0.5 .. -0.22
                opens too fast, never lands, lands too fast, stability < 1 cal at the    (how close the
                rail or <= 0 in the burn, rail exit < 15 m/s                             worst flight came)
@@ -73,11 +74,6 @@ HARD_LANDING_MS = 8.0            # CLAUDE.md Tier 3 limit: a prompt can make it 
 WEIGHTS = {"apogee": 0.40, "flight_time": 0.25, "cost": 0.20, "landing": 0.15}
 FALLOFF = 0.50                   # past its tolerance, a target's score reaches 0 this far off (50 %)
 MIN_FIN_THICKNESS_M = 0.0015     # CLAUDE.md week 8 ("razor fin" patch)
-STEP_TOL_M = 0.001               # nose -> body and body -> body diameter step
-MOTOR_FIT = 1.05                 # motor up to 5 % wider than its mount bore (as Shamik measured on 249 .ork)
-TUBE_FIT = 1.10                  # inner tube up to 10 % wider than its parent's bore
-FIN_ON_AIRFRAME = 0.5            # at least this share of a fin's root must sit on the stage's airframe
-FIN_CLASH_DEG = 3.0              # two fin sets on one tube with fins closer than this, and overlapping
 SIM_TIMEOUT_S, BOOT_TIMEOUT_S = 60, 300
 MAX_DEPLOY_MS = 50.0             # parachute/streamer opening faster than this fails. OpenRocket warns at 20 m/s,
                                  # but most real designs open at 20-35 m/s (6 % of sft_v5 above 50)
@@ -398,148 +394,150 @@ def material_problems(root, mats):
     return out
 
 
-def extent(n):
-    """Length of a part along the rocket axis."""
-    if n.tag in ("trapezoidfinset", "ellipticalfinset"):
-        return n.num("rootchord") or 0.0
-    if n.tag == "freeformfinset":            # the root runs from the first point to the last one
-        xs = [to_float(p.attrs.get("x")) for fp in n.kids if fp.tag == "finpoints" for p in fp.kids]
-        return (xs[-1] - xs[0]) if len(xs) >= 2 and None not in (xs[0], xs[-1]) else 0.0
-    return n.num("length") or 0.0
-
-
-def fore(n):
-    """Fore end of a part, measured from its owner's fore end (OpenRocket axial methods)."""
-    L, own = extent(n), n.owner()
-    own_len = extent(own) if own is not None else 0.0
-    method, x = "top", 0.0
-    for key in ("axialoffset", "position"):
-        f = n.get(key)
-        if f is not None:
-            method = str(f.attrs.get("method") or f.attrs.get("type") or "top").lower()
-            x = to_float(f.value) or 0.0
-            break
-    return {"top": x, "middle": own_len / 2 - L / 2 + x, "bottom": own_len - L + x,
-            "after": own_len + x, "absolute": x - abs_fore(own)}.get(method, x)
-
-
-def abs_fore(n):
-    """Fore end of a part from the nose tip. Airframe parts stack in order inside their stage."""
-    if n is None or n.tag in ("rocket", "openrocket"):
-        return 0.0
-    own = n.owner()
-    if n.tag == "stage" or (own is not None and own.tag == "stage" and n.tag in AIRFRAME):
-        sibs = list(own.parts()) if own is not None else []
-        before = sibs[:sibs.index(n)] if n in sibs else []
-        if n.tag == "stage":
-            return sum(extent(p) for s in before for p in s.parts() if p.tag in AIRFRAME)
-        return abs_fore(own) + sum(extent(p) for p in before if p.tag in AIRFRAME)
-    return abs_fore(own) + fore(n)
-
-
-def radii(n):
-    """(outer, inner) radius of a tube, None when unknown or auto."""
-    r = n.num("radius") if n.tag == "bodytube" else n.num("outerradius")
-    if r is None:
-        return None, None
-    t = n.text("thickness")
-    if t == "filled":
-        return r, 0.0
-    return r, r - (to_float(t) or 0.0)
-
-
-def fin_angles(n):
-    base = n.num("angleoffset")
-    base = n.num("rotation") if base is None else base
-    k = int(n.num("fincount") or n.num("instancecount") or 1)
-    return [((base or 0.0) + i * 360.0 / k) % 360 for i in range(max(k, 1))]
-
-
-def fit_problems(stages):
-    out, max_r = [], 0.0
-    for stage in stages:
-        air = [p for p in stage.parts() if p.tag in AIRFRAME]
-        span = (abs_fore(air[0]), abs_fore(air[-1]) + extent(air[-1])) if air else (0.0, 0.0)
-        for a, b in zip(air, air[1:]):
-            if (a.tag, b.tag) not in (("nosecone", "bodytube"), ("bodytube", "bodytube")):
-                continue
-            ra = a.num("aftradius") if a.tag == "nosecone" else a.num("radius")
-            rb = b.num("radius")
-            if ra and rb and abs(ra - rb) * 2 > STEP_TOL_M:
-                out.append(f"diameter step of {abs(ra - rb) * 2000:.1f} mm between {a.tag} and {b.tag}")
-        for n in stage.walk():
-            if n.leaf:
-                continue
-            own = n.owner()
-            for key in ("radius", "aftradius", "foreradius"):
-                if n.tag in AIRFRAME and (r := n.num(key, auto=True)):
-                    max_r = max(max_r, r)
-            if n.tag in AIRFRAME | {"innertube"}:
-                if n.tag != "nosecone" and n.tag != "transition":
-                    ro, ri = radii(n)
-                    if ro is not None and ro <= 0:
-                        out.append(f"{n.tag} has radius {ro:g}")
-                    elif ro is not None and ri is not None and ri < 0:
-                        out.append(f"{n.tag} wall is thicker than its radius")
-                if n.tag != "innertube" and extent(n) <= 0:
-                    out.append(f"{n.tag} has length {extent(n):g}")
-            if n.tag in FINS:
-                out += fin_problems(n, own, span)
-            if n.tag == "innertube" and own is not None and own.tag == "bodytube":
-                _, bore = radii(own)
-                r, _ = radii(n)
-                if bore and r and r > bore * TUBE_FIT:
-                    out.append(f"inner tube {r * 2000:.1f} mm in a {bore * 2000:.1f} mm bore")
-            if n.tag == "motor":
-                mount = n.parent.owner() if n.parent is not None else None
-                _, bore = radii(mount) if mount is not None else (None, None)
-                d = n.num("diameter")
-                if d and bore and bore > 0.002 and d > bore * 2 * MOTOR_FIT:
-                    out.append(f"{d * 1000:.1f} mm motor in a {bore * 2000:.1f} mm mount")
-        for own in stage.walk():
-            if own.leaf or own.tag == "subcomponents":
-                continue
-            sets = [f for f in own.parts() if f.tag in FINS]
-            for i, a in enumerate(sets):
-                for b in sets[i + 1:]:
-                    lo = max(fore(a), fore(b))
-                    hi = min(fore(a) + extent(a), fore(b) + extent(b))
-                    close = min(min(abs(x - y), 360 - abs(x - y)) for x in fin_angles(a) for y in fin_angles(b))
-                    if hi - lo > 0.001 and close < FIN_CLASH_DEG:
-                        out.append(f"fin sets clash on <{own.tag}> ({a.tag} and {b.tag})")
-    return out, max_r
-
-
-def fin_problems(n, own, span):
+def part_problems(stages):
+    """Checks on what the model wrote that OpenRocket would silently repair (it moves fins off a stage,
+    fills in a default fin shape). Everything about where parts end up is checked on OpenRocket's own
+    geometry instead (fit_problems)."""
     out = []
-    if own is None or own.tag not in AIRFRAME:
-        return [f"{n.tag} is on <{own.tag if own else None}>, not the airframe"]
-    if (n.num("fincount") or n.num("instancecount") or 0) < 1:
-        out.append(f"{n.tag} has no fins")
-    if n.tag != "tubefinset":
-        t = n.num("thickness")
-        if t is None or t < MIN_FIN_THICKNESS_M:
-            out.append(f"{n.tag} is {0 if t is None else t * 1000:.2f} mm thick (min {MIN_FIN_THICKNESS_M * 1000:g})")
-        if n.tag in ("trapezoidfinset", "ellipticalfinset") and not ((n.num("height") or 0) > 0 and extent(n) > 0):
+    for n in (n for s in stages for n in s.walk() if not n.leaf):
+        if n.tag in AIRFRAME and n.tag != "nosecone" and n.tag != "transition":
+            r, t = n.num("radius") if n.tag == "bodytube" else n.num("outerradius"), n.num("thickness")
+            if r is not None and t is not None and t >= r:
+                out.append(f"{n.tag} wall is thicker than its radius")
+        if n.tag in AIRFRAME and (n.num("length") or 0) <= 0:
+            out.append(f"{n.tag} has no length")
+        if n.tag not in FINS:
+            continue
+        own = n.owner()
+        if own is None or own.tag not in AIRFRAME:
+            out.append(f"{n.tag} is on <{own.tag if own else None}>, not the airframe")
+        if (n.num("fincount") or n.num("instancecount") or 0) < 1:
+            out.append(f"{n.tag} has no fins")
+        if n.tag != "tubefinset":
+            t = n.num("thickness")
+            if t is None or t < MIN_FIN_THICKNESS_M:
+                out.append(f"{n.tag} is {0 if t is None else t * 1000:.2f} mm thick (min {MIN_FIN_THICKNESS_M * 1000:g})")
+        if n.tag in ("trapezoidfinset", "ellipticalfinset") and not ((n.num("height") or 0) > 0 and (n.num("rootchord") or 0) > 0):
             out.append(f"{n.tag} has zero height or root chord")
-        if n.tag == "freeformfinset":
-            pts = [p for fp in n.kids if fp.tag == "finpoints" for p in fp.kids]
-            if len(pts) < 3 or extent(n) <= 0:
-                out.append("freeform fin has fewer than 3 points or no root")
-    a, L = abs_fore(n), extent(n)                   # from the nose tip
-    on = min(a + L, span[1]) - max(a, span[0])
-    if L > 0 and on < FIN_ON_AIRFRAME * L:
-        out.append(f"{n.tag} root ({a * 1000:.0f}..{(a + L) * 1000:.0f} mm from the tip) is mostly off "
-                   f"the airframe ({span[0] * 1000:.0f}..{span[1] * 1000:.0f} mm)")
+        if n.tag == "freeformfinset" and len([p for fp in n.kids if fp.tag == "finpoints" for p in fp.kids]) < 3:
+            out.append("freeform fin has fewer than 3 points")
     return out
 
 
 def gate_geometry(root, stages, mats):
-    probs = limit_problems(root) + material_problems(root, mats)
-    fit, max_r = fit_problems(stages)
-    if probs + fit:
-        raise Reject("geometry", probs + fit)
-    return max_r
+    probs = limit_problems(root) + material_problems(root, mats) + part_problems(stages)
+    if probs:
+        raise Reject("geometry", probs)
+
+
+# ====================================================================================== gate 5: fit
+# The model writes positions in many ways ("bottom - 0.02", "after", "absolute 0.8"). OpenRocket turns
+# them into one rocket: every part with its absolute position x0 (m from the nose tip), length and radii
+# (scripts/or_batch/OrBatch.java, sim name "__geometry__"). Four physical rules then run on that rocket,
+# so we never re-implement OpenRocket's placement rules and never guess what the model meant.
+#   1 the outer shell is one piece      2 fins sit on the shell
+#   3 inside parts fit inside           4 no two solids in the same space
+# Two exceptions, both physical: the diameter may change between stages (an interstage), and short
+# hardware may sit on the outside of the tail if it touches the tail (motor retainers, thrust plates).
+SHELL = {"NoseCone", "BodyTube", "Transition"}
+SOLID_INSIDE = {"InnerTube", "TubeCoupler", "CenteringRing", "Bulkhead", "EngineBlock"}
+PACKED = {"Parachute", "Streamer", "ShockCord", "MassComponent"}  # soft or placeholder size: position only
+RINGS = {"CenteringRing", "Bulkhead", "EngineBlock"}
+FIT_TOL_M = 0.001
+FIN_CLASH_DEG = 3.0              # two fin sets on one tube with fins closer than this, and overlapping
+MOTOR_FIT = 1.05                 # motor up to 5 % wider than its mount bore (as Shamik measured on 249 .ork)
+INSIDE_FIT = 1.05                # a solid inside part up to 5 % wider than the bore it sits in
+
+
+def _overlap(a0, a1, b0, b1):
+    return min(a1, b1) - max(a0, b0)
+
+
+def _bore(p):
+    if p["type"] in ("InnerTube", "TubeCoupler"):
+        return p.get("r_in") or 0.0
+    wall = p.get("wall")
+    return 0.0 if wall is None or wall < 0 else max(p.get("r_fore") or 0, p.get("r_aft") or 0) - wall
+
+
+def fit_problems(parts):
+    """(problems, widest shell radius) for OpenRocket's resolved parts."""
+    by = {p["i"]: p for p in parts}
+
+    def up(p, types):
+        q = by.get(p["parent"])
+        while q is not None and q["type"] not in types:
+            q = by.get(q["parent"])
+        return q
+
+    out = []
+    if not any("motor_d" in p for p in parts):
+        out.append("no motor is left after OpenRocket loaded the design (parts nested wrongly)")
+    stage_of = {p["i"]: (up(p, {"AxialStage", "ParallelStage", "PodSet"}) or {}) for p in parts}
+    shell = sorted((p for p in parts if p["type"] in SHELL and stage_of[p["i"]].get("type") == "AxialStage"),
+                   key=lambda p: p["x0"])
+    max_r = max((max(p.get("r_fore") or 0, p.get("r_aft") or 0) for p in shell), default=0.0)
+    if not shell:
+        return out + ["no outer shell"], max_r
+    lo, hi = shell[0]["x0"], max(p["x0"] + p["len"] for p in shell)
+    tail_r = shell[-1].get("r_aft") or 0.0
+    # Tail hardware: short solid parts behind the tail, each touching the tail or a part already on it.
+    ends, tail = [hi], set()
+    for p in sorted((p for p in parts if p["type"] in SOLID_INSIDE | {"MassComponent"} and 0 < p["len"] <= 2 * tail_r
+                     and p["x0"] + p["len"] > hi + FIT_TOL_M), key=lambda p: p["x0"]):
+        if p["x0"] <= max(ends) + 2 * FIT_TOL_M:       # starts on the tail or on a part already attached
+            tail.add(p["i"])
+            ends.append(p["x0"] + p["len"])
+    # 1 the outer shell is one piece
+    for a, b in zip(shell, shell[1:]):
+        gap = b["x0"] - (a["x0"] + a["len"])
+        if abs(gap) > FIT_TOL_M:
+            out.append(f"{'gap' if gap > 0 else 'overlap'} of {abs(gap) * 1000:.0f} mm between {a['type']} and {b['type']}")
+        step = abs((a.get("r_aft") or 0) - (b.get("r_fore") or 0)) * 2
+        if step > FIT_TOL_M and stage_of[a["i"]].get("i") == stage_of[b["i"]].get("i"):
+            out.append(f"diameter step of {step * 1000:.1f} mm between {a['type']} and {b['type']}")
+    for p in parts:
+        end = p["x0"] + p["len"]
+        # 2 fins sit on the shell
+        if "fins" in p:
+            host = by.get(p["parent"])
+            if host is not None and p["len"] > 0 and (
+                    _overlap(p["x0"], end, lo, hi) < 0.5 * p["len"]
+                    or _overlap(p["x0"], end, host["x0"], host["x0"] + host["len"]) <= 0):
+                out.append(f"fins at {p['x0']:.3f}-{end:.3f} m are off their tube "
+                           f"({host['x0']:.3f}-{host['x0'] + host['len']:.3f} m)")
+        # 3 inside parts fit inside
+        if p["type"] in SOLID_INSIDE | PACKED and p["len"] > 0:
+            tail_hardware = p["i"] in tail
+            if _overlap(p["x0"], end, lo, hi) < 0.5 * p["len"] and not tail_hardware:
+                out.append(f"{p['type']} at {p['x0']:.3f}-{end:.3f} m is outside the rocket ({lo:.3f}-{hi:.3f} m)")
+            host = up(p, SHELL if p["type"] in RINGS | {"InnerTube", "TubeCoupler"} else SHELL | {"InnerTube"})
+            r = (p.get("r_out") or 0) + abs(p.get("r_pos") or 0)
+            if (p["type"] in SOLID_INSIDE and host is not None and not tail_hardware
+                    and _bore(host) > 0 and r > _bore(host) * INSIDE_FIT + 0.0005):
+                out.append(f"{p['type']} {r * 2000:.1f} mm wide in a {_bore(host) * 2000:.1f} mm {host['type']}")
+        if "motor_d" in p and _bore(p) and p["motor_d"] > _bore(p) * 2 * MOTOR_FIT:
+            out.append(f"{p['motor_d'] * 1000:.0f} mm motor in a {_bore(p) * 2000:.1f} mm mount")
+    # 4 no two solids in the same space
+    kids = {}
+    for p in parts:
+        kids.setdefault(p["parent"], []).append(p)
+    for sibs in kids.values():
+        fins = [p for p in sibs if "fins" in p]
+        for i, a in enumerate(fins):
+            for b in fins[i + 1:]:
+                ang = min(min(abs(x - y) % 360, 360 - abs(x - y) % 360)
+                          for x in (a["rot"] + k * 360 / a["fins"] for k in range(a["fins"]))
+                          for y in (b["rot"] + k * 360 / b["fins"] for k in range(b["fins"])))
+                if _overlap(a["x0"], a["x0"] + a["len"], b["x0"], b["x0"] + b["len"]) > FIT_TOL_M and ang < FIN_CLASH_DEG:
+                    out.append("two fin sets in the same place")
+        rings = [p for p in sibs if p["type"] in RINGS]
+        for i, a in enumerate(rings):
+            for b in rings[i + 1:]:
+                if (_overlap(a["x0"], a["x0"] + a["len"], b["x0"], b["x0"] + b["len"]) > FIT_TOL_M
+                        and _overlap(a.get("r_in") or 0, a.get("r_out") or 0, b.get("r_in") or 0, b.get("r_out") or 0) > FIT_TOL_M):
+                    out.append(f"{a['type']} and {b['type']} in the same space")
+    return out, max_r
 
 
 # ====================================================================================== gate 5
@@ -723,11 +721,18 @@ def flight_metrics(sim, limit):
 
 
 def gate_flight(root, req, seed):
-    """Fly the design FLIGHTS times. Returns (metrics of every flight, fields OpenRocket ignored)."""
+    """Check the fit on OpenRocket's geometry, then fly the design FLIGHTS times.
+    Returns (metrics of every flight, fields OpenRocket ignored, widest body radius)."""
     limit = min(float(req.get("max_touchdown_ms", LIM["default_max_landing_ms"])), HARD_LANDING_MS)
     with tempfile.TemporaryDirectory(prefix="reward_") as d:
         path = Path(d) / "design.ork"
         path.write_text(to_ork(root, req), encoding="utf-8")
+        geo = _OR.fly(path, seed, "__geometry__")
+        if geo.get("error"):
+            raise Reject("geometry", [f"OpenRocket could not build it: {geo['error'][:160]}"], credit=0.0)
+        fit, max_r = fit_problems(geo.get("parts") or [])
+        if fit:
+            raise Reject("geometry", fit)
         sims = []
         for i in range(len(FLIGHTS)):
             sims.append(_OR.fly(path, seed + i, f"reward{i}"))
@@ -745,7 +750,7 @@ def gate_flight(root, req, seed):
     if failing:
         probs, margin, m = min(failing, key=lambda f: f[1])
         raise Reject("flight", probs, m, credit=min(margin, 0.95))
-    return [f[2] for f in flights], ignored
+    return [f[2] for f in flights], ignored, max_r
 
 
 
@@ -812,11 +817,11 @@ def score(completion, requirements, finish="stop", lookup=None, materials=None, 
             root, res["notes"]["overrides_removed"] = gate_format(completion or "", finish)
             stages = gate_parts(root)
             motors = gate_motors(root, lookup)
-            max_r = gate_geometry(root, stages, materials)
+            gate_geometry(root, stages, materials)
             if not flight:
                 res["gate"] = "not flown"
                 return res
-            flights, res["notes"]["ignored_fields"] = gate_flight(root, req, seed)
+            flights, res["notes"]["ignored_fields"], max_r = gate_flight(root, req, seed)
             worst_v = max((m.get("max_velocity_ms") or 0) for m in flights)
             gate_spec(req, max_r, motors, {"max_velocity_ms": worst_v})
         except (Reject, SetupError):

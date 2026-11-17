@@ -99,7 +99,8 @@ def test_bad_numbers_fail_geometry(bad):
 
 
 def _fake_fly(sim):
-    return lambda path, seed=42, name="reward0": copy.deepcopy(sim)
+    return lambda path, seed=42, name="reward0": (
+        {"parts": copy.deepcopy(GEO)} if name == "__geometry__" else copy.deepcopy(sim))
 
 
 def test_openrocket_warnings_decide_structure(monkeypatch):
@@ -121,24 +122,57 @@ def test_thin_fins_fail():
     assert any("thick" in x for x in run(d)["reasons"])
 
 
-def test_duplicated_fin_set_clashes():
-    d = design()
-    for b in nodes(d, "subcomponents"):
-        fins = [c for c in b["children"] if "trapezoidfinset" in c]
-        if fins:
-            b["children"].append(copy.deepcopy(fins[0]))
-            break
-    assert any("clash" in x for x in run(d)["reasons"])
+# ------------------------------------------------------------------ fit, on OpenRocket's own geometry
+GEO = FIX["geometry"]
+
+
+def geo(edit=None):
+    g = copy.deepcopy(GEO)
+    if edit:
+        edit(g)
+    return R.fit_problems(g)[0]
+
+
+def part(g, kind):
+    return next(p for p in g if p["type"] == kind)
+
+
+def test_reference_geometry_fits():
+    assert geo() == []
 
 
 def test_floating_fins_fail():
-    d = design()
-    f = nodes(d, "trapezoidfinset")[0]
-    for key in ("position", "axialoffset"):
-        if any(key in c for c in f["children"]):
-            field(f, key)["attrs"] = {"type" if key == "position" else "method": "bottom"}
-            field(f, key)["value"] = 0.5                     # 0.5 m behind the tail
-    assert any("off the airframe" in x for x in run(d)["reasons"])
+    assert any("off their tube" in x for x in geo(lambda g: part(g, "TrapezoidFinSet").update(x0=1.2)))
+
+
+def test_duplicated_fin_set_clashes():
+    assert "two fin sets in the same place" in geo(lambda g: g.append({**part(g, "TrapezoidFinSet"), "i": 99}))
+
+
+def test_gap_and_diameter_step_in_the_shell_fail():
+    assert any("gap" in x for x in geo(lambda g: part(g, "BodyTube").update(x0=0.2)))
+    assert any("diameter step" in x for x in geo(lambda g: part(g, "BodyTube").update(r_fore=0.04, r_aft=0.04)))
+
+
+def test_virtual_drag_cone_is_rejected():
+    """A paper-thin, pointed tail cone is an OpenRocket base-drag trick, not a real part."""
+    def add_cone(g):
+        g.append({"i": 50, "parent": 0, "type": "Transition", "name": "Base drag", "x0": 0.87, "len": 0.17, "n": 1,
+                  "r_fore": 0.0, "r_aft": 0.027, "wall": 0.0})
+    assert any("diameter step" in x for x in geo(add_cone))
+
+
+def test_part_behind_the_rocket_fails_but_tail_hardware_passes():
+    def bulkhead(x0, length):
+        return lambda g: g.append({"i": 60, "parent": 2, "type": "Bulkhead", "name": "b", "x0": x0, "len": length,
+                                   "n": 1, "r_out": 0.02, "r_in": 0.0, "r_pos": 0.0})
+    assert any("outside the rocket" in x for x in geo(bulkhead(1.3, 0.005)))   # 43 cm behind the tail
+    assert geo(bulkhead(0.87, 0.02)) == []                                       # a retainer on the tail
+
+
+def test_motor_too_wide_and_motor_lost_fail():
+    assert any("motor in a" in x for x in geo(lambda g: part(g, "BodyTube").update(motor_d=0.075)))
+    assert any("no motor is left" in x for x in geo(lambda g: part(g, "BodyTube").pop("motor_d")))
 
 
 def test_unknown_material_fails():
@@ -323,7 +357,7 @@ def test_unsafe_flight_gets_partial_credit_below_zero(monkeypatch):
 def test_worst_of_three_flights_counts(monkeypatch):
     good, bad = _fake_flight(None), _fake_flight(None)
     bad["branches"][0]["landing_ms"] = 9.0
-    calls = iter([good, good, bad])
+    calls = iter([{"parts": GEO}, good, good, bad])
     monkeypatch.setattr(R._OR, "fly", lambda path, seed=42, name="reward0": copy.deepcopy(next(calls)))
     assert R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)["gate"] == "flight"
 
