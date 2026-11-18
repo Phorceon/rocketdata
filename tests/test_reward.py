@@ -346,12 +346,39 @@ def test_tiers_never_overlap():
 
 def test_unsafe_flight_gets_partial_credit_below_zero(monkeypatch):
     sim = _fake_flight(None)
-    sim["branches"][0]["landing_ms"] = 6.5             # just over the 6 m/s limit
+    sim["branches"][0]["landing_ms"] = 6.8             # just over the 6 m/s limit + 10 % slack
     monkeypatch.setattr(R._OR, "fly", _fake_fly(sim))
     near = R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)
     sim["branches"][0]["landing_ms"] = 30.0            # a lawn dart
     far = R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)
     assert near["gate"] == far["gate"] == "flight" and -0.5 <= far["score"] < near["score"] < 0
+
+
+@pytest.mark.parametrize("prompt,lands,ok", [
+    (6.0, 6.5, True),      # inside the 10 % slack on the prompt's limit
+    (6.0, 6.7, False),     # past the slack
+    (7.5, 8.1, False),     # the hard 8 m/s limit gets no slack
+])
+def test_prompt_landing_limit_has_slack(monkeypatch, prompt, lands, ok):
+    sim = _fake_flight(None)
+    sim["branches"][0]["landing_ms"] = lands
+    monkeypatch.setattr(R._OR, "fly", _fake_fly(sim))
+    r = R.score(answer(design()), {"max_touchdown_ms": prompt}, lookup=LOOKUP)
+    assert (r["gate"] is None) == ok, r["reasons"]
+
+
+@pytest.mark.parametrize("main,booster,ok", [
+    ((True, 5.0), (False, 7.5), True),     # booster with no chute tumbles down under 8 m/s: fine
+    ((True, 5.0), (False, 56.0), False),   # booster lawn-darts
+    ((False, 5.0), (True, 5.0), False),    # the main rocket must open its recovery
+])
+def test_spent_boosters_only_need_the_hard_limit(monkeypatch, main, booster, ok):
+    sim = _fake_flight(None)
+    sim["branches"] = [{"name": "Sustainer", "deployed": main[0], "ground": True, "landing_ms": main[1]},
+                       {"name": "Booster", "deployed": booster[0], "ground": True, "landing_ms": booster[1]}]
+    monkeypatch.setattr(R._OR, "fly", _fake_fly(sim))
+    r = R.score(answer(design()), {"max_touchdown_ms": 6.0}, lookup=LOOKUP)
+    assert (r["gate"] is None) == ok, r["reasons"]
 
 
 def test_worst_of_three_flights_counts(monkeypatch):

@@ -71,6 +71,9 @@ LIM = contract.GATES
 SIM = contract.DEFAULT_SIM_CONDITIONS
 SOFT_LANDING_MS = 3.5            # landing slower than this scores less: a needlessly big chute drifts far
 HARD_LANDING_MS = 8.0            # CLAUDE.md Tier 3 limit: a prompt can make it stricter, never looser
+LANDING_TOL = 0.10               # a prompt's landing limit gets the same 10 % slack as its apogee. Prompts were
+                                 # written from each reference's own landing speed, with no margin; the hard
+                                 # 8 m/s limit gets no slack
 WEIGHTS = {"apogee": 0.40, "flight_time": 0.25, "cost": 0.20, "landing": 0.15}
 FALLOFF = 0.50                   # past its tolerance, a target's score reaches 0 this far off (50 %)
 MIN_FIN_THICKNESS_M = 0.0015     # CLAUDE.md week 8 ("razor fin" patch)
@@ -689,17 +692,22 @@ def flight_problems(sim, limit):
         out.append(f"recovery opens at {fast:.0f} m/s (max {MAX_DEPLOY_MS:g})")
     if early:
         out.append("recovery opens while the motor burns")
+    # Branch 0 is the rocket the user asked for: it must open its recovery and meet the prompt's limit.
+    # Later branches are spent boosters. Many real ones have no chute and tumble down, so they only
+    # have to land under the hard limit.
     branches, recovered, land = sim.get("branches") or [], True, 0.0
-    for b in branches:
-        if not b["deployed"]:
+    for i, b in enumerate(branches):
+        cap = limit if i == 0 else HARD_LANDING_MS
+        if i == 0 and not b["deployed"]:
             out.append(f"{b['name']}: recovery never deployed")
             recovered = False
         if not b["ground"]:
             out.append(f"{b['name']}: never reached the ground")
             recovered = False
-        elif b["landing_ms"] is None or b["landing_ms"] > limit:
-            out.append(f"{b['name']}: lands at {b['landing_ms'] or 0:.1f} m/s (limit {limit:g})")
-        land = max(land, b["landing_ms"] if b["landing_ms"] is not None else math.inf)
+        elif b["landing_ms"] is None or b["landing_ms"] > cap:
+            out.append(f"{b['name']}: {'booster ' if i else ''}lands at {b['landing_ms'] or 0:.1f} m/s (limit {cap:g})")
+        v = b["landing_ms"] if b["landing_ms"] is not None else math.inf
+        land = max(land, v * limit / cap)            # scaled to the main limit, for the partial credit
     if not branches:
         out.append("no flight data")
     st, sb, rail = sim.get("stability_rail_cal"), sim.get("stability_min_burn_cal"), sim.get("rail_exit_ms") or 0.0
@@ -731,10 +739,17 @@ def flight_metrics(sim, limit):
     return m
 
 
+def landing_limit(req):
+    """The prompt's touchdown limit plus LANDING_TOL, never above HARD_LANDING_MS."""
+    if req.get("max_touchdown_ms") is None:
+        return min(float(LIM["default_max_landing_ms"]), HARD_LANDING_MS)
+    return min(float(req["max_touchdown_ms"]) * (1 + LANDING_TOL), HARD_LANDING_MS)
+
+
 def gate_flight(root, req, seed, motors=()):
     """Check the fit on OpenRocket's geometry, then fly the design FLIGHTS times.
     Returns (metrics of every flight, fields OpenRocket ignored, widest body radius)."""
-    limit = min(float(req.get("max_touchdown_ms", LIM["default_max_landing_ms"])), HARD_LANDING_MS)
+    limit = landing_limit(req)
     with tempfile.TemporaryDirectory(prefix="reward_") as d:
         path = Path(d) / "design.ork"
         path.write_text(to_ork(root, req, rail_length(motors)), encoding="utf-8")
@@ -792,7 +807,7 @@ def targets(req, m):
         parts["apogee"] = closeness(m["apogee_m"], req["target_apogee_m"], "about", req.get("apogee_tol_frac", 0.05))
     if req.get("max_flight_time_s"):
         parts["flight_time"] = closeness(m["flight_time_s"], req["max_flight_time_s"], "max", 0.0)
-    lands = [v for v in m["landing_ms"] if v is not None]
+    lands = [v for v in m["landing_ms"][:1] if v is not None]    # the main rocket, not spent boosters
     if lands:
         lim = m["landing_limit_ms"]
         soft = min(SOFT_LANDING_MS, 0.6 * lim)       # full marks from soft up to the limit; no prize for
