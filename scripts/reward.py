@@ -828,6 +828,18 @@ def _load(path, what):
     return _CACHE[path]
 
 
+def shape_notes(root):
+    """Size ratios to log in RL, not scored. Real references: fin span <= 2x body width. If RL drifts past
+    that (giant fins as air brakes, found by scripts/attack.py), patch it then."""
+    d = 2 * max((n.num("radius", auto=True) or 0.0 for n in root.walk() if n.tag == "bodytube"), default=0.0)
+    if not d:
+        return {}
+    spans = [n.num("height") or 0.0 for n in root.walk() if n.tag in ("trapezoidfinset", "ellipticalfinset")]
+    chutes = [n.num("diameter") or 0.0 for n in root.walk() if n.tag == "parachute"]
+    return {"fin_span_over_d": round(max(spans, default=0.0) / d, 2),
+            "chute_over_d": round(max(chutes, default=0.0) / d, 1)}
+
+
 def score(completion, requirements, finish="stop", lookup=None, materials=None, seed=42, flight=True):
     """Run the ladder. Returns {"score", "gate", "reasons", "parts", "metrics", "notes"}.
     gate is the gate that failed (None when the design reached the targets). flight=False stops after
@@ -844,6 +856,7 @@ def score(completion, requirements, finish="stop", lookup=None, materials=None, 
             stages = gate_parts(root)
             motors = gate_motors(root, lookup)
             gate_geometry(root, stages, materials)
+            res["notes"]["shape"] = shape_notes(root)
             if not flight:
                 res["gate"] = "not flown"
                 return res
