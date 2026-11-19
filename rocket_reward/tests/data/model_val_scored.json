@@ -1,0 +1,194 @@
+{
+ "row-001-deb57c98": {
+  "stage": "motor",
+  "score": 0.2145
+ },
+ "row-002-be731fc9": {
+  "stage": "motor",
+  "score": 0.229
+ },
+ "row-003-fca5ed76": {
+  "stage": "parts",
+  "score": 0.13
+ },
+ "row-004-85b80de9": {
+  "stage": "motor",
+  "score": 0.233
+ },
+ "row-005-87286add": {
+  "stage": "motor",
+  "score": 0.229
+ },
+ "row-006-ff300a35": {
+  "stage": "parts",
+  "score": 0.17
+ },
+ "row-007-5e9884b6": {
+  "stage": "format",
+  "score": 0.06
+ },
+ "row-008-b132baa7": {
+  "stage": "motor",
+  "score": 0.2324
+ },
+ "row-009-1afe6677": {
+  "stage": "limits",
+  "score": 0.3267
+ },
+ "row-010-343e826c": {
+  "stage": "motor",
+  "score": 0.2581
+ },
+ "row-011-54ff7228": {
+  "stage": "parts",
+  "score": 0.15
+ },
+ "row-012-d61d86fa": {
+  "stage": "motor",
+  "score": 0.234
+ },
+ "row-013-7608fb06": {
+  "stage": "motor",
+  "score": 0.2471
+ },
+ "row-014-7a8e1628": {
+  "stage": "motor",
+  "score": 0.233
+ },
+ "row-015-3aa92684": {
+  "stage": "build",
+  "score": 0.4
+ },
+ "row-016-5851080b": {
+  "stage": "motor",
+  "score": 0.2199
+ },
+ "row-017-df7ff989": {
+  "stage": "motor",
+  "score": 0.2286
+ },
+ "row-018-fe08cd1c": {
+  "stage": "format",
+  "score": 0.06
+ },
+ "row-019-02134834": {
+  "stage": "motor",
+  "score": 0.2206
+ },
+ "row-020-5f4105e0": {
+  "stage": "build",
+  "score": 0.4285
+ },
+ "row-021-1e75140c": {
+  "stage": "targets",
+  "score": 0.8568
+ },
+ "row-022-02cbb911": {
+  "stage": "build",
+  "score": 0.4
+ },
+ "row-023-ddd51955": {
+  "stage": "flight",
+  "score": 0.5362
+ },
+ "row-024-a959187e": {
+  "stage": "build",
+  "score": 0.4152
+ },
+ "row-025-0c84ade8": {
+  "stage": "motor",
+  "score": 0.2205
+ },
+ "row-026-d213889e": {
+  "stage": "motor",
+  "score": 0.2471
+ },
+ "row-027-51a351c4": {
+  "stage": "limits",
+  "score": 0.34
+ },
+ "row-028-da7ce3ba": {
+  "stage": "motor",
+  "score": 0.258
+ },
+ "row-029-03872d3b": {
+  "stage": "format",
+  "score": 0.0
+ },
+ "row-030-0545a03c": {
+  "stage": "build",
+  "score": 0.4254
+ },
+ "row-031-e75ff0bf": {
+  "stage": "format",
+  "score": 0.06
+ },
+ "row-032-89d5f271": {
+  "stage": "motor",
+  "score": 0.2624
+ },
+ "row-033-adcf6c6e": {
+  "stage": "motor",
+  "score": 0.246
+ },
+ "row-034-2dd6e630": {
+  "stage": "format",
+  "score": 0.0
+ },
+ "row-035-ca68c1e1": {
+  "stage": "motor",
+  "score": 0.2282
+ },
+ "row-036-016d1e96": {
+  "stage": "flight",
+  "score": 0.5105
+ },
+ "row-037-365db497": {
+  "stage": "motor",
+  "score": 0.2193
+ },
+ "row-038-c24331d9": {
+  "stage": "motor",
+  "score": 0.229
+ },
+ "row-039-b6bbcf30": {
+  "stage": "parts",
+  "score": 0.16
+ },
+ "row-040-25c4d3f7": {
+  "stage": "motor",
+  "score": 0.2203
+ },
+ "row-041-bbcf4448": {
+  "stage": "parts",
+  "score": 0.15
+ },
+ "row-042-157c980d": {
+  "stage": "build",
+  "score": 0.4072
+ },
+ "row-043-3455b127": {
+  "stage": "motor",
+  "score": 0.231
+ },
+ "row-044-fb97f9c9": {
+  "stage": "motor",
+  "score": 0.2335
+ },
+ "row-045-1f6c5f5e": {
+  "stage": "parts",
+  "score": 0.15
+ },
+ "row-046-5517e018": {
+  "stage": "motor",
+  "score": 0.2657
+ },
+ "row-047-31720ddd": {
+  "stage": "motor",
+  "score": 0.2387
+ },
+ "row-048-e02c5b85": {
+  "stage": "motor",
+  "score": 0.274
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "name": "level-1 (H170M)",
+ "about": "The self-test rocket. Row 288 of sft_v5 (level-1.ork): one stage, one AeroTech H170M in a 38 mm mount, 66 mm Kraft phenolic body, three plywood fins, one 0.91 m parachute, no stored simulation. Flown on every check_setup() and before a design that hung or crashed the helper is retried. Expected numbers measured 2026-11-19 with the RocketSim helper on OpenRocket 24.12 / JDK 17.0.21 (Windows 11); the team's OrBatch helper gives the same numbers to the last digit. The tolerance is a machine check, not a score number: other machines can move time to apogee by one 0.05 s step (0.43%) and flight time by a few tenths of a percent, while a wrong jar, motor list or helper moves these numbers by far more.",
+ "ork_file": "canary.ork",
+ "rail_m": 1.5,
+ "flights": [{"wind_ms": 2.0, "seed": 1}],
+ "launch": {"altitude_m": 0.0, "latitude_deg": 28.61, "longitude_deg": -80.6,
+            "rod_angle_deg": 0.0, "rod_direction_deg": 90.0,
+            "wind_turbulence": 0.1, "time_step_s": 0.05,
+            "wind_direction_deg": 90.0, "launch_into_wind": false, "geodetic": "spherical"},
+ "expected": {
+  "apogee_m": 1041.905419951133,
+  "max_velocity_ms": 278.7788263322733,
+  "time_to_apogee_s": 11.536815210355615,
+  "flight_time_s": 240.70228649178645
+ },
+ "expected_rocket": {"motor_count": 1, "stage_count": 1},
+ "rel_tol": 0.01
+}

@@ -1,0 +1,242 @@
+{
+ "row-001-deb57c98": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-H1650R-v1' is not a real motor; did you mean 'AeroTech-H165R-v1'? (maker 'AeroTech' is a real maker; designation 'H1650R' is not sold by any maker; a real H motor is never 98.0 mm wide)"
+ },
+ "row-002-be731fc9": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'Cesaroni Technology-K550W' is not a real motor; did you mean 'AeroTech-K550W'? (maker 'Cesaroni Technology' is a real maker; designation 'K550W' exists; a real K motor is 54.0 mm wide) | motor 'Cesaroni Technology-J650W' is not a real motor (maker 'Cesaroni Technology' is a real maker; designation 'J650W' is not sold by any maker; a real J motor is 54.0 mm wide)"
+ },
+ "row-003-fca5ed76": {
+  "stage": "parts",
+  "score": 0.13,
+  "why": "5 of 8 needed parts are missing: missing a fin set; missing a motor mount; missing a motor inside a motor mount; missing a motor configuration; missing a recovery device"
+ },
+ "row-004-85b80de9": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'Cesaroni Technology-J1500W' is not a real motor (maker 'Cesaroni Technology' is a real maker; designation 'J1500W' is not sold by any maker; a real J motor is 54.0 mm wide)"
+ },
+ "row-005-87286add": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-K1200W-v1' is not a real motor; did you mean 'AeroTech-K1050W'? (maker 'AeroTech' is a real maker; designation 'K1200W' is not sold by any maker; a real K motor is 38.0 mm wide)"
+ },
+ "row-006-ff300a35": {
+  "stage": "parts",
+  "score": 0.17,
+  "why": "1 of 8 needed parts are missing: missing a recovery device (its only parachute, with a fin set, a launch lug and a mass, sits directly in the stage, where OpenRocket drops it)"
+ },
+ "row-007-5e9884b6": {
+  "stage": "format",
+  "score": 0.06,
+  "why": "attribute 'attrs' of <... > calculator > parameters > formula > barrowman> must be a plain value, got an object"
+ },
+ "row-008-b132baa7": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H160R-v1' is not a real motor; did you mean 'AeroTech-H210R-v1'? (maker 'AeroTech' is a real maker; designation 'H160R' is not sold by any maker; a real H motor is 38.0 mm wide)"
+ },
+ "row-009-1afe6677": {
+  "stage": "limits",
+  "score": 0.3267,
+  "why": "bodytube #1's material, tubecoupler #1's material, bodytube #2's material and 2 more use material 'Paper, spiral kraft glassine, RK Tubes, loc:03a', which is not in the material table of bulk materials, so the reward cannot give it its real density (the design wrote 958.7 kg/m3); use a known material name, for example 'Paper, spiral kraft glassine, bulk' | launchlug #1's material uses material 'Bronze', which is not in the material table of bulk materials, so the reward cannot give it its real density (the design wrote 8554 kg/m3); use a known material name, for example 'Oak (Brown)'"
+ },
+ "row-010-343e826c": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'Cesaroni Technology-141G125-14A' is not a real motor; did you mean 'Cesaroni Technology-159G125-14A'? (maker 'Cesaroni Technology' is a real maker; designation '141G125-14A' is not sold by any maker; a real G motor is 38.0 mm wide)"
+ },
+ "row-011-54ff7228": {
+  "stage": "parts",
+  "score": 0.15,
+  "why": "3 of 8 needed parts are missing: missing a motor mount; missing a motor inside a motor mount; missing a motor configuration"
+ },
+ "row-012-d61d86fa": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H150NT' is not a real motor; did you mean 'AeroTech-HP-H195NT'? (maker 'AeroTech' is a real maker; designation 'H150NT' is not sold by any maker; a real H motor is 38.0 mm wide)"
+ },
+ "row-013-7608fb06": {
+  "stage": "motor",
+  "score": 0.28,
+  "why": "motor 'AeroTech-H195NT' is not a real motor; did you mean 'AeroTech-HP-H195NT'? (maker 'AeroTech' is a real maker; designation 'H195NT' exists; a real H motor is 29.0 mm wide)"
+ },
+ "row-014-7a8e1628": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'Cesaroni Technology-3369M335-19A' is not a real motor (maker 'Cesaroni Technology' is a real maker; designation '3369M335-19A' is not sold by any maker; a real M motor is 54.0 mm wide)"
+ },
+ "row-015-3aa92684": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-016-5851080b": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-L131M' is not a real motor (maker 'AeroTech' is a real maker; designation 'L131M' is not sold by any maker; a real L motor is never 38.0 mm wide)"
+ },
+ "row-017-df7ff989": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H195W' is not a real motor; did you mean 'AeroTech-HP-H135W'? (maker 'AeroTech' is a real maker; designation 'H195W' is not sold by any maker; a real H motor is 29.0 mm wide)"
+ },
+ "row-018-fe08cd1c": {
+  "stage": "format",
+  "score": 0.06,
+  "why": "a node inside ... > subcomponents > stage > subcomponents > nosecone must be an object with exactly one tag, got 2 keys"
+ },
+ "row-019-02134834": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-H120T' is not a real motor; did you mean 'AeroTech-H220T'? (maker 'AeroTech' is a real maker; designation 'H120T' is not sold by any maker; a real H motor is never 75.0 mm wide)"
+ },
+ "row-020-5f4105e0": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-021-1e75140c": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-022-02cbb911": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-023-ddd51955": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-024-a959187e": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-025-0c84ade8": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-J410WS' is not a real motor (maker 'AeroTech' is a real maker; designation 'J410WS' is not sold by any maker; a real J motor is never 29.0 mm wide)"
+ },
+ "row-026-d213889e": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-I259W' is not a real motor; did you mean 'AeroTech-I59WN-v1'? (maker 'AeroTech' is a real maker; designation 'I259W' is not sold by any maker; a real I motor is 38.0 mm wide)"
+ },
+ "row-027-51a351c4": {
+  "stage": "limits",
+  "score": 0.34,
+  "why": "shockcord #1's material uses material 'RS: Elastic cord (flat 10 mm, 3/8 in)', which is not in the material table of line materials, so the reward cannot give it its real density (the design wrote 0.004056 kg/m); use a known material name, for example 'Elastic cord (flat 19 mm, 3/4 in)'"
+ },
+ "row-028-da7ce3ba": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H160R' is not a real motor; did you mean 'AeroTech-H210R-v1'? (maker 'AeroTech' is a real maker; designation 'H160R' is not sold by any maker; a real H motor is 29.0 mm wide)"
+ },
+ "row-029-03872d3b": {
+  "stage": "format",
+  "score": 0.0,
+  "why": "the answer was cut off before it finished"
+ },
+ "row-030-0545a03c": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-031-e75ff0bf": {
+  "stage": "format",
+  "score": 0.06,
+  "why": "the tag 'cord diameter' inside a shockcord is not a valid XML element name, so OpenRocket could never read it"
+ },
+ "row-032-89d5f271": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'Cesaroni Technology-232I250-12A' is not a real motor (maker 'Cesaroni Technology' is a real maker; designation '232I250-12A' is not sold by any maker; a real I motor is 38.0 mm wide)"
+ },
+ "row-033-adcf6c6e": {
+  "stage": "motor",
+  "score": 0.28,
+  "why": "motor 'Cesaroni Technology-G71R' is not a real motor; did you mean 'AeroTech-G71R-v1'? (maker 'Cesaroni Technology' is a real maker; designation 'G71R' exists; a real G motor is 24.1 mm wide)"
+ },
+ "row-034-2dd6e630": {
+  "stage": "format",
+  "score": 0.0,
+  "why": "the answer was cut off before it finished"
+ },
+ "row-035-ca68c1e1": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H112W' is not a real motor; did you mean 'AeroTech-H128W-v1'? (maker 'AeroTech' is a real maker; designation 'H112W' is not sold by any maker; a real H motor is 29.0 mm wide)"
+ },
+ "row-036-016d1e96": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-037-365db497": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-J1750-IP' is not a real motor (maker 'AeroTech' is a real maker; designation 'J1750-IP' is not sold by any maker; a real J motor is never 75.0 mm wide)"
+ },
+ "row-038-c24331d9": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-HP-K500W-v3' is not a real motor; did you mean 'AeroTech-K700W-v1'? (maker 'AeroTech' is a real maker; designation 'HP-K500W' is not sold by any maker; a real K motor is 54.0 mm wide)"
+ },
+ "row-039-b6bbcf30": {
+  "stage": "parts",
+  "score": 0.16,
+  "why": "2 of 8 needed parts are missing: missing a fin set; missing a recovery device"
+ },
+ "row-040-25c4d3f7": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-H278FJ' is not a real motor (maker 'AeroTech' is a real maker; designation 'H278FJ' is not sold by any maker; a real H motor is never 54.0 mm wide)"
+ },
+ "row-041-bbcf4448": {
+  "stage": "parts",
+  "score": 0.15,
+  "why": "3 of 8 needed parts are missing: missing a motor mount; missing a motor inside a motor mount; missing a motor configuration"
+ },
+ "row-042-157c980d": {
+  "stage": "passed",
+  "score": null,
+  "why": "passes stages 1-4"
+ },
+ "row-043-3455b127": {
+  "stage": "motor",
+  "score": 0.2267,
+  "why": "motor 'AeroTech-H285HT-v1' is not a real motor (maker 'AeroTech' is a real maker; designation 'H285HT' is not sold by any maker; a real H motor is never 54.0 mm wide)"
+ },
+ "row-044-fb97f9c9": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H223R' is not a real motor (maker 'AeroTech' is a real maker; designation 'H223R' is not sold by any maker; a real H motor is 38.0 mm wide)"
+ },
+ "row-045-1f6c5f5e": {
+  "stage": "parts",
+  "score": 0.15,
+  "why": "3 of 8 needed parts are missing: missing a motor mount; missing a motor inside a motor mount; missing a motor configuration"
+ },
+ "row-046-5517e018": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H231ST' is not a real motor; did you mean 'AeroTech-H283ST'? (maker 'AeroTech' is a real maker; designation 'H231ST' is not sold by any maker; a real H motor is 38.0 mm wide)"
+ },
+ "row-047-31720ddd": {
+  "stage": "motor",
+  "score": 0.2533,
+  "why": "motor 'AeroTech-H235W' is not a real motor; did you mean 'AeroTech-HP-H135W'? (maker 'AeroTech' is a real maker; designation 'H235W' is not sold by any maker; a real H motor is 38.0 mm wide)"
+ },
+ "row-048-e02c5b85": {
+  "stage": "motor",
+  "score": 0.28,
+  "why": "motor 'AeroTech-I377-CT' is not a real motor; did you mean 'Loki Research-I377-CT'? (maker 'AeroTech' is a real maker; designation 'I377-CT' exists; a real I motor is 38.0 mm wide)"
+ }
+}
