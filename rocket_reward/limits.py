@@ -126,9 +126,9 @@ MAX_SIM_STEPS = 400000             # backstop so a runaway simulation ends the s
 # Measured by flying the 183 reference designs that pass stages 1-5 under the
 # launch conditions above (calibration report: flight statistics). A limit is
 # set so that sound references pass and only truly unsafe ones fail.
-RAIL_EXIT_MIN_MS = 11.0            # 15 m/s (contract) fails 14 sound low-power references (an A8 rocket leaves at 11.6); one reference is below 11 (9.0, and it weathercocks)
+RAIL_EXIT_MIN_MS = 11.0            # 15 m/s (contract) fails 14 references, 12 of them otherwise sound and most of them small (an A8 rocket leaves at 11.6); one reference is below 11 (9.0, and it weathercocks)
 STATIC_STABILITY_MIN_CAL = 1.0     # contract. Flown as the reward flies them (table densities), every reference that reaches this stage has at least 1.0 cal except one (V4-0171: 0.973 cal; it had 1.02 with the densities its file wrote), which is left failing rather than loosening the contract
-RAIL_STABILITY_MIN_CAL = 0.0       # leaving the rail in the worst wind: crosswind lowers the margin by a median 0.48 cal, so 1.0 here fails 31 sound references; two are below 0 and truly unstable
+RAIL_STABILITY_MIN_CAL = 0.0       # leaving the rail in the worst wind: the margin moves by a median 0.48 cal across the three winds, so 1.0 here fails 31 references, 29 of them sound; the other two are below 0 and truly unstable
 BURN_STABILITY_MIN_CAL = 0.0       # contract: stable from the rail to the last burnout; four references fail (two air-start a second stage after a 9 s coast)
 THRUST_TO_WEIGHT_MIN = 3.0         # contract; lowest reference is 3.08
 DEPLOY_SPEED_MAX_MS = 60.0         # references open recovery at a median 7.7 m/s, 95% under 36; the two above 60 use a 0 s ejection delay (68 and 99 m/s). OpenRocket itself warns from 20 m/s
