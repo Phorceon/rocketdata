@@ -21,8 +21,13 @@ never reached the ground) are `null`, never NaN or infinity.
 {"op": "ping", "id": "p1"}
 ```
 ```json
-{"id": "p1", "ok": true, "openrocket": "24.12", "java": "17.0.21", "helper": 1}
+{"id": "p1", "ok": true, "openrocket": "24.12", "java": "17.0.21", "helper": 4}
 ```
+
+`helper` is the helper's version (`HELPER_VERSION` in `RocketSim.java`). It
+is raised when the helper reports something new:
+version 3 added `motor_lookup` ("How each motor was found" below), version 4
+(2026-11-19) the per-part `axis_offset_m`.
 
 ## run
 
@@ -90,6 +95,11 @@ Meaning of the less obvious fields:
 * `mass_kg` is the mass OpenRocket uses (with any override); `computed_mass_kg`
   is the mass it would compute from the shape and material with no override.
   The same for `cg_x_m` and `computed_cg_x_m` (measured from the nose tip).
+  The helper reports what the file it is given holds. The reward's cleaning
+  removes every override before a design is flown (DESIGN.md section 5), so
+  in scoring these pairs are equal and `mass_overridden`, `cg_overridden`,
+  `cd_overridden` and `override_subcomponents` are false (the example above
+  shows a file that still had an override).
 * `fins` (fin sets only): `{"count", "root_chord_m", "tip_chord_m", "span_m",
   "sweep_m", "thickness_m", "cant_deg", "root_x0_m", "root_radius_m",
   "points": [[x, y], ...]}` where `root_radius_m` is the radius of the body at
@@ -202,7 +212,7 @@ Added by the helper; leaving them out gives the behaviour described above.
 `ping` adds `motor_database_size` (1,452 for OpenRocket 24.12: the entries of its
 motor list, which hold 1,389 distinct thrust curves; sim.py refuses
 a helper with fewer than 1,000). `run` adds per part `active`, `stage`,
-`instances`, `radial_offset_m`, `mass_overridden_by`; in `rocket`
+`instances`, `axis_offset_m`, `radial_offset_m`, `mass_overridden_by`; in `rocket`
 `structure_mass_kg` and `reference_length_m`; per flight `ground_hit_ms`
 (OpenRocket's own ground-hit speed of the main branch, equal to its
 `landing_total_ms` on all 147 parity designs), per flight `ignition_time_s`
@@ -218,7 +228,16 @@ the helper read the last sample and reported 0). The reward still counts a
 landed branch's vertical speed that is not above 0 as unknown. Components list every part
 except the Rocket root, so stages are included (a top stage has parent -1).
 
-### How each motor was found (helper version 3)
+`axis_offset_m` (helper version 4): how far the part's own axis lies from the
+rocket's centre line, in metres: for each copy of the part OpenRocket places,
+the distance `sqrt(y^2 + z^2)` of that copy's location from the centre line,
+and the smallest of these over the copies. It is 0 for a part on the centre
+line. A pod set or side booster and every part inside it report the pod's
+distance (the copies of a part inside a pod sit where the pod's copies sit).
+`null` when OpenRocket gives the part no location. `fit.py` uses it for the
+pod rules `pod_inside_body` and `pod_detached` (DESIGN.md, stage 5).
+
+### How each motor was found (added in helper version 3)
 
 OpenRocket looks a motor up by the thrust-curve digest written in the file
 first, then by maker and designation. `run` replies (and build faults) carry

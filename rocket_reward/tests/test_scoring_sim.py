@@ -62,20 +62,17 @@ def _first_passing(gold_rows):
 class Stages:
     """Fake stages 5-7 that record their calls."""
 
-    def __init__(self, monkeypatch, removed=0):
+    def __init__(self, monkeypatch):
         self.calls: list[str] = []
         self.build = StageCheck("build", True, 1.0)
         self.flight = StageCheck("flight", True, 1.0, info={"metrics": {"apogee_m": 480.0}})
         self.targets = StageCheck("targets", True, 0.6)
-        self.natural_seen = "unset"
         monkeypatch.setattr(S, "_check_build", self.check_build)
         monkeypatch.setattr(S, "_check_flight", self.check_flight)
         monkeypatch.setattr(S, "_check_targets", self.check_targets)
-        monkeypatch.setattr(S, "_natural_copy", lambda root: (root, removed))
 
-    def check_build(self, reply, natural, root):
+    def check_build(self, reply, root):
         self.calls.append("build")
-        self.natural_seen = natural
         return self.build
 
     def check_flight(self, reply, requirements):
@@ -131,30 +128,6 @@ def test_defects_of_every_stage_lower_the_score(quiet, monkeypatch, gold_rows):
     r = S.score(answer, REQ, simulator=FakeSim())
     assert r.defects[-3:] == ["a", "b", "c"]
     assert r.score == ladder.stage_score("targets", 1.0, len(r.defects))
-
-
-def test_natural_rocket_is_flown_only_with_overrides(quiet, monkeypatch, gold_rows):
-    answer, _ = _first_passing(gold_rows)
-    st = Stages(monkeypatch, removed=0)
-    sim = FakeSim()
-    S.score(answer, REQ, simulator=sim)
-    assert len(sim.calls) == 1 and st.natural_seen is None
-
-    st = Stages(monkeypatch, removed=3)
-    sim = FakeSim()
-    r = S.score(answer, REQ, simulator=sim)
-    assert len(sim.calls) == 2 and isinstance(st.natural_seen, dict)
-    assert sim.calls[1]["flights"] == [{"wind_ms": 2.0, "seed": 2}]
-    assert sim.calls[1]["max_sim_time_s"] == S.NATURAL_MAX_SIM_TIME_S
-    assert r.flags["overrides_removed"] == 3
-
-
-def test_natural_rocket_is_not_flown_when_the_design_does_not_build(quiet, monkeypatch, gold_rows):
-    answer, _ = _first_passing(gold_rows)
-    Stages(monkeypatch, removed=3)
-    sim = FakeSim({"ok": False, "error_kind": "build", "message": "no motor"})
-    S.score(answer, REQ, simulator=sim)
-    assert len(sim.calls) == 1
 
 
 # ------------------------------------------------------------------ real stages, odd replies
@@ -239,26 +212,6 @@ def test_a_crash_inside_stage_6_is_quarantined(quiet, monkeypatch, gold_rows):
     r = S.score(answer, REQ, simulator=FakeSim())
     assert r.score is None and r.flags["quarantined"] and r.stages_passed == 4
     assert list((quiet / "quarantine").glob("*.json"))
-
-
-@pytest.mark.parametrize("kind", ["load", "build", "hang", "crash"])
-def test_a_natural_twin_that_fails_scores_the_build_floor(quiet, gold_rows, kind):
-    """The natural twin (overrides removed) is part of the build check: when
-    OpenRocket rejects, hangs or crashes on it, the answer scores exactly the
-    build floor, as it would for the design itself (DESIGN.md rule 4)."""
-    answer = next(r["answer"] for r in gold_rows
-                  if S.preflight(r["answer"]).passed and S._natural_copy(S.preflight(r["answer"]).clean_root)[1])
-
-    def reply(call):
-        if "max_sim_time_s" in call:          # the natural twin's short run
-            return {"ok": False, "error_kind": kind, "message": f"natural twin {kind}"}
-        return load_reply("single_stage")
-
-    r = S.score(answer, REQ, simulator=FakeSim(reply))
-    main = S.score(answer, REQ, simulator=FakeSim({"ok": False, "error_kind": kind, "message": kind}))
-    assert r.stage == main.stage == "build"
-    assert r.score == main.score == ladder.stage("build").floor
-    assert "without its mass and balance overrides" in r.reasons[0] and f"natural twin {kind}" in r.reasons[0]
 
 
 # ------------------------------------------------------------------ shadow flights

@@ -49,7 +49,7 @@ def test_scores_sit_inside_their_stage_band(results):
 
 def test_stage_counts(results):
     counts = collections.Counter(r["stage"] for r in results.values())
-    assert counts == {"format": 5, "parts": 6, "motor": 26, "limits": 2, "passed": 9}
+    assert counts == {"format": 5, "parts": 6, "motor": 26, "limits": 3, "passed": 8}
 
 
 def test_snapshot_file_is_consistent():
@@ -80,5 +80,13 @@ def test_snapshot_file_is_consistent():
 #            'Bronze' (launch lug) are not in the material table, so no real density can be given.
 #   row-027: passed -> limits. Shock cord 'RS: Elastic cord (flat 10 mm, 3/8 in)' is not in the
 #            material table (OpenRocket's lists have 19 mm and round 2-6 mm elastic cord).
-#   row-023 still passes: its unknown 'Paper, spiral kraft glassine, PK IIIa, bulk' sits only on
-#            parts that override their own mass, so it is noted, not counted.
+#   row-023 still passed then: its unknown 'Paper, spiral kraft glassine, PK IIIa, bulk' sat only on
+#            parts that override their own mass, so it was noted, not counted.
+# Re-made on purpose 2026-11-19 after the targets, overrides and sizes changes of that day; only one
+# answer moved (stage counts: limits 2 -> 3, passed 9 -> 8):
+#   row-023: passed -> limits 0.34 (overrides). With its mass overrides removed, the unknown material
+#            'Paper, spiral kraft glassine, PK IIIa, bulk' gives four parts their mass, so it counts.
+#   The targets change works only in stage 7, and the new stage 4 size bounds change no stage or
+#   score here (the sizes change moves answers only through stage 5, in test_model_scores.py).
+#   Checked again after the second round of fixes the same day (stages 5 and 6 only): no stage or
+#   score moved, so the file is unchanged.

@@ -12,12 +12,21 @@ safety (stage 6)" section of limits.py:
   * stable when leaving the rail and while the motors burn
   * every section with a recovery device opens it, nothing opens while a motor
     burns, and the fastest opening is not too fast
-  * every section lands, at a safe vertical speed (the main section also within
-    the prompt's landing limit, with its slack)
+  * the last opening of a section comes a few seconds before it lands, and no
+    device is set to open at a fixed altitude just above the ground (judged
+    once, from the settings as OpenRocket read them): OpenRocket fills a
+    parachute the instant it opens, so without these a parachute opened a few
+    metres up would count as a soft landing
+  * every section lands, at a safe vertical speed
+
+Stage 6 judges only safety that holds for every rocket. The prompt's own
+landing limit is a target like the apogee and is scored in stage 7
+(targets.py), so a rocket that lands safely but a little faster than asked
+keeps the credit its other targets earn.
 
 A flight's total is the sum of its violation sizes. The worst flight counts:
-credit = ladder.credit_from_violations(static violation + worst flight's
-violations). The stage passes only when nothing at all is violated.
+credit = ladder.credit_from_violations(the violations judged once + the worst
+flight's violations). The stage passes only when nothing at all is violated.
 
 `check_flight` reads only the simulator's reply (java/PROTOCOL.md) and the
 requirements. Any number a rule needs that is missing, null or not a number
@@ -94,21 +103,6 @@ def flight_plan(requirements: Requirements) -> list[dict]:
             for f, s in zip(L.WIND_FACTORS, L.FLIGHT_SEEDS)]
 
 
-def landing_limit_ms(requirements: Requirements) -> Optional[float]:
-    """The highest vertical landing speed (m/s) the main section may have under
-    the prompt, or None when the prompt states no landing limit.
-
-    It is the prompt's value plus its slack (the target's tol, or
-    limits.LANDING_SLACK_DEFAULT when it gives none), never above
-    limits.LANDING_HARD_MAX_MS. A "min" landing target sets no upper limit.
-    """
-    target = requirements.landing_ms
-    if target is None or target.kind == "min":
-        return None
-    slack = target.tol if target.tol is not None else L.LANDING_SLACK_DEFAULT
-    return min(L.LANDING_HARD_MAX_MS, float(target.value) * (1.0 + slack))
-
-
 # --------------------------------------------------------------------------- helpers
 
 def _field_number(d: Any, key: str) -> Optional[float]:
@@ -178,7 +172,7 @@ def _section_label(branch: dict, position: int) -> str:
 
 # --------------------------------------------------------------------------- rules
 
-def _judge_flight(flight: Any, planned_wind: Optional[float], land_limit: Optional[float]) -> _Flight:
+def _judge_flight(flight: Any, planned_wind: Optional[float]) -> _Flight:
     """Every per-flight rule on one flight of the reply."""
     f = flight if isinstance(flight, dict) else {}
     wind = _field_number(f, "wind_ms")
@@ -234,11 +228,11 @@ def _judge_flight(flight: Any, planned_wind: Optional[float], land_limit: Option
             f"{L.BURN_STABILITY_MIN_CAL:g} cal (move mass forward, enlarge the fins, or shorten a coast "
             f"before an upper stage lights)")
 
-    _judge_sections(f, out, land_limit)
+    _judge_sections(f, out)
     return out
 
 
-def _judge_sections(f: dict, out: _Flight, land_limit: Optional[float]) -> None:
+def _judge_sections(f: dict, out: _Flight) -> None:
     """Recovery and landing rules, per section (branch) of one flight."""
     w = out.where
     branches = f.get("branches")
@@ -305,13 +299,18 @@ def _judge_sections(f: dict, out: _Flight, land_limit: Optional[float]) -> None:
                     f"{w} {name} has no recovery device and hits the ground at {_value_text(v, limit)} m/s; a "
                     f"section without recovery must come down at {limit:g} m/s or slower (give it a "
                     f"streamer or parachute, or make it tumble instead of falling nose-first)")
-        if is_main and land_limit is not None:
-            size = ladder.over_limit(v, land_limit)
-            out.add("landing_prompt", size,
-                    f"{w} the landing speed of {name} {unknown}; the prompt allows at most "
-                    f"{land_limit:.2f} m/s" if v is None else
-                    f"{w} {name} lands at {_value_text(v, land_limit)} m/s vertical speed; the prompt's landing "
-                    f"limit with its slack is {land_limit:.2f} m/s (use a larger parachute)")
+
+        # The last opening must come well before the ground.
+        if deployed:
+            last, land = _last_opening_s(b), _field_number(b, "landing_time_s")
+            gap = None if last is None or land is None else land - last
+            limit = L.RECOVERY_OPEN_BEFORE_LANDING_MIN_S
+            out.add(f"opens_late_{position}", ladder.under_limit(gap, limit),
+                    f"{w} the time between the last recovery opening of {name} and its landing is unknown; "
+                    f"it must be at least {limit:g} s" if gap is None else
+                    f"{w} the last recovery device of {name} opens only {max(gap, 0.0):.1f} s before it lands; "
+                    f"a real parachute needs time to fill, so it must open at least {limit:g} s before "
+                    f"landing (open it at apogee or at a higher altitude)")
 
     # Recovery timing, once per flight over every section that opened something.
     if any(flag is True for flag in burn_flags):
@@ -334,6 +333,43 @@ def _judge_sections(f: dict, out: _Flight, land_limit: Optional[float]) -> None:
             out.add("deploy_speed", size,
                     f"{w} a recovery device of {name} opens at {_value_text(fastest, limit)} m/s; it must open at "
                     f"{limit:g} m/s or slower (open nearer apogee: adjust the ejection delay)")
+
+
+def _last_opening_s(branch: dict) -> Optional[float]:
+    """Time of the last recovery opening of one section, or None when unknown."""
+    times = []
+    openings = branch.get("deployments")
+    if isinstance(openings, list):
+        times = [t for t in (_field_number(d, "time_s") for d in openings) if t is not None]
+    first = _field_number(branch, "deploy_time_s")
+    if first is not None:
+        times.append(first)
+    return max(times) if times else None
+
+
+def _low_openings(reply: dict) -> list[tuple[float, str]]:
+    """Recovery devices set to open at a fixed altitude below
+    limits.DEPLOY_ALTITUDE_MIN_M, judged once from the settings OpenRocket
+    read (the reply's "recovery" of each parachute and streamer): a list of
+    (size, reason)."""
+    out: list[tuple[float, str]] = []
+    components = reply.get("components")
+    limit = L.DEPLOY_ALTITUDE_MIN_M
+    for c in components if isinstance(components, list) else []:
+        rec = c.get("recovery") if isinstance(c, dict) else None
+        if not isinstance(rec, dict) or rec.get("deploy_event") != "ALTITUDE":
+            continue
+        h = _field_number(rec, "deploy_altitude_m")
+        size = ladder.under_limit(h, limit)
+        if size > 0:
+            name = c.get("name")
+            what = f"'{name.strip()[:40]}'" if isinstance(name, str) and name.strip() else "a recovery device"
+            out.append((size, f"{what} is set to open at an unknown altitude; it must be at least {limit:g} m"
+                        if h is None else
+                        f"{what} is set to open {h:.4g} m above the ground; a recovery device that opens at a "
+                        f"fixed altitude must open at {limit:g} m or higher (a real parachute needs height "
+                        f"to fill)"))
+    return out
 
 
 def _pad_stability(reply: dict) -> tuple[float, Optional[str], Optional[float]]:
@@ -397,12 +433,12 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
 
     info carries: "metrics" (the nominal flight's numbers), "worst_flight"
     (its index in the plan), "flight_violations" (per flight, a list of
-    {"rule", "size"}), "flight_totals", "static_violation", "landing_limit_ms"
-    and "winds_ms".
+    {"rule", "size"}), "flight_totals", "static_violation" (pad stability),
+    "low_opening_violations" (sizes, one per device set to open too low) and
+    "winds_ms".
     """
     rep = reply if isinstance(reply, dict) else {}
     plan = flight_plan(requirements)
-    land_limit = landing_limit_ms(requirements)
     flights = rep.get("flights")
     flights = list(flights) if isinstance(flights, list) else []
     # A flight the reply leaves out counts as one that never flew.
@@ -410,13 +446,15 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
     flights += [{}] * (count - len(flights))
     planned = [p["wind_ms"] for p in plan] + [None] * (count - len(plan))
 
-    judged = [_judge_flight(f, w, land_limit) for f, w in zip(flights, planned)]
+    judged = [_judge_flight(f, w) for f, w in zip(flights, planned)]
     static_size, static_reason, static_value = _pad_stability(rep)
+    low = _low_openings(rep)
 
     totals = [j.total for j in judged]
     worst = max(range(count), key=lambda i: (totals[i], -i))   # the first of equally bad flights
-    credit = ladder.credit_from_violations([static_size] + [s for _, s, _ in judged[worst].items])
-    passed = static_size == 0 and all(t == 0 for t in totals)
+    credit = ladder.credit_from_violations([static_size] + [s for s, _ in low]
+                                           + [s for _, s, _ in judged[worst].items])
+    passed = static_size == 0 and not low and all(t == 0 for t in totals)
 
     # One reason per broken rule: the flight where it is worst, largest first.
     by_rule: dict[str, tuple[float, str]] = {}
@@ -425,7 +463,7 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
             if rule not in by_rule or size > by_rule[rule][0]:
                 by_rule[rule] = (size, reason)
     ordered = sorted(by_rule.values(), key=lambda p: -p[0])
-    reasons = ([static_reason] if static_reason else []) + [r for _, r in ordered]
+    reasons = ([static_reason] if static_reason else []) + [r for _, r in low] + [r for _, r in ordered]
     if len(reasons) > MAX_REASONS:
         extra = len(reasons) - MAX_REASONS
         reasons = reasons[:MAX_REASONS] + [f"... and {extra} more flight problems"]
@@ -437,8 +475,8 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
         "flight_totals": [round(t, 6) for t in totals],
         "flight_violations": [[{"rule": r, "size": round(s, 6)} for r, s, _ in j.items] for j in judged],
         "static_violation": round(static_size, 6),
+        "low_opening_violations": [round(s, 6) for s, _ in low],
         "static_stability_cal": static_value,
-        "landing_limit_ms": land_limit,
         "winds_ms": [j.wind for j in judged],
     }
     return StageCheck(stage=STAGE_KEY, passed=passed, credit=credit if not passed else 1.0,

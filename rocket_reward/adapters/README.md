@@ -45,7 +45,7 @@ from rocket_reward.adapters.trl import make_reward, make_diagnostics
 from rocket_reward.sim import SimPool
 
 ds = load_dataset("json", data_files="rocket_reward/prompts/rl_prompts_v1.jsonl", split="train")
-ds = ds.filter(lambda r: r["split"] == "train")           # 390 of the 482 prompts
+ds = ds.filter(lambda r: r["split"] == "train")           # 385 of the 474 prompts
 ds = ds.map(lambda r: {"prompt": [{"role": "system", "content": r["system"]},
                                   {"role": "user", "content": r["prompt"]}],
                        "requirements": json.dumps(r["requirements"])}, remove_columns=["system"])
@@ -202,10 +202,15 @@ How it works, based on the v0.4.1 source
 
 ## Speed
 
-About 0.15 s per answer with 4 simulator helpers (`SimPool(4)`: 0.14 s on the
-594 reference rows, 0.19 s on the model's 48 answers). Starting a pool takes
-about 5 s. Each helper is one Java process, so make one pool per trainer
-process and share it. With no pool given, both adapters use the shared default
-pool, `ROCKET_REWARD_WORKERS` helpers (default 4, at most the CPU count minus
-one). A rare slow design can take 15 to 300 s and scores no more than 0.40, so
-set the trainer's reward timeout with that in mind.
+About 0.15-0.3 s per answer with 4 warm simulator helpers (`SimPool(4)`,
+measured on 2026-11-19 on a PC shared with other jobs: 0.27 s on the 594
+reference rows, 0.14-0.18 s on 48 val answers and on the model's 48 answers).
+Starting a helper takes a few seconds (`python -m rocket_reward check` started
+one and flew the self-test rocket in 5.2 s), and the first batch is slower
+while the helpers warm up. Each helper is one Java process, so make one pool
+per trainer process and share it. With no pool given, both adapters use the
+shared default pool, `ROCKET_REWARD_WORKERS` helpers (default 4, at most the
+CPU count minus one). A rare slow design can take far longer: a run past the
+helper's wall-clock limit (30 s plus 10 s per flight, `sim.py`) is tried once
+more on a fresh helper and, if still stuck, scores 0.40. Set the trainer's
+reward timeout with that in mind.

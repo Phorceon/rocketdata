@@ -1,31 +1,38 @@
 """Stage 7: does the rocket do what the prompt asked?
 
 Every design that reaches this stage has flown safely. Here it earns a credit
-`t` from 0 to 1: the weighted mean of one credit per target the requirements
-state, all read from the nominal flight (the 1x-wind flight,
-limits.NOMINAL_FLIGHT) of the simulator's reply (java/PROTOCOL.md).
+`t` from 0 to 1: the product of one credit per target the requirements state,
+all read from the nominal flight (the 1x-wind flight, limits.NOMINAL_FLIGHT)
+of the simulator's reply (java/PROTOCOL.md). Every target counts the same way,
+with no weights, so missing one target by a given amount costs the same
+whatever else the prompt states, and missing two never beats missing one.
 
   apogee_m, flight_time_s, time_to_apogee_s, max_velocity_ms, max_accel_ms2
       the flight's own number, judged with ladder.closeness
   landing_ms
       the main section's vertical landing speed. For a "max" target the
-      landing earns full credit from a comfort floor up to the limit; slower
-      than the floor the credit falls in proportion (a needlessly large
-      parachute drifts far); faster than the limit ladder.closeness judges it
+      landing earns full credit from a comfort floor up to the limit with its
+      tolerance (limits.LANDING_SLACK_DEFAULT when the target gives none: the
+      prompts were written from one flight with no margin); slower than the
+      floor the credit falls in proportion (a needlessly large parachute
+      drifts far); faster than the limit ladder.closeness judges it. Stage 6
+      judges only the landing limits that hold for every rocket, so this is
+      the only place the prompt's landing number counts
   body_diameter_m
       the widest body tube OpenRocket built
   mass_kg
       the mass on the pad, motors included
   motors
-      the share of the motors the prompt names that the flown configuration
-      really uses
+      ladder.MOTORS_CREDIT_MIN plus the rest in proportion to the share of the
+      motors the prompt names that the flown configuration really uses
   motor_class
-      1 when the largest flown motor is of that impulse class, 0.5 when it is
-      one letter away, else 0
+      1 when the largest flown motor is of that impulse class,
+      ladder.MOTOR_CLASS_NEAR_CREDIT when it is one letter away, else
+      ladder.MOTOR_CLASS_FAR_CREDIT (also when no flown motor has a known
+      impulse)
 
-Apogee has weight ladder.APOGEE_WEIGHT, every other stated target
-ladder.OTHER_TARGET_WEIGHT. A target whose measured value is missing earns 0.
-The stage always passes; StageCheck.defects stays empty.
+A numeric target whose measured value is missing earns 0, so t is 0. The
+stage always passes; StageCheck.defects stays empty.
 """
 from __future__ import annotations
 
@@ -33,7 +40,7 @@ import math
 from typing import Any, Optional
 
 from . import ladder
-from .limits import NOMINAL_FLIGHT
+from .limits import LANDING_SLACK_DEFAULT, NOMINAL_FLIGHT
 from .motors import (MotorTable, _motor_fields, _norm_designation, class_from_designation,
                      flown_motors, impulse_class)
 from .records import TARGET_FIELDS, Requirements, StageCheck, Target
@@ -173,7 +180,9 @@ def _asked_text(field: str, target: Target) -> str:
     """'about 500 m (5% allowed)', 'at most 5.0 m/s'."""
     _, unit, factor = _TARGET_TEXT[field]
     text = f"{_KIND_WORDS.get(target.kind, target.kind)} {_figure(target.value * factor)} {unit}"
-    tol = target.tol if target.tol is not None else (ladder.DEFAULT_ABOUT_TOL if target.kind == "about" else 0.0)
+    tol = _landing_tol(target) if field == "landing_ms" else target.tol
+    if tol is None:
+        tol = ladder.DEFAULT_ABOUT_TOL if target.kind == "about" else 0.0
     if tol > 0:
         text += f" ({tol * 100:.4g}% allowed)"
     return text
@@ -191,9 +200,11 @@ def landing_credit(speed: Optional[float], target: Target) -> float:
     """Credit for the main section's landing speed against a landing target.
 
     For a "max" target: full credit from the comfort floor, min(3.5 m/s, 60% of
-    the limit) (ladder.LANDING_COMFORT_*), up to the limit with its tolerance;
-    below the floor speed / floor; above the limit ladder.closeness. Other kinds
-    use ladder.closeness alone. A missing or zero speed earns 0.
+    the limit) (ladder.LANDING_COMFORT_*), up to the limit with its tolerance
+    (limits.LANDING_SLACK_DEFAULT when the target gives none; a given tol, 0.0
+    included, is used as given); below the floor speed / floor; above the limit
+    ladder.closeness. Other kinds use ladder.closeness alone. A missing or zero
+    speed earns 0.
     """
     if speed is None or not ladder.is_number(speed) or speed <= 0:
         return 0.0
@@ -202,7 +213,16 @@ def landing_credit(speed: Optional[float], target: Target) -> float:
     floor = _comfort_floor(target)
     if speed < floor:
         return ladder.clamp01(speed / floor)
-    return ladder.closeness(speed, target.value, "max", target.tol)
+    return ladder.closeness(speed, target.value, "max", _landing_tol(target))
+
+
+def _landing_tol(target: Target) -> Optional[float]:
+    """The tolerance a landing target is judged with: a "max" target that gives
+    none gets limits.LANDING_SLACK_DEFAULT (the prompts were written from one
+    flight with no margin); any other target keeps its own."""
+    if target.kind == "max" and target.tol is None:
+        return LANDING_SLACK_DEFAULT
+    return target.tol
 
 
 def _comfort_floor(target: Target) -> float:
@@ -231,7 +251,8 @@ def _number_target(field: str, value: Optional[float], target: Target) -> tuple[
 
 
 def _motors_target(named: tuple[str, ...], flown: list[dict]) -> tuple[float, dict, Optional[str]]:
-    """Share of the named motors the flown configuration uses."""
+    """ladder.MOTORS_CREDIT_MIN plus the rest of the credit in proportion to the
+    share of the named motors the flown configuration uses."""
     wanted: dict[str, str] = {}
     for n in named[:_MAX_NAMED_MOTORS]:
         if isinstance(n, str) and n.strip() and len(n) <= 200:
@@ -239,7 +260,8 @@ def _motors_target(named: tuple[str, ...], flown: list[dict]) -> tuple[float, di
     flown_names = set().union(*(m["names"] for m in flown)) if flown else set()
     found = [w for w in wanted if w in flown_names]
     missing = [wanted[w] for w in wanted if w not in flown_names]
-    credit = len(found) / len(wanted) if wanted else 0.0
+    share = len(found) / len(wanted) if wanted else 0.0
+    credit = ladder.MOTORS_CREDIT_MIN + (1.0 - ladder.MOTORS_CREDIT_MIN) * share
     flown_shown = sorted({_cut(m["designation"]) for m in flown if m["designation"]})
     measured = {"flown": flown_shown, "matched": [wanted[w] for w in found]}
     if credit >= _FULL:
@@ -251,7 +273,9 @@ def _motors_target(named: tuple[str, ...], flown: list[dict]) -> tuple[float, di
 
 
 def _motor_class_target(letter: str, flown: list[dict]) -> tuple[float, dict, Optional[str]]:
-    """1 when the largest flown motor is of the asked class, 0.5 one letter away, else 0.
+    """1 when the largest flown motor is of the asked class,
+    ladder.MOTOR_CLASS_NEAR_CREDIT one letter away, else (also when no flown
+    motor has a known impulse) ladder.MOTOR_CLASS_FAR_CREDIT.
 
     The largest motor is the one with the most total impulse. Its class is the
     letter its impulse gives or the letter it is sold under (some real motors
@@ -259,13 +283,16 @@ def _motor_class_target(letter: str, flown: list[dict]) -> tuple[float, dict, Op
     """
     rated = [m for m in flown if m["impulse_ns"] is not None]
     if not rated:
-        return 0.0, {"largest": None, "classes": []}, (
-            f"motor class: no flown motor with a known impulse, asked for class {letter}: credit 0")
+        credit = ladder.MOTOR_CLASS_FAR_CREDIT
+        return credit, {"largest": None, "classes": []}, (
+            f"motor class: no flown motor with a known impulse, asked for class {letter} (fly a real motor "
+            f"of class {letter}): credit {credit:.2f}")
     largest = max(rated, key=lambda m: m["impulse_ns"])
     classes = sorted({c for c in (impulse_class(largest["impulse_ns"]),
                                   class_from_designation(largest["designation"])) if c})
     steps = min((abs(ord(c) - ord(letter)) for c in classes), default=None)
-    credit = 1.0 if steps == 0 else 0.5 if steps == 1 else 0.0
+    credit = (1.0 if steps == 0 else ladder.MOTOR_CLASS_NEAR_CREDIT if steps == 1
+              else ladder.MOTOR_CLASS_FAR_CREDIT)
     measured = {"largest": largest["designation"], "impulse_ns": largest["impulse_ns"], "classes": classes}
     if credit >= _FULL:
         return credit, measured, None
@@ -305,9 +332,9 @@ def _measured_value(field: str, reply: dict, flight: dict) -> Optional[float]:
 def check_targets(reply: dict, requirements: Requirements, root: Node, table: MotorTable) -> StageCheck:
     """Stage 7: how well the flown rocket meets every stated target.
 
-    Always passes; credit is t, the weighted mean of the target credits.
-    info["targets"] lists every target with its measured value, credit and
-    weight; reasons name each target that lost credit and by how much.
+    Always passes; credit is t, the product of the target credits.
+    info["targets"] lists every target with its measured value and credit;
+    reasons name each target that lost credit and by how much.
     """
     reply = _dict(reply)
     flight = _nominal_flight(reply)
@@ -319,9 +346,8 @@ def check_targets(reply: dict, requirements: Requirements, root: Node, table: Mo
             continue
         value = _measured_value(field, reply, flight)
         credit, reason = _number_target(field, value, target)
-        weight = ladder.APOGEE_WEIGHT if field == "apogee_m" else ladder.OTHER_TARGET_WEIGHT
         rows.append({"target": field, "kind": target.kind, "asked": target.value, "tol": target.tol,
-                     "measured": value, "credit": credit, "weight": weight})
+                     "measured": value, "credit": credit})
         if reason:
             reasons.append(reason)
     if requirements.motors or requirements.motor_class:
@@ -329,17 +355,18 @@ def check_targets(reply: dict, requirements: Requirements, root: Node, table: Mo
         if requirements.motors:
             credit, measured, reason = _motors_target(requirements.motors, flown)
             rows.append({"target": "motors", "asked": list(requirements.motors), "measured": measured,
-                         "credit": credit, "weight": ladder.OTHER_TARGET_WEIGHT})
+                         "credit": credit})
             if reason:
                 reasons.append(reason)
         if requirements.motor_class:
             credit, measured, reason = _motor_class_target(requirements.motor_class, flown)
             rows.append({"target": "motor_class", "asked": requirements.motor_class, "measured": measured,
-                         "credit": credit, "weight": ladder.OTHER_TARGET_WEIGHT})
+                         "credit": credit})
             if reason:
                 reasons.append(reason)
-    total_weight = sum(r["weight"] for r in rows)
-    t = sum(r["credit"] * r["weight"] for r in rows) / total_weight if total_weight > 0 else 0.0
+    t = 1.0   # apogee is always stated (records.Requirements), so there is at least one credit
+    for r in rows:
+        t *= ladder.clamp01(r["credit"])
     t = ladder.clamp01(t)
     info: dict[str, Any] = {"t": t, "targets": rows}
     if not flight:

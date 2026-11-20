@@ -64,12 +64,6 @@ ERROR_RUN = 5             # this many crashes in a row also means it is broken
 
 MAX_SHADOW_SHOWN = 3      # substitutes named in the reason of a shadow flight
 MAX_SHADOW_REASON_CHARS = 240  # the shadow's own first reason, shortened (display only)
-# The natural rocket (overrides removed) is built only for its mass and balance
-# point, which OpenRocket reports before flying; its one flight is cut short
-# after this many simulated seconds. On all 158 reference designs with overrides
-# the reported mass, balance point and reference length are identical to a full
-# flight's, at about a tenth of the time.
-NATURAL_MAX_SIM_TIME_S = 0.05
 
 
 # --------------------------------------------------------------------------- stage hooks
@@ -116,14 +110,14 @@ def _flight_plan(requirements: Requirements) -> list[dict]:
     return flight_plan(requirements)
 
 
-def _natural_copy(root: Node) -> tuple[Node, int]:
-    from .clean import natural_copy
-    return natural_copy(root)
+def _override_count(root: Node) -> int:
+    from .clean import override_count
+    return override_count(root)
 
 
-def _check_build(reply: Any, natural: Optional[dict], root: Node) -> StageCheck:
+def _check_build(reply: Any, root: Node) -> StageCheck:
     from .fit import check_build
-    return check_build(reply, natural, root)
+    return check_build(reply, root)
 
 
 def _check_flight(reply: Any, requirements: Requirements) -> StageCheck:
@@ -248,6 +242,7 @@ class Preflight:
     root:       the model's design tree ("openrocket" node), when it parsed
     clean_root: the cleaned copy (clean.py), when stage 3 passed
     notes:      what the cleaning changed, in plain words
+    overrides_removed: how many override settings the cleaning removed
     """
 
     checks: list[StageCheck] = field(default_factory=list)
@@ -255,6 +250,7 @@ class Preflight:
     root: Optional[Node] = None
     clean_root: Optional[Node] = None
     notes: list[str] = field(default_factory=list)
+    overrides_removed: int = 0
 
     @property
     def passed(self) -> bool:
@@ -314,6 +310,7 @@ def _preflight_tree(pre: Preflight, root: Node, motor_table: Any) -> None:
         raise TypeError(f"clean_design returned {type(cleaned).__name__}, not (tree, notes)")
     pre.clean_root, notes = cleaned
     pre.notes = [str(n) for n in (notes or [])]
+    pre.overrides_removed = _override_count(root)
 
     record(_expect(_check_limits(pre.clean_root, table), "limits"))
 
@@ -480,12 +477,11 @@ def _run_simulator_stages(pre: Preflight, requirements: Requirements, simulator:
                           table: Any) -> Result:
     """Stages 5-7 (build, flight, targets) on `pre.clean_root`, which passed stages 1-4.
 
-    The cleaned design is written as an OpenRocket file (a file that cannot be
-    written fails the build stage with credit 0) and flown on the launch rail
-    and in the three winds stage 6 asks for. When it carries mass or balance
-    overrides, the same design without them is also built (one flight, cut
-    short after NATURAL_MAX_SIM_TIME_S) so that stage 5 can bound what they do. The first stage that does not pass ends
-    the ladder; defects from every stage run lower the score.
+    The cleaned design (no override settings left: clean.py removes them) is
+    written as an OpenRocket file (a file that cannot be written fails the
+    build stage with credit 0) and flown once on the launch rail, in the three
+    winds stage 6 asks for. The first stage that does not pass ends the
+    ladder; defects from every stage run lower the score.
     """
     root = pre.clean_root
     if root is None:
@@ -508,22 +504,7 @@ def _run_simulator_stages(pre: Preflight, requirements: Requirements, simulator:
     if isinstance(reply, dict) and reply.get("ok") is not True and isinstance(reply.get("error_kind"), str):
         flags["sim_error_kind"] = reply["error_kind"]
 
-    natural: Optional[dict] = None
-    if isinstance(reply, dict) and reply.get("ok") is True:
-        nat_root, removed = _natural_copy(root)
-        if removed:
-            flags["overrides_removed"] = removed
-            try:
-                nat_text = _write_ork(nat_root)
-            except OrkWriteError as exc:
-                natural = {"ok": False, "error_kind": "load", "message": str(exc)}
-            else:
-                from .limits import NOMINAL_FLIGHT
-                got = _fly(simulator, nat_text, rail, [plan[min(NOMINAL_FLIGHT, len(plan) - 1)]], config_id,
-                           max_sim_time_s=NATURAL_MAX_SIM_TIME_S)
-                natural = got if isinstance(got, dict) else {"ok": False, "message": "no reply"}
-
-    build = _expect(_check_build(reply, natural, root), "build")
+    build = _expect(_check_build(reply, root), "build")
     defects += build.defects
     metrics = _flight_metrics(reply)
     if not build.passed:
@@ -693,6 +674,8 @@ def score(answer_text: str, requirements: Requirements, truncated: bool = False,
         result.flags["truncated"] = True
     if pre.notes:
         result.flags.setdefault("clean_notes", list(pre.notes))
+    if pre.overrides_removed:
+        result.flags.setdefault("overrides_removed", pre.overrides_removed)
     return result
 
 

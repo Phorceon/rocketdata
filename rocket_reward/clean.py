@@ -24,15 +24,19 @@ its own physics. Before a design is flown, clean_design() makes a copy in which:
   * the file format version is the one OpenRocket 24.12 writes
     (ork.FILE_VERSION): the version changes how OpenRocket reads the file
     (below 1.4 it ignores the motor digest), so the model cannot choose it
-  * every drag override ("overridecd" and its "overridesubcomponentscd"
-    switch) is removed: the drag is the one OpenRocket computes from the
-    shape. Mass and balance overrides stay (82% of the reference designs
-    weigh their kit parts); stage 5 bounds what they do to the whole rocket
+  * every override setting is removed, right after the simulations blocks and
+    before every other rule (_drop_overrides): every tag starting with
+    "override" (overridemass, overridecg, overridecd and their
+    "overridesubcomponents..." switches). The rocket is judged and flown
+    on its parts and materials alone; mass a designer wants to add must be a
+    real part (a mass component). Until 2026-11-19 mass and balance overrides
+    were kept and bounded, but a bounded override could still fake about
+    2 calibres of stability or hide a too-fast landing
   * every material's density comes from the material table, the way
     OpenRocket's loader reads a material (apply_material_densities)
 
-natural_copy (at the end) gives the same design without its mass and balance
-overrides; scoring.py flies it so that stage 5 can bound what they do.
+override_count (at the end) says how many override settings the cleaning
+removes from a design; scoring.py keeps it in Result.flags["overrides_removed"].
 
 The input tree is never changed. Cleaning a cleaned design changes nothing.
 """
@@ -66,9 +70,10 @@ MERGED_HOLDERS = ("subcomponents", "motormount")
 REPEATABLE = frozenset({"tabposition", "motorconfiguration"})
 # Nodes whose settings are de-duplicated: every component, the rocket, a motor.
 _SETTING_OWNERS = KNOWN_COMPONENT_TYPES | {"rocket", "motor"}
-# Drag overrides: a part's own drag coefficient, and the switch that makes it
-# stand for the parts inside it.
-DRAG_OVERRIDE_TAGS = ("overridecd", "overridesubcomponentscd")
+# Override settings: every tag that starts with this (a part's own mass,
+# balance point or drag, and the "overridesubcomponents..." switches that make
+# it stand for the parts inside it). The cleaning removes them all.
+OVERRIDE_TAG_PREFIX = "override"
 
 
 # ------------------------------------------------------------------ editing helpers
@@ -281,12 +286,28 @@ def _force_file_version(root: Node, notes: list[str]) -> None:
     notes.append(f"file format version set to {FILE_VERSION!r}, the one OpenRocket 24.12 writes (was {was})")
 
 
-def _drop_drag_overrides(rocket: Node, notes: list[str]) -> None:
-    """Remove every drag override: the drag is what OpenRocket computes."""
-    n = _remove_tags(rocket, DRAG_OVERRIDE_TAGS)
-    if n:
-        notes.append(f"removed {n} drag override setting(s) (overridecd, overridesubcomponentscd): "
-                     "the drag of every part is the one OpenRocket computes from its shape")
+def _is_override(c: Any) -> bool:
+    return is_node(c) and tag_of(c).startswith(OVERRIDE_TAG_PREFIX)
+
+
+def _drop_overrides(root: Node, notes: list[str]) -> None:
+    """Remove every override setting anywhere in the design: the mass, balance
+    point and drag of every part are the ones OpenRocket computes from its
+    shape and material."""
+    removed = 0
+    for node in walk_nodes(root):
+        kids = child_list(node)
+        if not kids:
+            continue
+        keep = [c for c in kids if not _is_override(c)]
+        if len(keep) != len(kids):
+            removed += len(kids) - len(keep)
+            kids[:] = keep
+    if removed:
+        notes.append(f"removed {removed} override setting(s) (tags starting with 'override', such as "
+                     "overridemass, overridecg, overridecd and their overridesubcomponents switches): the "
+                     "mass, balance point and drag of every part are the ones OpenRocket computes from its "
+                     "shape and material; to add mass, put in a real mass component")
 
 
 def _no_wait_on_the_pad(root: Node, notes: list[str]) -> None:
@@ -416,6 +437,7 @@ def clean_design(root: Node, table: Any, materials: Optional[MaterialTable] = No
     if not isinstance(out, dict) or not out:
         return out, notes
     out = _drop_simulations(out, notes)
+    _drop_overrides(out, notes)   # before every other rule, so none of them ever sees an override
     rocket = rocket_of(out)
     if rocket is not None:
         _force_file_version(out, notes)
@@ -424,41 +446,24 @@ def clean_design(root: Node, table: Any, materials: Optional[MaterialTable] = No
         _no_wait_on_the_pad(out, notes)
         _force_reference(rocket, notes)
         _motor_table_values(rocket, table, notes)
-        _drop_drag_overrides(rocket, notes)
         apply_material_densities(rocket, notes, materials)
     return out, notes
 
 
-# ------------------------------------------------------------------ the natural rocket (stage 5)
-
-# Mass and balance overrides ("overridemass", "overridecg" and their
-# "overridesubcomponents..." switches) stay in the cleaned copy: 155 of 183
-# sound references use them (kit parts weighed by their maker). Stage 5 bounds
-# what they do to the whole rocket by comparing it with the "natural" rocket:
-# the same cleaned design with every override tag removed (fit.check_build,
-# limits.OVERRIDE_MASS_RATIO_MIN/_MAX and OVERRIDE_CG_SHIFT_MAX_CAL). Drag
-# overrides never get this far: the cleaning removes them.
-OVERRIDE_TAG_PREFIX = "override"
-
-
 def override_count(root: Node) -> int:
-    """How many override settings (tags starting with "override") the design holds."""
-    return sum(1 for node in walk_nodes(root) for c in children_of(node)
-               if tag_of(c).startswith(OVERRIDE_TAG_PREFIX))
-
-
-def natural_copy(root: Node) -> tuple[Node, int]:
-    """The same design with every override setting removed, as OpenRocket
-    would build it from its parts and materials alone. Returns the copy and
-    how many settings were removed; the input is never changed."""
-    out = copy_tree(root)
-    removed = 0
-    for node in walk_nodes(out):
-        kids = child_list(node)
-        if not kids:
-            continue
-        keep = [c for c in kids if not (is_node(c) and tag_of(c).startswith(OVERRIDE_TAG_PREFIX))]
-        if len(keep) != len(kids):
-            removed += len(kids) - len(keep)
-            kids[:] = keep
-    return out, removed
+    """How many override settings (tags starting with "override") the
+    cleaning removes from this design: the same walk as _drop_overrides,
+    which never looks inside a setting it removes. Keys next to "openrocket"
+    are not counted: the cleaning drops them whole. The input is never changed."""
+    if isinstance(root, dict) and "openrocket" in root and len(root) > 1:
+        root = {"openrocket": root["openrocket"]}
+    count = 0
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        for c in children_of(node):
+            if _is_override(c):
+                count += 1
+            else:
+                stack.append(c)
+    return count

@@ -12,20 +12,44 @@
   "model:row-048-e02c5b85"
  ],
  "operators": [
-  "ballast_overrides",
-  "ballast_cg_override",
-  "lighten_rocket_override",
-  "lighten_one_stage_override",
   "floating_fins",
   "duplicated_fin_sets",
   "motor_far_forward",
   "motor_too_wide",
+  "far_away_thin_part",
+  "far_away_mass",
+  "far_away_recovery",
+  "pod_part_far_away",
+  "lug_behind_tail",
+  "closed_tail",
+  "pod_weight_ahead_of_nose",
+  "booster_weight_in_upper_stage",
+  "motor_in_pod_inside_body",
+  "one_sided_motor_pod",
+  "pod_far_to_the_side",
+  "needle_rocket",
+  "motor_pods_inside_pods",
+  "booster_pod_beside_upper_stage",
+  "needle_rocket_with_tail_disk",
   "zero_ejection_delay",
   "chute_far_too_small",
   "fins_shrunk",
   "booster_without_recovery",
+  "parachute_opens_at_ground",
+  "main_opens_low_drogue_kept",
   "weaker_motor",
+  "chute_too_small_for_prompt",
+  "landing_just_under_hard_limit",
+  "swap_to_unnamed_motor",
   "drag_override",
+  "override_over_limit",
+  "override_negative",
+  "ballast_overrides",
+  "ballast_cg_override",
+  "lighten_rocket_override",
+  "lighten_one_stage_override",
+  "unstable_fake_cg_override",
+  "light_stage_mass_override",
   "delayed_ignition",
   "model_digest",
   "extra_top_level_key",
@@ -62,7 +86,7 @@
   },
   "model:row-013-7608fb06": {
    "stage": "motor",
-   "score": 0.2471
+   "score": 0.2423
   },
   "model:row-033-adcf6c6e": {
    "stage": "motor",
@@ -74,22 +98,10 @@
   },
   "model:row-048-e02c5b85": {
    "stage": "motor",
-   "score": 0.274
+   "score": 0.2651
   }
  },
  "cases": {
-  "row-001-deb57c98|ballast_overrides": {
-   "stage": "build",
-   "score": 0.4248
-  },
-  "row-001-deb57c98|ballast_cg_override": {
-   "stage": "build",
-   "score": 0.424
-  },
-  "row-001-deb57c98|lighten_rocket_override": {
-   "stage": "build",
-   "score": 0.4125
-  },
   "row-001-deb57c98|floating_fins": {
    "stage": "build",
    "score": 0.4309
@@ -106,25 +118,89 @@
    "stage": "build",
    "score": 0.444
   },
+  "row-001-deb57c98|far_away_mass": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-001-deb57c98|far_away_recovery": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-001-deb57c98|closed_tail": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-001-deb57c98|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
   "row-001-deb57c98|zero_ejection_delay": {
    "stage": "flight",
    "score": 0.5525
   },
   "row-001-deb57c98|chute_far_too_small": {
    "stage": "flight",
-   "score": 0.531
+   "score": 0.5492
   },
   "row-001-deb57c98|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
   },
+  "row-001-deb57c98|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5182
+  },
+  "row-001-deb57c98|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5373
+  },
   "row-001-deb57c98|weaker_motor": {
    "stage": "targets",
-   "score": 0.8712
+   "score": 0.7854
+  },
+  "row-001-deb57c98|chute_too_small_for_prompt": {
+   "stage": "targets",
+   "score": 0.8953
+  },
+  "row-001-deb57c98|landing_just_under_hard_limit": {
+   "stage": "targets",
+   "score": 0.8446
+  },
+  "row-001-deb57c98|swap_to_unnamed_motor": {
+   "stage": "targets",
+   "score": 0.794
   },
   "row-001-deb57c98|drag_override": {
    "stage": "targets",
    "score": 1.0
+  },
+  "row-001-deb57c98|override_over_limit": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|override_negative": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|ballast_overrides": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|ballast_cg_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|lighten_rocket_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|unstable_fake_cg_override": {
+   "stage": "flight",
+   "score": 0.5122
+  },
+  "row-001-deb57c98|light_stage_mass_override": {
+   "stage": "flight",
+   "score": 0.6733
   },
   "row-001-deb57c98|delayed_ignition": {
    "stage": "targets",
@@ -150,22 +226,6 @@
    "stage": "targets",
    "score": 1.0
   },
-  "row-007-5e9884b6|ballast_overrides": {
-   "stage": "build",
-   "score": 0.4142
-  },
-  "row-007-5e9884b6|ballast_cg_override": {
-   "stage": "build",
-   "score": 0.4306
-  },
-  "row-007-5e9884b6|lighten_rocket_override": {
-   "stage": "build",
-   "score": 0.4077
-  },
-  "row-007-5e9884b6|lighten_one_stage_override": {
-   "stage": "build",
-   "score": 0.4145
-  },
   "row-007-5e9884b6|floating_fins": {
    "stage": "build",
    "score": 0.4139
@@ -182,9 +242,41 @@
    "stage": "build",
    "score": 0.4424
   },
-  "row-007-5e9884b6|chute_far_too_small": {
-   "stage": "flight",
-   "score": 0.5871
+  "row-007-5e9884b6|far_away_thin_part": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|far_away_mass": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|far_away_recovery": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|closed_tail": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|booster_weight_in_upper_stage": {
+   "stage": "build",
+   "score": 0.4268
+  },
+  "row-007-5e9884b6|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4183
+  },
+  "row-007-5e9884b6|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-007-5e9884b6|booster_pod_beside_upper_stage": {
+   "stage": "build",
+   "score": 0.4264
   },
   "row-007-5e9884b6|fins_shrunk": {
    "stage": "flight",
@@ -192,13 +284,45 @@
   },
   "row-007-5e9884b6|booster_without_recovery": {
    "stage": "flight",
-   "score": 0.5919
+   "score": 0.5917
+  },
+  "row-007-5e9884b6|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5139
+  },
+  "row-007-5e9884b6|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5339
   },
   "row-007-5e9884b6|weaker_motor": {
    "stage": "targets",
-   "score": 0.8678
+   "score": 0.7819
   },
   "row-007-5e9884b6|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|override_over_limit": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|override_negative": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|ballast_overrides": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|ballast_cg_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|lighten_rocket_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|lighten_one_stage_override": {
    "stage": "targets",
    "score": 1.0
   },
@@ -226,18 +350,6 @@
    "stage": "targets",
    "score": 1.0
   },
-  "row-016-5851080b|ballast_overrides": {
-   "stage": "build",
-   "score": 0.412
-  },
-  "row-016-5851080b|ballast_cg_override": {
-   "stage": "build",
-   "score": 0.4268
-  },
-  "row-016-5851080b|lighten_rocket_override": {
-   "stage": "build",
-   "score": 0.4144
-  },
   "row-016-5851080b|floating_fins": {
    "stage": "build",
    "score": 0.4309
@@ -246,17 +358,81 @@
    "stage": "build",
    "score": 0.42
   },
-  "row-016-5851080b|chute_far_too_small": {
+  "row-016-5851080b|far_away_recovery": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-016-5851080b|lug_behind_tail": {
+   "stage": "build",
+   "score": 0.419
+  },
+  "row-016-5851080b|closed_tail": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-016-5851080b|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.4169
+  },
+  "row-016-5851080b|needle_rocket": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-016-5851080b|needle_rocket_with_tail_disk": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-016-5851080b|parachute_opens_at_ground": {
    "stage": "flight",
-   "score": 0.6129
+   "score": 0.5257
+  },
+  "row-016-5851080b|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5651
   },
   "row-016-5851080b|weaker_motor": {
    "stage": "targets",
-   "score": 0.8852
+   "score": 0.8086
+  },
+  "row-016-5851080b|chute_too_small_for_prompt": {
+   "stage": "targets",
+   "score": 0.9941
+  },
+  "row-016-5851080b|landing_just_under_hard_limit": {
+   "stage": "targets",
+   "score": 0.8202
+  },
+  "row-016-5851080b|swap_to_unnamed_motor": {
+   "stage": "targets",
+   "score": 0.8086
   },
   "row-016-5851080b|drag_override": {
    "stage": "targets",
    "score": 1.0
+  },
+  "row-016-5851080b|override_over_limit": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|override_negative": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|ballast_overrides": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|ballast_cg_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|lighten_rocket_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|light_stage_mass_override": {
+   "stage": "targets",
+   "score": 0.861
   },
   "row-016-5851080b|delayed_ignition": {
    "stage": "targets",
@@ -282,18 +458,6 @@
    "stage": "targets",
    "score": 1.0
   },
-  "row-028-da7ce3ba|ballast_overrides": {
-   "stage": "build",
-   "score": 0.4136
-  },
-  "row-028-da7ce3ba|ballast_cg_override": {
-   "stage": "build",
-   "score": 0.4216
-  },
-  "row-028-da7ce3ba|lighten_rocket_override": {
-   "stage": "build",
-   "score": 0.4105
-  },
   "row-028-da7ce3ba|floating_fins": {
    "stage": "build",
    "score": 0.4309
@@ -310,21 +474,93 @@
    "stage": "build",
    "score": 0.4424
   },
+  "row-028-da7ce3ba|far_away_thin_part": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|far_away_mass": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|far_away_recovery": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|lug_behind_tail": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|closed_tail": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4182
+  },
+  "row-028-da7ce3ba|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
   "row-028-da7ce3ba|chute_far_too_small": {
    "stage": "flight",
-   "score": 0.5391
+   "score": 0.5647
   },
   "row-028-da7ce3ba|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
   },
+  "row-028-da7ce3ba|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5191
+  },
+  "row-028-da7ce3ba|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5348
+  },
   "row-028-da7ce3ba|weaker_motor": {
    "stage": "flight",
-   "score": 0.6723
+   "score": 0.6746
+  },
+  "row-028-da7ce3ba|swap_to_unnamed_motor": {
+   "stage": "targets",
+   "score": 0.7775
   },
   "row-028-da7ce3ba|drag_override": {
    "stage": "targets",
    "score": 1.0
+  },
+  "row-028-da7ce3ba|override_over_limit": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|override_negative": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|ballast_overrides": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|ballast_cg_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|lighten_rocket_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|unstable_fake_cg_override": {
+   "stage": "flight",
+   "score": 0.5678
+  },
+  "row-028-da7ce3ba|light_stage_mass_override": {
+   "stage": "flight",
+   "score": 0.6202
   },
   "row-028-da7ce3ba|delayed_ignition": {
    "stage": "targets",
@@ -350,22 +586,6 @@
    "stage": "targets",
    "score": 1.0
   },
-  "row-040-25c4d3f7|ballast_overrides": {
-   "stage": "build",
-   "score": 0.4148
-  },
-  "row-040-25c4d3f7|ballast_cg_override": {
-   "stage": "build",
-   "score": 0.4274
-  },
-  "row-040-25c4d3f7|lighten_rocket_override": {
-   "stage": "build",
-   "score": 0.4133
-  },
-  "row-040-25c4d3f7|lighten_one_stage_override": {
-   "stage": "build",
-   "score": 0.4133
-  },
   "row-040-25c4d3f7|floating_fins": {
    "stage": "build",
    "score": 0.4309
@@ -382,23 +602,87 @@
    "stage": "build",
    "score": 0.4434
   },
+  "row-040-25c4d3f7|far_away_thin_part": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|far_away_mass": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|far_away_recovery": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|lug_behind_tail": {
+   "stage": "build",
+   "score": 0.4114
+  },
+  "row-040-25c4d3f7|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4191
+  },
+  "row-040-25c4d3f7|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
   "row-040-25c4d3f7|zero_ejection_delay": {
    "stage": "flight",
-   "score": 0.5536
+   "score": 0.5538
   },
   "row-040-25c4d3f7|chute_far_too_small": {
    "stage": "flight",
-   "score": 0.5379
+   "score": 0.5667
   },
   "row-040-25c4d3f7|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
   },
+  "row-040-25c4d3f7|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5265
+  },
+  "row-040-25c4d3f7|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5577
+  },
   "row-040-25c4d3f7|weaker_motor": {
    "stage": "targets",
-   "score": 0.8817
+   "score": 0.8015
+  },
+  "row-040-25c4d3f7|swap_to_unnamed_motor": {
+   "stage": "targets",
+   "score": 0.8061
   },
   "row-040-25c4d3f7|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|override_over_limit": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|override_negative": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|ballast_overrides": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|ballast_cg_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|lighten_rocket_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|lighten_one_stage_override": {
    "stage": "targets",
    "score": 1.0
   },
@@ -427,8 +711,8 @@
    "score": 0.4174
   },
   "model:row-013-7608fb06|repair_motor_spelling": {
-   "stage": "build",
-   "score": 0.4243
+   "stage": "limits",
+   "score": 0.34
   },
   "model:row-033-adcf6c6e|repair_motor_spelling": {
    "stage": "build",
@@ -440,7 +724,7 @@
   },
   "model:row-048-e02c5b85|repair_motor_spelling": {
    "stage": "targets",
-   "score": 0.991
+   "score": 0.9395
   }
  }
 }

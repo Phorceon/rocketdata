@@ -87,14 +87,21 @@ STABILITY_ZERO_STEP = 0.1
 MOTOR_FACTS_SHARE = 0.5
 MOTOR_SHADOW_SHARE = 0.5
 
-# Targets (stage 7).
+# Targets (stage 7). t is the product of one credit per stated target, so every
+# target counts the same way and missing two never beats missing one.
 # A landing slower than this earns less: a needlessly large parachute drifts far.
 LANDING_COMFORT_MIN_MS = 3.5       # full credit from here up to the limit ...
 LANDING_COMFORT_FRACTION = 0.6     # ... or from this share of the limit, whichever is lower
 TARGET_FALLOFF = 0.25   # how fast credit falls once a target is missed
 DEFAULT_ABOUT_TOL = 0.05
-APOGEE_WEIGHT = 3.0
-OTHER_TARGET_WEIGHT = 1.0
+# The two motor targets. A design that flies a different real motor has still
+# answered the rest of the prompt, so the miss halves the credit instead of
+# erasing what the other targets say (a credit of 0 would zero the product).
+# Every kept reference flies its named motors (the 148 of 474 prompt rows that
+# name motors all score 1.0; none names a class), so these never touch a reference.
+MOTORS_CREDIT_MIN = 0.5            # "motors": this + (1 - this) x share of the named motors flown
+MOTOR_CLASS_NEAR_CREDIT = 0.75     # "motor_class": largest flown motor one letter away
+MOTOR_CLASS_FAR_CREDIT = 0.5       # two or more letters away, or no flown motor with a known impulse
 
 
 def stage(key: str) -> Stage:

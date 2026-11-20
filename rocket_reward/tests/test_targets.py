@@ -62,8 +62,8 @@ def test_every_flight_field_and_kind_uses_closeness(table, field, kind, factor, 
     chk = check_targets(reply, req(apogee_m=Target(apogee, "about"), **{field: target}), {}, table)
     expected = ladder.closeness(measured, target.value, kind, tol)
     r = row_of(chk, field)
-    assert r["measured"] == measured and r["credit"] == pytest.approx(expected) and r["weight"] == 1.0
-    assert chk.credit == pytest.approx((3 * 1.0 + expected) / 4)
+    assert r["measured"] == measured and r["credit"] == pytest.approx(expected) and "weight" not in r
+    assert chk.credit == pytest.approx(1.0 * expected)        # the apogee is met exactly
 
 
 @pytest.mark.parametrize("kind", ["about", "max", "min"])
@@ -100,16 +100,15 @@ def test_mass_is_the_liftoff_mass(table, kind):
     assert r["credit"] == pytest.approx(ladder.closeness(mass, 10.0, kind, 0.1))
 
 
-def test_weights(table):
+def test_t_is_the_product_of_the_credits(table):
     reply = load_reply()
     f = nominal(reply)
     chk = check_targets(reply, req(apogee_m=Target(f["apogee_m"] * 2, "about"),
                                    flight_time_s=Target(f["flight_time_s"], "about"),
                                    mass_kg=Target(reply["rocket"]["mass_kg"] * 3, "max")), {}, table)
     a = ladder.closeness(f["apogee_m"], f["apogee_m"] * 2, "about")
-    assert row_of(chk, "apogee_m")["weight"] == ladder.APOGEE_WEIGHT
-    assert chk.credit == pytest.approx((ladder.APOGEE_WEIGHT * a + 2 * ladder.OTHER_TARGET_WEIGHT)
-                                       / (ladder.APOGEE_WEIGHT + 2 * ladder.OTHER_TARGET_WEIGHT))
+    assert all("weight" not in r for r in chk.info["targets"])
+    assert chk.credit == pytest.approx(a * 1.0 * 1.0)
     assert chk.info["t"] == chk.credit
     assert len(chk.reasons) == 1 and chk.reasons[0].startswith("apogee 1,318 m, asked for about 2,635 m (5% allowed)")
 
@@ -198,11 +197,11 @@ def test_landing_reasons_on_both_sides(table):
     nominal(reply)["branches"][0]["landing_vertical_ms"] = 1.5
     slow = check_targets(reply, req(apogee_m=apogee, landing_ms=Target(5.0, "max")), {}, table)
     assert slow.reasons == ["landing speed 1.50 m/s, 1.50 m/s slower than needed (full credit from 3.00 m/s "
-                            "up to the limit, at most 5.00 m/s), so the parachute is larger than it needs "
-                            "to be: credit 0.50"]
+                            "up to the limit, at most 5.00 m/s (15% allowed)), so the parachute is larger than "
+                            "it needs to be: credit 0.50"]
     nominal(reply)["branches"][0]["landing_vertical_ms"] = 7.0
     fast = check_targets(reply, req(apogee_m=apogee, landing_ms=Target(5.0, "max")), {}, table)
-    assert fast.reasons[0].startswith("landing speed 7.00 m/s, asked for at most 5.00 m/s: credit 0.")
+    assert fast.reasons[0].startswith("landing speed 7.00 m/s, asked for at most 5.00 m/s (15% allowed): credit 0.")
 
 
 # ------------------------------------------------------------------ motors
@@ -214,8 +213,9 @@ def test_motor_share_and_normalising(table):
                          (("K550",), 1.0)):    # K550 is the designation the file asked for
         chk = check_targets(reply, req(apogee_m=Target(nominal(reply)["apogee_m"], "about"), motors=named),
                             {}, table)
-        assert row_of(chk, "motors")["credit"] == pytest.approx(share), named
-        assert chk.credit == pytest.approx((3 + share) / 4)
+        credit = ladder.MOTORS_CREDIT_MIN + (1 - ladder.MOTORS_CREDIT_MIN) * share
+        assert row_of(chk, "motors")["credit"] == pytest.approx(credit), named
+        assert chk.credit == pytest.approx(credit)
         if share < 1:
             assert "missing M2000R" in chk.reasons[0] and "I211W" in chk.reasons[0]
 
@@ -231,13 +231,14 @@ def test_motors_fall_back_to_the_design_when_the_reply_lists_none(table, gold_ro
     chk = check_targets(reply, req(motors=named), root, table)
     assert row_of(chk, "motors")["credit"] == 1.0
     chk = check_targets(reply, req(motors=named), {}, table)
-    assert row_of(chk, "motors")["credit"] == 0.0
+    assert row_of(chk, "motors")["credit"] == ladder.MOTORS_CREDIT_MIN
     assert "flown: no motor" in chk.reasons[-1]
 
 
 def test_motor_class_credit(table):
     reply = load_reply()                     # largest motor: K550W, 1,625 Ns, class K
-    for letter, credit in (("K", 1.0), ("J", 0.5), ("L", 0.5), ("I", 0.0), ("M", 0.0), ("A", 0.0)):
+    near, far = ladder.MOTOR_CLASS_NEAR_CREDIT, ladder.MOTOR_CLASS_FAR_CREDIT
+    for letter, credit in (("K", 1.0), ("J", near), ("L", near), ("I", far), ("M", far), ("A", far)):
         chk = check_targets(reply, req(apogee_m=Target(nominal(reply)["apogee_m"], "about"),
                                        motor_class=letter), {}, table)
         assert row_of(chk, "motor_class")["credit"] == credit, letter
@@ -249,17 +250,18 @@ def test_motor_class_sold_under_a_letter_counts(table):
     reply = load_reply("two_stage")
     m = next(c["motor"] for c in reply["components"] if c.get("motor") and c["motor"]["designation"] == "I115W")
     m["designation"], m["total_impulse_ns"] = "H128W", 150.0    # measures as a G, sold as an H
-    for letter, credit in (("H", 1.0), ("G", 1.0), ("I", 0.5), ("F", 0.5), ("J", 0.0)):
+    near, far = ladder.MOTOR_CLASS_NEAR_CREDIT, ladder.MOTOR_CLASS_FAR_CREDIT
+    for letter, credit in (("H", 1.0), ("G", 1.0), ("I", near), ("F", near), ("J", far)):
         chk = check_targets(reply, req(motor_class=letter), {}, table)
         assert row_of(chk, "motor_class")["credit"] == credit, letter
 
 
-def test_motor_class_without_motors_earns_nothing(table):
+def test_motor_class_without_motors_earns_the_far_credit(table):
     reply = load_reply()
     for c in reply["components"]:
         c["motor"] = None
     chk = check_targets(reply, req(motor_class="K"), {}, table)
-    assert row_of(chk, "motor_class")["credit"] == 0.0
+    assert row_of(chk, "motor_class")["credit"] == ladder.MOTOR_CLASS_FAR_CREDIT
 
 
 # ------------------------------------------------------------------ closer is never worse
@@ -298,11 +300,10 @@ def test_closer_is_never_worse(table, field, target):
             assert t <= last + 1e-12, (field, value)
             last = t
         ends.append(last)
-    # an "about" target (and a landing limit) loses credit on both sides, "max" and "min" on one
+    # an "about" target (and a landing limit) loses credit on both sides, "max" and "min" on one;
+    # t is a product, so the stepped target takes t down with it (the apogee is met exactly)
     both = target.kind == "about" or field == "landing_ms"
-    # (apogee, met exactly, keeps 3/4 of t when another target is stepped)
-    floor = 0.0 if field == "apogee_m" else 0.75
-    assert (max(ends) if both else min(ends)) < floor + 0.1
+    assert (max(ends) if both else min(ends)) < 0.1
 
 
 def test_landing_credit_is_monotone_on_a_fine_grid():

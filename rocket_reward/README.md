@@ -110,7 +110,7 @@ many answers use one pool and `score_many`, which keeps the input order:
 from rocket_reward.scoring import score_many
 from rocket_reward.sim import SimPool
 
-with SimPool(4) as pool:                  # 4 helpers: about 0.15-0.2 s per answer
+with SimPool(4) as pool:                  # 4 helpers: about 0.15-0.3 s per answer once warm
     results = score_many(answers, requirements_list, simulator=pool)
 ```
 
@@ -132,7 +132,8 @@ answer, or a `.jsonl` of rows with `"id"` and `"requirements"` (like
 `prompts/rl_prompts_v1.jsonl`). The table shows each answer's stage, score and
 first reason, then the count per stage; `--json` prints every answer's stage,
 score, reasons, defects, flight numbers and shadow flight as JSON. Example
-with the files the tests use (about 15 s with Java; without Java it stops with
+with the files the tests use (about 25 s with Java, starting the helpers
+included; without Java it stops with
 a setup error once an answer reaches stage 5):
 
 ```
@@ -166,7 +167,9 @@ python -m rocket_reward score rocket_reward/tests/data/model_val.jsonl.gz rocket
 * `metrics`: the numbers of the 1x-wind flight when the design was flown.
 * `flags`: extra facts: `truncated`, `shadow` (for an unknown motor: the real
   motor it was flown with instead and how far that got), `clean_notes` (what the
-  cleaning changed), `stage_info` (the stopping stage's own numbers), `quarantined`.
+  cleaning changed), `overrides_removed` (how many override settings the
+  cleaning removed, when there were any), `stage_info` (the stopping stage's
+  own numbers), `quarantined`.
 
 ## When it stops with a setup error
 
@@ -188,10 +191,11 @@ From the repository root:
 python -m pytest rocket_reward/tests -q -p no:cacheprovider
 ```
 
-Without Java the tests marked `needs_java` are skipped (about 100), and
-everything else runs in about a minute. With `ROCKET_REWARD_JAVA_HOME` and
-`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) they all run, in
-about three minutes. Two tests of the prompt data also need
+Without Java the 97 tests marked `needs_java` are skipped, and the other
+2,277 run in a little over a minute. With `ROCKET_REWARD_JAVA_HOME` and
+`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) all 2,374 run, in
+about three minutes (times measured on 2026-11-19 on a PC shared with other
+jobs). Four tests of the prompt data and the reference designs also need
 `ROCKET_REWARD_PROMPT_META` set to the reference meta file
 (`sft_v5_meta_c94ffa5.jsonl`); they are skipped without it.
 
@@ -199,19 +203,26 @@ about three minutes. Two tests of the prompt data also need
 
 1. The number goes in `limits.py` (a physical limit, with a one-line note on
    where it comes from: which reference value it clears and by how much) or in
-   `ladder.py` (only if it shapes the score itself, such as a band or a weight).
+   `ladder.py` (only if it shapes the score itself, such as a band or a credit).
    No other file holds a tuning number.
 2. The check goes in the stage's own file: `limit_checks.py` (stage 4, the
    design tree), `fit.py` (stage 5, the positions OpenRocket reports), `flight.py`
    (stage 6) or `targets.py` (stage 7). Use the violation helpers already there
    (`over_limit` / `under_limit` in `ladder.py`), and write a reason that says
-   what is wrong, by how much, and what to change.
+   what is wrong, by how much, and what to change. If the rule needs a number
+   OpenRocket does not report yet, add the field in `java/RocketSim.java`,
+   raise its `HELPER_VERSION` and describe the field in `java/PROTOCOL.md`
+   (the pod rules added `axis_offset_m` this way, helper version 4).
 3. Copy a test next to a similar rule: in `tests/test_limits.py` (for example
    `test_launch_lug_and_rail_button_counts` and `test_more_lugs_never_score_better`),
    `tests/test_fit.py` (`test_tube_fins_past_the_back_of_their_part`) or
    `tests/test_flight.py`. Test just under the limit, a little over and far
-   over, and that a smaller violation never scores lower.
-4. If it blocks a cheat, add an operator to `tools/mutate.py` and re-make
+   over, and that a smaller violation never scores lower. A rule judges the
+   cleaned design, which never holds an override setting, so it needs no
+   exception for one.
+4. If it blocks a cheat, add an operator to `tools/mutate.py` that says what
+   the reward must do with it (stop at a given stage, score the same, or stay
+   in the targets stage and score lower) and re-make
    `tests/data/mutation_expected.json` (the command is in `tests/test_mutations.py`).
 5. Re-run the calibration and check that no sound reference moved:
    `python -X utf8 -m rocket_reward.tools.calibrate --meta sft_v5_meta_c94ffa5.jsonl --prompts parsed_prompts.jsonl --out calib.md --json calib.json`
@@ -219,7 +230,9 @@ about three minutes. Two tests of the prompt data also need
    prompt states; they are not in this package (ask the data owners), so give
    their full paths.
    If the model answers move, regenerate `tests/data/model_val_scored.json` on
-   purpose and say why in `tests/test_model_scores.py`. Update DESIGN.md.
+   purpose and say why in `tests/test_model_scores.py`. If a reference changes
+   stage, rebuild the RL prompts (below) and update REFERENCE_ROCKETS.md.
+   Update DESIGN.md.
 
 ## Rebuilding the data files
 
@@ -245,13 +258,113 @@ Every tool prints its arguments with `--help`.
 * The verifiers adapter follows the verifiers 0.4.1 source but has never been
   run against the real library.
 * One answer with many parts and a long descent (huge parachutes) can take
-  tens of seconds; such answers score no more than 0.40. Set trainer timeouts with that in mind.
-* 32 of the 197 reference designs (96 of the 594 rows) do not pass, and 4 more
-  carry a defect; [REFERENCE_ROCKETS.md](REFERENCE_ROCKETS.md) lists them for
-  the data owners. The RL prompt file leaves them out.
+  far longer than the usual fraction of a second. A run that takes longer
+  than the helper's wall-clock limit (30 s plus 10 s per flight, `sim.py`) is
+  tried once more on a fresh helper, and if it is still stuck it scores 0.40,
+  the floor of the build stage. Set trainer timeouts with that in mind.
+* 38 of the 197 reference designs (114 of the 594 rows) do not pass, and 1 more
+  (3 rows) passes with a defect; [REFERENCE_ROCKETS.md](REFERENCE_ROCKETS.md)
+  lists them for the data owners. The RL prompt file leaves them out.
 * The stage 6 limits were measured on the references with their own written
-  densities, while the reward flies the material table's densities (see the
-  V4-0171 note in REFERENCE_ROCKETS.md).
+  densities and their mass overrides, while the reward flies the material
+  table's densities and no overrides (see the V4-0171 note in
+  REFERENCE_ROCKETS.md).
+* Override settings (`overridemass`, `overridecg`, `overridecd` and their
+  `overridesubcomponents` switches) are removed, so a design is scored without
+  the overrides it writes. To add mass, add a mass component. Six reference
+  designs pass only with their overrides and now fail (REFERENCE_ROCKETS.md,
+  "Sound only with their overrides").
+* A mass component written as a point (length or radius 0) is not
+  density-checked, so heavy nose ballast is accepted as real mass. Moving
+  V4-0205's 12.69 kg point mass to the nose tip raises its stability from
+  2.18 to 5.12 calibres and still scores 0.835.
+* Inner tubes, tube couplers and centering rings may have zero wall thickness
+  and then weigh nothing. A minimum would fail sound references (33 inner
+  tubes and 15 couplers in the references have a 0 wall once their overrides
+  are removed).
+* A wrong named motor only halves the targets credit (`ladder.MOTORS_CREDIT_MIN`),
+  so flying another real motor can pay when the named one would miss an
+  `about` apogee target by more than about 1.35 times (`ladder.closeness`
+  gives 0.4987 there, under the swap's 0.5). With both `motors` and
+  `motor_class` stated and the class two or more letters away, the swap earns
+  0.25 and pays only past about 2.2 times (0.2503 there).
+* A landing faster than the prompt asks but under 9 m/s now stays in the
+  targets stage with a lower score, where it used to stop at flight: 1% over
+  a limit given with tolerance 0 scores 0.9885, twice the limit 0.7795, and a
+  rocket asked for at most 3 m/s (tolerance 0) that lands at 8.9 m/s 0.756.
+* Any rocket that flies safely in every wind still scores at least 0.70,
+  however far it misses the targets: on the 400 designs of the review's
+  attack search, the
+  57 that miss the apogee by more than 50% score 0.702-0.806.
+* A pod or side booster may stand up to 100 mm clear of the body beside it
+  (`limits.POD_GAP_MAX_M`; V4-0112's pods stand 50.8 mm off), and up to about
+  1.41 times that with only a defect. Nothing checks that a strut joins it to
+  the body.
+* A pod or side booster may reach past the ends of the main body of its stage
+  by up to a third of its own length (`limits.POD_OVERHANG_MAX_FRACTION`), and
+  with only a defect up to a share of about 0.47, so strap-on boosters that
+  end a little below the core pass: V4-0107's boosters (0.1715 m long) moved
+  0.08 m aft score 0.9837 with a defect.
+* The 50 m floor for an opening reads only the altitude a device is set to,
+  not where it really opens. A device timed by a delay (an ALTITUDE setting of
+  183-457 m plus a deploy delay, or APOGEE plus a delay) can really open 20-40 m
+  up while falling at 25-46 m/s and still pass, as long as it opens 3 s
+  before landing. V4-0086 (25.9 kg) with its main at ALTITUDE 213 m plus a
+  7.31 s delay opens at 24.9 m/s, 3.35 s before landing, about 30-40 m up, and
+  scores 1.0; it ties the honest version with the main set to 50 m (1.0) and
+  never beats it. 28 reference designs can do this (measured on the second
+  round's code; the third round changed no stage 6 rule). Closing it needs the
+  helper to report the height of every opening (a new field and a new helper
+  version), so that the floor can be applied to the real height of each
+  section's last opening.
+* A weight of the top stage placed far down in the booster is impossible (it
+  sits inside the booster's airframe but stays with the top stage at
+  separation) but is not caught,
+  because reaching back into the stage behind is judged only against the
+  whole airframe. It gains nothing: V4-0139 scores 0.9998 against 0.9991 for
+  the honest weight in the nose, and on four other designs it fails flight.
+* Pods beside a nose cone or transition were not tried in the attacks. By
+  reading the code only: `pod_inside_body` and `pod_detached` use the largest
+  radius the main body has along the pod's own length, and read a nose cone
+  or transition along a straight line between its two end radii, so beside a
+  curved nose the gap is judged a little generously.
+
+Holes found by the 2026-11-19 attacks on the fixed version and left open
+(DESIGN.md section 7 has the ones that were closed; the numbers below were
+measured before the second round's rules were added):
+
+* A nose cone or transition shoulder wider than the rocket is not checked.
+  It is a solid disk outside the airframe with no drag: V4-0049 (0.594,
+  flight) scores 1.0 with a solid nose shoulder 1.5 times the body radius, and
+  a transition shoulder does the same (V4-0057 0.971 to 1.0). Left because it
+  gains nothing over honest nose ballast of the same mass (V4-0049 with a
+  3-times shoulder 0.8825, with the same mass as a point weight in the nose
+  0.8835), and because a rule would fail three references whose 76 mm
+  shoulders sit on 25 mm noses (V4-0086, V4-0087, V4-0109).
+* Adding one massless part of no size can change the simulated flight on a
+  few designs: V4-0050's apogee goes from 5,832 to 5,547 m and its score from
+  0.9747 to 1.0 with one such mass component (five of them give 0.9746). Apogee
+  moved by more than 1% on 3 of 80 designs and on none of the next 40;
+  re-scoring the unchanged designs gave no difference. This is the
+  simulator's own behaviour: its result depends on the number of parts (it
+  may come from the random part ids OpenRocket gives on load, which the
+  helper seeds; not proven). A policy could gain about 0.025 by trying such
+  parts.
+* An unreadable wall value such as `"auto 0.00001"` is not judged by stage 4,
+  so a design that fails limits can fail build instead and score more:
+  V4-0062 goes from 0.3204 (limits) to 0.40 (build). Left because it only moves
+  a failing design up one failing band, far below 0.70.
+* The `motors` target gives full credit when the one named motor is flown
+  twice in a cluster. With the apogee target set to what the doubled rocket
+  reaches, it beats the single motor: V4-0006 (M2000R) 0.8318 against 0.797.
+  Left because twice the impulse really flies (real physics); whether naming
+  one motor means flying exactly one is a question for the prompts.
+* A fin fillet may be up to 50 mm in radius whatever the fin height
+  (`limits.FILLET_RADIUS_MAX_M`). A 50 mm fillet on every fin set lifted 11 of
+  30 designs (V4-0066 0.9153 to 1.0) by adding real tail mass, which a builder
+  could do; the one case where the fillet is taller than the fin (V4-0016,
+  30 mm fins) failed anyway (0.559), so no absurd fillet design was found
+  scoring 0.70 or more.
 
 ## Files
 

@@ -110,9 +110,9 @@
   "why": "passes stages 1-4"
  },
  "row-023-ddd51955": {
-  "stage": "passed",
-  "score": null,
-  "why": "passes stages 1-4"
+  "stage": "limits",
+  "score": 0.34,
+  "why": "bodytube #1's material, tubecoupler #1's material, launchlug #1's material and 1 more use material 'Paper, spiral kraft glassine, PK IIIa, bulk', which is not in the material table of bulk materials, so the reward cannot give it its real density (the design wrote 1121 kg/m3); use a known material name, for example 'Paper, spiral kraft glassine, 4\", bulk'"
  },
  "row-024-a959187e": {
   "stage": "passed",

@@ -10,16 +10,24 @@ never on our own copy of OpenRocket's placement rules:
   nose cones, body tubes and transitions)
 * fins sit on the part that holds them
 * inside parts fit inside the airframe (a frame with no room inside is judged
-  by its outer radius), and motor tubes and rings stay inside it
+  by its outer radius), and every inside part lies inside it along the axis
+  (a pod's parts inside the pod's shell), judged as a distance, and no
+  inside part of a lower stage sits far inside the stage above it
 * the motor fits its mount, does not hang far out of it, and fires out of the
-  back of its stage, not into the airframe
-* pods and side boosters are no wider than the main body and have a nose cone
-  or transition at the front
+  back of its stage or pod, not into the airframe
+* pods and side boosters are no wider than the main body, have a nose cone
+  or transition at the front, sit alongside the stage that holds them (not
+  ahead of it or behind it for more than a share of their own length), on the
+  outside of the body that holds them (not inside it, not far away from it),
+  are not put inside another pod, and one that holds a motor has at least two
+  copies
+* the rocket is not many times longer than it is wide
 * no two fin sets, and no two rings, take the same place
 * every motor the design gives is still there after loading
-* mass and balance overrides adjust the rocket and each stage, they do not
-  replace its physics; a natural twin (overrides removed) that OpenRocket
-  cannot build or fly gets credit 0, like the design itself
+
+The cleaned design holds no override settings (clean.py removes them), so the
+masses and balance points in the reply are the ones OpenRocket computes from
+the parts and materials.
 
 Every limit is in limits.py, section "fit (stage 5)", with the measurement it
 came from (flight statistics report, section 5). A violation smaller than
@@ -72,6 +80,7 @@ FIN_SET_TYPES = ("TrapezoidFinSet", "EllipticalFinSet", "FreeformFinSet", "TubeF
 RING_TYPES = ("CenteringRing", "Bulkhead", "EngineBlock")
 RIGID_INSIDE_TYPES = RING_TYPES + ("InnerTube", "TubeCoupler")
 SOFT_INSIDE_TYPES = ("Parachute", "Streamer", "ShockCord", "MassComponent")
+RAIL_GUIDE_TYPES = ("LaunchLug", "RailButton")
 
 _PLAIN = {
     "NoseCone": "nose cone", "BodyTube": "body tube", "Transition": "transition",
@@ -93,7 +102,7 @@ _ERROR_WORDS = {
 # value, so the reason adds where to look. Display only: none of this shapes a score.
 INVALID_VALUE_WARNING = "Invalid parameter encountered"
 INVALID_VALUE_HINT = (" (OpenRocket does not say which value; usually it is a word or NaN where it expects"
-                      " a number, such as overridemass 'auto': write a number there or leave the tag out)")
+                      " a number: write a number there or leave the tag out)")
 MAX_WARNINGS_SHOWN = 3
 
 
@@ -219,7 +228,7 @@ class _Findings:
         defect = size < FIT_DEFECT_BELOW
         if len(self.kept) < MAX_FINDINGS_KEPT:
             self.kept.append({"rule": rule, "size": round(size, 4), "defect": defect,
-                              "value": round(value, 6) if is_number(value) else value,
+                              "value": round(value, 6) if is_number(value) else None,
                               "limit": limit})
         if defect:
             self.defect_sizes.append(size)
@@ -367,17 +376,15 @@ def _check_inside_radius(parts: _Parts, out: _Findings) -> None:
               f"{limit - 1:.0%} wider: make it narrower or the airframe wider")
 
 
-def _shell_union(parts: _Parts) -> list[tuple[float, float]]:
-    """The stretches along the axis that the main airframe (shells not in pods) covers."""
-    spans = []
-    for c in parts.all:
-        if c.get("type") in SHELL_TYPES and not parts.in_pod(c):
-            x0, end = _num(c, "x0_m"), _end(c)
-            if x0 is not None and end is not None:
-                spans.append((min(x0, end), max(x0, end)))
-    spans.sort()
+def _pod_of(parts: _Parts, c: dict) -> Optional[dict]:
+    """The nearest enclosing pod or side booster of a part, or None for the main body."""
+    return next((a for a in parts.ancestors(c) if a.get("type") in POD_TYPES), None)
+
+
+def _merge(spans: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Stretches along the axis, sorted, with touching ones joined."""
     union: list[tuple[float, float]] = []
-    for lo, hi in spans:
+    for lo, hi in sorted(spans):
         if union and lo <= union[-1][1] + LENGTH_SLACK_M:
             union[-1] = (union[-1][0], max(union[-1][1], hi))
         else:
@@ -385,25 +392,132 @@ def _shell_union(parts: _Parts) -> list[tuple[float, float]]:
     return union
 
 
+def _shell_union(parts: _Parts, pod: Optional[dict] = None,
+                 stage: Optional[dict] = None) -> list[tuple[float, float]]:
+    """The stretches along the axis that an airframe covers: the main body's
+    shells (pod None), or the shells of one pod or side booster. With `stage`,
+    only the shells of that stage."""
+    spans = []
+    for c in parts.all:
+        if (c.get("type") in SHELL_TYPES and _pod_of(parts, c) is pod
+                and (stage is None or _stage_of(parts, c) is stage)):
+            x0, end = _num(c, "x0_m"), _end(c)
+            if x0 is not None and end is not None:
+                spans.append((min(x0, end), max(x0, end)))
+    return _merge(spans)
+
+
+def _outside_distance(x0: float, end: float, union: list[tuple[float, float]]) -> tuple[float, str]:
+    """How far a part from x0 to end lies outside the covered stretches, and where.
+
+    For each covered stretch, how much the part sticks out ahead of its front
+    plus how much it sticks out behind its back; the stretch that needs the
+    least counts. So a part fully inside measures 0, a ring 2 mm thick placed
+    63 m ahead of the nose measures 63 m (not its own 2 mm), and a part in a
+    gap between two stretches measures its distance to the nearer one."""
+    best, where = math.inf, ""
+    for lo, hi in union:
+        ahead, behind = max(0.0, lo - x0), max(0.0, end - hi)
+        d = ahead + behind
+        if d < best:
+            best = d
+            if lo == union[0][0] and ahead > 0 and behind == 0:
+                where = "ahead of the front of"
+            elif hi == union[-1][1] and behind > 0 and ahead == 0:
+                where = "behind the back of"
+            else:
+                where = "outside"
+    return max(0.0, best - LENGTH_SLACK_M), where
+
+
 def _check_outside_airframe(parts: _Parts, out: _Findings) -> None:
-    """Motor tubes, rings, bulkheads and engine blocks must stay inside the main airframe."""
-    union = _shell_union(parts)
+    """Every inside part must lie inside its airframe: motor tubes, rings,
+    bulkheads, engine blocks, tube couplers, mass components, shock cords,
+    parachutes and streamers; and the launch lugs and rail buttons on the
+    outside must sit along it, not beyond its ends.
+
+    The size of a violation is a distance along the axis (_outside_distance),
+    never the part's own length, so a thin part far away is caught. Parts in
+    a pod or side booster are judged against that pod's own shells (the main
+    body's when the pod has none). A ring, bulkhead, engine block or coupler
+    may also sit on the motor tube that holds it where that tube sticks out
+    behind the tail (motor retainers); the tube itself has its own limit.
+
+    An inside part may also not lie far ahead of the front of its own
+    stage's shells (rule part_ahead_of_stage): a weight, or a heavy bulkhead,
+    that belongs to a booster cannot sit inside the sustainer's nose (it
+    would steady the rocket on the way up and then drop away with the
+    booster). Motor tubes and tube couplers may reach
+    limits.STAGE_JOINT_REACH_MAX_M into the stage above (the joint between
+    stages); the other parts get the same limit as for lying outside the
+    airframe, and a ring, bulkhead or engine block counts from the front of
+    the motor tube or tube coupler that holds it when that reaches further
+    forward than the stage's shells. Reaching back into the stage behind is judged against the whole
+    airframe only (motor tubes, couplers and parachutes do that in the
+    references). Launch lugs and rail buttons are not judged here."""
+    unions: dict[tuple[str, int], list[tuple[float, float]]] = {}
+    main = _shell_union(parts)
     for c in parts.all:
         t = c.get("type")
         if t == "InnerTube":
-            rule, limit = "motor_tube_outside_airframe", L.MOTOR_TUBE_BEHIND_TAIL_MAX_M
-        elif t in RING_TYPES:
-            rule, limit = "ring_outside_airframe", L.RING_OUTSIDE_AIRFRAME_MAX_M
+            rule, limit, kind = "motor_tube_outside_airframe", L.MOTOR_TUBE_BEHIND_TAIL_MAX_M, "a motor tube"
+        elif t in RING_TYPES or t == "TubeCoupler":
+            rule, limit, kind = "ring_outside_airframe", L.RING_OUTSIDE_AIRFRAME_MAX_M, "a rigid inside part"
+        elif t in SOFT_INSIDE_TYPES:
+            rule, limit, kind = "part_outside_airframe", L.PACKED_OUTSIDE_AIRFRAME_MAX_M, "a packed inside part"
+        elif t in RAIL_GUIDE_TYPES:
+            rule, limit, kind = "part_outside_airframe", L.PACKED_OUTSIDE_AIRFRAME_MAX_M, "a launch lug or rail button"
         else:
             continue
-        x0, length = _num(c, "x0_m"), _num(c, "length_m")
-        if x0 is None or length is None or length <= 0 or parts.in_pod(c):
+        x0 = _num(c, "x0_m")
+        if x0 is None:
             continue
-        covered = sum(max(0.0, min(hi, x0 + length) - max(lo, x0)) for lo, hi in union)
-        outside = max(0.0, length - covered)
+        length = max(0.0, _num(c, "length_m") or 0.0)
+        pod = _pod_of(parts, c)
+        frame = "the airframe"
+        own: Optional[list[tuple[float, float]]] = None   # the shells of the part's own stage (main body only)
+        stage = None
+        if pod is None:
+            union = main
+            stage = _stage_of(parts, c) if t not in RAIL_GUIDE_TYPES else None
+            if stage is not None:
+                key = ("stage", id(stage))
+                if key not in unions:
+                    unions[key] = _shell_union(parts, None, stage)
+                own = unions[key] or None
+        else:
+            key = ("pod", id(pod))
+            if key not in unions:
+                unions[key] = _shell_union(parts, pod) or main
+            union = unions[key]
+            if union is not main:
+                frame = "its pod's shell"
+        if not union:
+            continue
+        front = own[0][0] if own else None
+        if kind == "a rigid inside part":
+            tubes = [(_num(a, "x0_m"), _end(a)) for a in parts.ancestors(c) if a.get("type") == "InnerTube"]
+            tubes = [(lo, hi) for lo, hi in tubes if lo is not None and hi is not None]
+            union = _merge(union + tubes)
+            # A ring or bulkhead may sit on the motor tube or in the tube coupler that holds it,
+            # as far forward as that tube reaches (the tube has its own limit).
+            held = [_num(a, "x0_m") for a in parts.ancestors(c) if a.get("type") in ("InnerTube", "TubeCoupler")]
+            held = [x for x in held if x is not None]
+            if front is not None and held:
+                front = min(front, min(held))
+        outside, where = _outside_distance(x0, x0 + length, union)
         _over(out, rule, outside, limit,
-              f"{_part(c)} sticks {_fmt(outside, 'm')} out of the airframe (it is {_fmt(length, 'm')} long); "
-              f"the limit is {_fmt(limit, 'm')}: move it inside a body tube or shorten it")
+              f"{_part(c)} lies {_fmt(outside, 'm')} {where} {frame} (it is {_fmt(length, 'm')} long); "
+              f"{kind} may lie at most {_fmt(limit, 'm')} outside it: move it "
+              + ("onto a body tube" if t in RAIL_GUIDE_TYPES else "inside a body tube"))
+        if front is not None and stage is not None and front > main[0][0] + LENGTH_SLACK_M:
+            # Not the top stage: how far the part reaches ahead into the stage above.
+            ahead = max(0.0, front - x0 - LENGTH_SLACK_M)
+            reach = L.STAGE_JOINT_REACH_MAX_M if t in ("InnerTube", "TubeCoupler") else limit
+            _over(out, "part_ahead_of_stage", ahead, reach,
+                  f"{_part(c)} belongs to {_part(stage)} but lies {_fmt(ahead, 'm')} ahead of the front of that "
+                  f"stage's airframe, inside the stage above it; {kind} may reach at most {_fmt(reach, 'm')} "
+                  f"ahead of its own stage: a part cannot sit in the stage above and drop away with the one below")
 
 
 def _check_motor_fit(parts: _Parts, out: _Findings) -> int:
@@ -446,22 +560,45 @@ def _stage_of(parts: _Parts, c: dict) -> Optional[dict]:
 def _check_motor_position(parts: _Parts, out: _Findings) -> None:
     """A motor must fire out of the back of its stage, not into the airframe:
     its back end may sit at most limits.MOTOR_AHEAD_OF_TAIL_MAX_M ahead of the
-    back end of the main-airframe shells of its stage. Motors in pods and side
-    boosters are left out (they have their own tails)."""
+    back end of the main-airframe shells of its stage. A motor in a pod or
+    side booster is judged the same way against that pod's own shells (the
+    pod itself must sit outside the body: _check_pods).
+
+    The tail must also be open: the aft radius of the stage's (or pod's) last
+    shell is at least limits.TAIL_RADIUS_PER_MOTOR_MIN times the motor's
+    radius, so a tail closed to a point cannot hide the motor behind a sharp
+    boat tail."""
     tails: dict[int, Optional[float]] = {}
+    tail_radius: dict[int, Optional[tuple[float, dict]]] = {}
     for c in parts.all:
         mo = c.get("motor")
-        if not isinstance(mo, dict) or parts.in_pod(c):
+        if not isinstance(mo, dict):
             continue
-        stage = _stage_of(parts, c)
+        pod = _pod_of(parts, c)
+        stage = pod if pod is not None else _stage_of(parts, c)
         if stage is None:
             continue
         if id(stage) not in tails:
-            ends = [_end(s) for s in parts.all if s.get("type") in SHELL_TYPES and not parts.in_pod(s)
-                    and s.get("active", True) is not False and _stage_of(parts, s) is stage]
-            ends = [e for e in ends if e is not None]
-            tails[id(stage)] = max(ends) if ends else None
+            shells = [s for s in parts.all if s.get("type") in SHELL_TYPES and _pod_of(parts, s) is pod
+                      and s.get("active", True) is not False and _end(s) is not None
+                      and (pod is not None or _stage_of(parts, s) is stage)]
+            last = max(shells, key=_end, default=None)
+            tails[id(stage)] = _end(last) if last is not None else None
+            ra = _num(last, "outer_radius_aft_m") if last is not None else None
+            tail_radius[id(stage)] = (ra, last) if ra is not None else None
         tail = tails[id(stage)]
+        dia = _num(mo, "diameter_m")
+        tr = tail_radius[id(stage)]
+        if tr is not None and dia is not None and dia > 0:
+            ratio = max(0.0, tr[0]) / (dia / 2)
+            out.measure("tail_radius_per_motor", ratio, high_is_bad=False)
+            if ratio < L.TAIL_RADIUS_PER_MOTOR_MIN:
+                what = f"motor '{_short_text(mo.get('designation'))}'" if mo.get("designation") else "the motor"
+                out.add("tail_closed", under_limit(ratio, L.TAIL_RADIUS_PER_MOTOR_MIN),
+                        f"the back of {_part(tr[1])} is {_fmt(tr[0], 'mm')} in radius, {ratio:.2f} times the "
+                        f"{_fmt(dia / 2, 'mm')} radius of {what} that fires out of it; the limit is "
+                        f"{L.TAIL_RADIUS_PER_MOTOR_MIN:g} times: open the tail so the motor can fire out of it",
+                        ratio, L.TAIL_RADIUS_PER_MOTOR_MIN)
         x0, length = _num(mo, "x0_m"), _num(mo, "length_m")
         if tail is None or x0 is None or length is None or length <= 0:
             continue
@@ -473,26 +610,112 @@ def _check_motor_position(parts: _Parts, out: _Findings) -> None:
               f"{_fmt(L.MOTOR_AHEAD_OF_TAIL_MAX_M, 'm')}: move the motor mount back to the tail")
 
 
+def _radius_beside(parts: _Parts, lo: float, hi: float) -> Optional[float]:
+    """The largest outer radius the main body has anywhere between lo and hi
+    along the axis, or None when no main-body shell lies there. A nose cone
+    or transition counts with a straight line between its two end radii,
+    which is what its widest point inside the stretch needs."""
+    best: Optional[float] = None
+    for c in parts.all:
+        if c.get("type") not in SHELL_TYPES or parts.in_pod(c) or c.get("active", True) is False:
+            continue
+        x0, end = _num(c, "x0_m"), _end(c)
+        fore, aft = _num(c, "outer_radius_fore_m"), _num(c, "outer_radius_aft_m")
+        if x0 is None or end is None or fore is None or aft is None:
+            continue
+        a, b = max(lo, x0), min(hi, end)
+        if b < a:
+            continue
+        if end > x0:
+            ra = fore + (aft - fore) * (a - x0) / (end - x0)
+            rb = fore + (aft - fore) * (b - x0) / (end - x0)
+        else:
+            ra = rb = max(fore, aft)
+        r = max(ra, rb)
+        if best is None or r > best:
+            best = r
+    return best
+
+
 def _check_pods(parts: _Parts, out: _Findings) -> None:
-    """Pods and side boosters: no shell wider than the main body, and each
-    pod's front is a nose cone or transition, not an open tube."""
+    """Pods and side boosters: no shell wider than the main body, each pod's
+    front is a nose cone or transition (not an open tube), and the pod is
+    where a pod can be held:
+
+    * alongside the main-body shells of the stage that holds it: at most
+      limits.POD_OVERHANG_MAX_FRACTION of the pod's own length may reach
+      ahead of that stage's front or behind its back (a weighted pod far
+      ahead of the nose is nose weight on a stick, and a booster's pod beside
+      the sustainer would drop away from the part it touches); a strap-on
+      booster that ends a little below the core is fine;
+    * on the main body, not inside another pod (the positions OpenRocket
+      reports for a pod in a pod cannot be judged against the main body);
+    * on the outside of the body it sits beside: not sunk into it (a motor
+      in a pod inside the body fires into the airframe) and not far away
+      from it (nothing would hold it there). The body's radius is the largest
+      the main body has along the pod's own length, so a pod held by a narrow
+      tube cannot hide inside a wider part of the same rocket;
+    * with at least two copies when it holds a motor, so the thrust does not
+      push on one side only (the simulator flies one-sided thrust straight)."""
     main = [r for r in (_outer_radius(c) for c in parts.all
                         if c.get("type") in SHELL_TYPES and not parts.in_pod(c)) if r is not None]
     body = max(main) if main else None
+    main_span = _shell_union(parts)
     for pod in parts.all:
         if pod.get("type") not in POD_TYPES:
             continue
         shells = [c for c in parts.all if c.get("type") in SHELL_TYPES and c.get("active", True) is not False
                   and next((a for a in parts.ancestors(c) if a.get("type") in POD_TYPES), None) is pod]
-        if body is not None and body > 0:
-            widest = max(shells, key=lambda c: _outer_radius(c) or 0.0, default=None)
-            r = _outer_radius(widest) if widest is not None else None
-            if r is not None:
-                ratio = r / body
-                _over(out, "pod_width", ratio, L.POD_RADIUS_PER_BODY_MAX,
-                      f"{_part(widest)} in {_part(pod)} is {_fmt(r, 'mm')} in radius, {ratio:.2f} times the "
-                      f"main body's {_fmt(body, 'mm')}; the limit is {L.POD_RADIUS_PER_BODY_MAX:g} times: "
-                      f"make the pod narrower than the body")
+        widest = max(shells, key=lambda c: _outer_radius(c) or 0.0, default=None)
+        r = _outer_radius(widest) if widest is not None else None
+        if body is not None and body > 0 and r is not None:
+            ratio = r / body
+            _over(out, "pod_width", ratio, L.POD_RADIUS_PER_BODY_MAX,
+                  f"{_part(widest)} in {_part(pod)} is {_fmt(r, 'mm')} in radius, {ratio:.2f} times the "
+                  f"main body's {_fmt(body, 'mm')}; the limit is {L.POD_RADIUS_PER_BODY_MAX:g} times: "
+                  f"make the pod narrower than the body")
+        if any(a.get("type") in POD_TYPES for a in parts.ancestors(pod)):
+            out.add("pod_in_pod", YES_NO_VIOLATION,
+                    f"{_part(pod)} is inside another pod or booster set; put every pod and side booster "
+                    f"on the main body", None, None)
+        span = _shell_union(parts, pod)
+        stage = _stage_of(parts, pod)
+        home = (_shell_union(parts, None, stage) if stage is not None else []) or main_span
+        if span and home:
+            length = span[-1][1] - span[0][0]
+            outside, where = _outside_distance(span[0][0], span[-1][1], [(home[0][0], home[-1][1])])
+            if length > 0:
+                share = outside / length
+                whose = "the main body" if home is main_span or home == main_span else "the stage that holds it"
+                _over(out, "pod_outside_airframe", share, L.POD_OVERHANG_MAX_FRACTION,
+                      f"{_part(pod)} is {_fmt(length, 'm')} long and reaches {_fmt(outside, 'm')} {where} "
+                      f"{whose}, {share:.0%} of its own length; at most "
+                      f"{L.POD_OVERHANG_MAX_FRACTION:.0%} of a pod or side booster may reach past the ends of "
+                      f"the stage that holds it: move it alongside the body")
+        axis = _num(pod, "axis_offset_m")
+        holder = parts.parent(pod)
+        around = _radius_beside(parts, span[0][0], span[-1][1]) if span else None
+        if around is None:   # the pod is beside no part of the main body: the tube that holds it
+            around = _outer_radius(holder) if holder is not None and holder.get("type") in SHELL_TYPES else body
+        if axis is not None and r is not None and r > 0 and around is not None and around > 0:
+            clear = axis - around   # how far the pod's axis lies outside the surface of the body beside it
+            sunk = (r - clear) / r
+            _over(out, "pod_inside_body", sunk, L.POD_SUNK_MAX_FRACTION,
+                  f"the axis of {_part(pod)} is {_fmt(axis, 'mm')} from the centre line, and the body beside "
+                  f"it is {_fmt(around, 'mm')} in radius, so {min(sunk, 1.0):.0%} of the pod's "
+                  f"{_fmt(r, 'mm')} radius lies inside that body"
+                  + (" (its axis is inside the body)" if clear < 0 else "")
+                  + f"; at most {L.POD_SUNK_MAX_FRACTION:.0%} may: put the pod on the outside of the body")
+            _over(out, "pod_detached", clear - r, L.POD_GAP_MAX_M,
+                  f"{_part(pod)} sits {_fmt(clear - r, 'mm')} clear of the body beside it; the gap may "
+                  f"be at most {_fmt(L.POD_GAP_MAX_M, 'mm')}: put the pod against the body")
+        copies = _num(pod, "instances")
+        if copies is not None and copies < 2 and any(isinstance(c.get("motor"), dict) and _pod_of(parts, c) is pod
+                                                     for c in parts.all):
+            out.add("pod_motor_one_sided", YES_NO_VIOLATION,
+                    f"{_part(pod)} holds a motor but has only one copy, so its thrust pushes on one side of "
+                    f"the rocket; give a pod or booster that holds a motor at least two copies around the body",
+                    None, None)
         real = [c for c in shells if (_num(c, "length_m") or 0.0) > 0 and (_outer_radius(c) or 0.0) > 0
                 and _num(c, "x0_m") is not None]
         if real:
@@ -502,6 +725,46 @@ def _check_pods(parts: _Parts, out: _Findings) -> None:
                         f"{_part(pod)} starts with an open {_part(front)} ({_fmt(_outer_radius(front) or 0.0, 'mm')} "
                         f"in radius); put a nose cone or transition at the front of every pod or booster",
                         None, None)
+
+
+def _body_width(parts: _Parts) -> Optional[float]:
+    """The rocket's width for the slenderness rule: the largest diameter that
+    at least limits.SLENDERNESS_WIDTH_SHARE of the main body's length has
+    (each nose cone, body tube and transition counts with its larger end).
+    A thin flared disk or a short wide ring at the tail does not make a long
+    thin rocket any stiffer, so it does not count; pods do not count either."""
+    shells = []
+    for c in parts.all:
+        if c.get("type") in SHELL_TYPES and not parts.in_pod(c) and c.get("active", True) is not False:
+            length, r = _num(c, "length_m"), _outer_radius(c)
+            if length is not None and length > 0 and r is not None and r > 0:
+                shells.append((r, length))
+    need = L.SLENDERNESS_WIDTH_SHARE * sum(length for _, length in shells)
+    covered = 0.0
+    for r, length in sorted(shells, reverse=True):
+        covered += length
+        if covered >= need:
+            return 2 * r
+    return None
+
+
+def _check_slenderness(reply: dict, parts: _Parts, out: _Findings) -> None:
+    """The rocket is not many times longer than it is wide (the simulator
+    does not model a long thin tube bending)."""
+    rocket = reply.get("rocket")
+    length, width = _num(rocket, "length_m"), _body_width(parts)
+    if width is None:
+        width = _num(rocket, "max_diameter_m")
+    if length is None or width is None or width <= 0 or length <= 0:
+        return
+    ratio = length / width
+    if not math.isfinite(ratio) or not math.isfinite(length):
+        out.add("slenderness", MAX_VIOLATION, "the rocket's length is not a usable number, so its shape "
+                                              "cannot be judged", None, L.SLENDERNESS_MAX)
+        return
+    _over(out, "slenderness", ratio, L.SLENDERNESS_MAX,
+          f"the rocket is {_fmt(length, 'm')} long and its body is {_fmt(width, 'mm')} across, {ratio:.0f} "
+          f"times as long as it is wide; the limit is {L.SLENDERNESS_MAX:g} times: make it shorter or wider")
 
 
 def _fin_angles(c: dict) -> list[float]:
@@ -596,100 +859,6 @@ def _check_motor_present(root: Node, loaded: int, out: _Findings) -> int:
     return expected
 
 
-def _stage_structure(reply: Any) -> dict[Any, tuple[float, dict]]:
-    """Mass of each stage's own parts, motors not included, by stage number:
-    the sum of every active part's mass_kg whose mass no part around it
-    overrides (an override that stands for the parts inside a part is that
-    part's mass_kg). A stage where some such part has no mass is left out.
-    On the reference replies the sum over all stages equals OpenRocket's
-    structure mass within 0.1% for 712 of 732 designs (pods: within 7%)."""
-    comps = reply.get("components") if isinstance(reply, dict) else None
-    parts = _Parts(comps if isinstance(comps, list) else [])
-    sums: dict[Any, float] = {}
-    named: dict[Any, dict] = {}
-    broken: set = set()
-    for c in parts.all:
-        s = c.get("stage")
-        if isinstance(s, bool) or not isinstance(s, int):
-            continue
-        if c.get("type") in STAGE_TYPES + POD_TYPES and s not in named:
-            named[s] = c
-        if c.get("active", True) is False or c.get("mass_overridden_by") is not None:
-            continue
-        m = _num(c, "mass_kg")
-        if m is None:
-            broken.add(s)
-            continue
-        sums[s] = sums.get(s, 0.0) + m
-    return {s: (v, named.get(s, {})) for s, v in sums.items() if s not in broken}
-
-
-def _check_stage_overrides(reply: dict, natural: dict, out: _Findings, info: dict[str, Any]) -> None:
-    """Each stage's structure (its parts, no motors) with overrides must weigh
-    at least limits.OVERRIDE_MASS_RATIO_MIN times what it weighs without them,
-    so a heavy booster and its motors cannot hide a weightless sustainer."""
-    with_o, without = _stage_structure(reply), _stage_structure(natural)
-    lowest = None
-    for s, (m, holder) in sorted(with_o.items(), key=lambda kv: kv[0]):
-        m0 = without.get(s, (None, {}))[0]
-        if m0 is None or m0 <= 0:
-            continue
-        ratio = m / m0
-        lowest = ratio if lowest is None else min(lowest, ratio)
-        out.measure("override_stage_ratio_low", ratio, high_is_bad=False)
-        if ratio < L.OVERRIDE_MASS_RATIO_MIN:
-            name = _part(holder) if holder else f"stage {s}"
-            out.add("override_stage_mass_ratio", under_limit(ratio, L.OVERRIDE_MASS_RATIO_MIN),
-                    f"the mass overrides make the parts of {name} (motors not counted) weigh {_fmt(m, 'kg')} "
-                    f"instead of {_fmt(m0, 'kg')} without them, {ratio:.2f} times; each stage must keep at "
-                    f"least {L.OVERRIDE_MASS_RATIO_MIN:g} times its own mass: let the parts and materials give "
-                    f"the mass and override only small corrections", ratio, L.OVERRIDE_MASS_RATIO_MIN)
-    if lowest is not None:
-        info["override_stage_ratio_min"] = round(lowest, 6)
-
-
-def _check_overrides(reply: dict, natural: dict, out: _Findings) -> dict[str, Any]:
-    """Mass and balance overrides may change the rocket's liftoff mass and balance point only so much."""
-    info: dict[str, Any] = {}
-    rocket = reply.get("rocket")
-    nat = natural.get("rocket") if isinstance(natural, dict) and natural.get("ok") is True else None
-    m, m0 = _num(rocket, "mass_kg"), _num(nat, "mass_kg")
-    cg, cg0 = _num(rocket, "cg_m"), _num(nat, "cg_m")
-    ref = _num(rocket, "reference_length_m") or _num(rocket, "max_diameter_m")
-    if m is None or m0 is None or m0 <= 0 or cg is None or cg0 is None or ref is None or ref <= 0:
-        out.add("override_effect", MAX_VIOLATION,
-                "OpenRocket gave no usable mass, balance point or reference length for the rocket with or "
-                "without its mass and balance overrides, so what they do cannot be checked; write the real parts "
-                "and materials, and override only small corrections")
-        return info
-    ratio = m / m0
-    shift = (cg0 - cg) / ref   # positive: the overrides move the balance point towards the nose
-    info["override_mass_ratio"] = round(ratio, 6)
-    info["override_cg_shift_cal"] = round(shift, 6)
-    out.measure("override_mass_ratio_high", ratio)
-    out.measure("override_mass_ratio_low", ratio, high_is_bad=False)
-    out.measure("override_cg_shift", abs(shift))
-    what = (f"the mass overrides make the rocket {ratio:.2f} times as heavy at liftoff "
-            f"({_fmt(m, 'kg')} instead of {_fmt(m0, 'kg')} without them); the limit is "
-            f"{L.OVERRIDE_MASS_RATIO_MIN:g} to {L.OVERRIDE_MASS_RATIO_MAX:g} times: let the parts and materials "
-            f"give the mass and override only small corrections")
-    if ratio > L.OVERRIDE_MASS_RATIO_MAX:
-        out.add("override_mass_ratio", over_limit(ratio, L.OVERRIDE_MASS_RATIO_MAX), what, ratio,
-                L.OVERRIDE_MASS_RATIO_MAX)
-    elif ratio < L.OVERRIDE_MASS_RATIO_MIN:
-        out.add("override_mass_ratio", under_limit(ratio, L.OVERRIDE_MASS_RATIO_MIN), what, ratio,
-                L.OVERRIDE_MASS_RATIO_MIN)
-    _check_stage_overrides(reply, natural, out, info)
-    if abs(shift) > L.OVERRIDE_CG_SHIFT_MAX_CAL:
-        way = "towards the nose" if shift > 0 else "towards the tail"
-        out.add("override_cg_shift", over_limit(abs(shift), L.OVERRIDE_CG_SHIFT_MAX_CAL),
-                f"the mass and balance overrides move the balance point {abs(shift):.2f} calibres "
-                f"({_fmt(abs(cg0 - cg), 'm')}) {way}; the limit is {L.OVERRIDE_CG_SHIFT_MAX_CAL:g} calibres "
-                f"either way: get stability from the fins and real nose weight, not from an override",
-                abs(shift), L.OVERRIDE_CG_SHIFT_MAX_CAL)
-    return info
-
-
 # ------------------------------------------------------------------ stage 5
 
 def _broken(reason: str, info: dict[str, Any]) -> StageCheck:
@@ -726,16 +895,14 @@ def _not_built(reply: Any) -> Optional[str]:
     return None
 
 
-def check_build(reply: dict, natural: Optional[dict], root: Node) -> StageCheck:
+def check_build(reply: dict, root: Node) -> StageCheck:
     """Stage 5: OpenRocket built the design, and its parts fit together.
 
-    `reply` is the simulator's reply for the cleaned design as written
-    (java/PROTOCOL.md); `natural` is the reply for the same design with every
-    mass and balance override removed, or None when it has none; `root` is the
-    cleaned design tree. Credit 0 when OpenRocket could not read, build or fly
-    the design, or the natural twin; otherwise 1 / (1 + sum of failure sizes). Violations smaller
-    than ladder.FIT_DEFECT_BELOW are listed as defects and do not fail the
-    stage. info holds the worst value of every rule ("measures").
+    `reply` is the simulator's reply for the cleaned design (java/PROTOCOL.md);
+    `root` is the cleaned design tree. Credit 0 when OpenRocket could not
+    read, build or fly the design; otherwise 1 / (1 + sum of failure sizes).
+    Violations smaller than ladder.FIT_DEFECT_BELOW are listed as defects and
+    do not fail the stage. info holds the worst value of every rule ("measures").
     """
     info: dict[str, Any] = {}
     why = _not_built(reply)
@@ -743,15 +910,6 @@ def check_build(reply: dict, natural: Optional[dict], root: Node) -> StageCheck:
         info["built"] = False
         return _broken(why, info)
     info["built"] = True
-    if natural is not None:
-        why_natural = _not_built(natural)
-        if why_natural is not None:
-            # Building the twin is part of this check, so a twin that OpenRocket
-            # rejects, hangs or crashes on fails the stage exactly as the design would.
-            info["natural_built"] = False
-            return _broken(f"without its mass and balance overrides the same design fails: {why_natural}; "
-                           f"so what the overrides do cannot be checked: write the real parts and materials, "
-                           f"and override only small corrections", info)
     out = _Findings()
     info["load_warnings"] = _check_warnings(reply, out)
     components = reply.get("components")
@@ -768,11 +926,10 @@ def check_build(reply: dict, natural: Optional[dict], root: Node) -> StageCheck:
     loaded = _check_motor_fit(parts, out)
     _check_motor_position(parts, out)
     _check_pods(parts, out)
+    _check_slenderness(reply, parts, out)
     _check_doubles(parts, out)
     info["motor_mounts_expected"] = _check_motor_present(root, loaded, out)
     info["motor_mounts_loaded"] = loaded
-    if natural is not None:
-        info.update(_check_overrides(reply, natural, out))
     info["measures"] = dict(sorted(out.worst.items()))
     info["findings"] = out.kept
     info["violations"] = out.count
