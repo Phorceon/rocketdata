@@ -1,5 +1,5 @@
-"""Stage 6 (flight.py): the flight plan, the rail length, the landing limit and
-every safety rule, on editable copies of real recorded simulator replies."""
+"""Stage 6 (flight.py): the flight plan, the rail length and every safety
+rule (the prompt's landing limit is a stage 7 target, not a rule here), on editable copies of real recorded simulator replies."""
 from __future__ import annotations
 
 import math
@@ -41,13 +41,11 @@ def test_flight_plan_scales_and_caps_the_wind():
     assert [p["seed"] for p in flight.flight_plan(default)] == list(L.FLIGHT_SEEDS)
 
 
-def test_landing_limit_uses_slack_and_cap():
-    assert flight.landing_limit_ms(NO_LIMIT) is None
-    assert flight.landing_limit_ms(requirement_with_landing(5.0)) == pytest.approx(5.0 * (1 + L.LANDING_SLACK_DEFAULT))
-    assert flight.landing_limit_ms(requirement_with_landing(5.0, tol=0.05)) == pytest.approx(5.25)
-    assert flight.landing_limit_ms(requirement_with_landing(5.0, tol=0.0)) == pytest.approx(5.0)
-    assert flight.landing_limit_ms(requirement_with_landing(8.5)) == L.LANDING_HARD_MAX_MS
-    assert flight.landing_limit_ms(requirement_with_landing(5.0, kind="min")) is None
+def test_stage_6_has_no_prompt_landing_limit():
+    """The prompt's landing number is scored in stage 7 only."""
+    assert not hasattr(flight, "landing_limit_ms")
+    check = flight.check_flight(load_reply("single_stage"), requirement_with_landing(5.0))
+    assert "landing_limit_ms" not in check.info
 
 
 def motor_tree(*motors: str) -> dict:
@@ -96,7 +94,6 @@ def test_recorded_sound_rockets_pass(name):
     check = flight.check_flight(load_reply(name), requirement_with_landing(5.0))
     assert check.stage == "flight" and check.passed and check.credit == 1.0 and check.reasons == []
     assert check.info["flight_violations"] == [[], [], []]
-    assert check.info["landing_limit_ms"] == pytest.approx(5.75)
 
 
 def test_info_carries_nominal_metrics_and_per_flight_lists():
@@ -194,14 +191,13 @@ def test_section_that_never_lands_is_charged_once():
     assert "never reaches the ground" in check.reasons[0]
 
 
-def test_prompt_landing_limit_on_the_main_section():
-    req = requirement_with_landing(5.0)          # 5.75 m/s with the default slack
-    assert flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=5.75), req).passed
-    check = flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=5.76), req)
-    assert rule_sizes(check) == {"landing_prompt": pytest.approx(math.log2(5.76 / 5.75), abs=1e-6)}
-    assert "the prompt's landing limit with its slack is 5.75 m/s" in check.reasons[0]
-    # Without a stated limit only the hard limit applies.
-    assert flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=8.0), NO_LIMIT).passed
+def test_prompt_landing_limit_is_not_a_flight_rule():
+    """Landing faster than the prompt asks, but under the hard limit, passes stage 6
+    (stage 7 scores the miss); over the hard limit fails it, with or without a prompt limit."""
+    for req in (requirement_with_landing(5.0), requirement_with_landing(5.0, tol=0.0), NO_LIMIT):
+        assert flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=8.0), req).passed
+        check = flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=9.5), req)
+        assert rule_sizes(check) == {"landing_hard_0": pytest.approx(math.log2(9.5 / 9.0), abs=1e-6)}
 
 
 def test_prompt_limit_does_not_apply_to_a_booster():
@@ -319,9 +315,9 @@ def test_removed_number_counts_as_the_largest_violation(field):
     assert not flight.check_flight(reply, NO_LIMIT).passed
 
 
-def test_missing_landing_speed_with_a_prompt_limit_counts_twice():
+def test_missing_landing_speed_with_a_prompt_limit_counts_once():
     check = flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=None), requirement_with_landing(5.0))
-    assert rule_sizes(check) == {"landing_hard_0": 3.0, "landing_prompt": 3.0}
+    assert rule_sizes(check) == {"landing_hard_0": 3.0}
 
 
 def test_missing_static_stability():
@@ -447,7 +443,7 @@ def test_landing_speed_that_is_not_downward_counts_as_unknown(bad):
     section is an odd reply (an older helper read OpenRocket's last sample, after the touchdown) and
     counts as the largest violation, never as a soft landing."""
     check = flight.check_flight(each_branch(load_reply(), 0, landing_vertical_ms=bad), requirement_with_landing(6.0))
-    assert rule_sizes(check) == {"landing_hard_0": ladder.MAX_VIOLATION, "landing_prompt": ladder.MAX_VIOLATION}
+    assert rule_sizes(check) == {"landing_hard_0": ladder.MAX_VIOLATION}
     assert "unknown" in check.reasons[0] and "not a downward speed" in check.reasons[0]
 
 

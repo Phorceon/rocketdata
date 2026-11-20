@@ -12,8 +12,12 @@ safety (stage 6)" section of limits.py:
   * stable when leaving the rail and while the motors burn
   * every section with a recovery device opens it, nothing opens while a motor
     burns, and the fastest opening is not too fast
-  * every section lands, at a safe vertical speed (the main section also within
-    the prompt's landing limit, with its slack)
+  * every section lands, at a safe vertical speed
+
+Stage 6 judges only safety that holds for every rocket. The prompt's own
+landing limit is a target like the apogee and is scored in stage 7
+(targets.py), so a rocket that lands safely but a little faster than asked
+keeps the credit its other targets earn.
 
 A flight's total is the sum of its violation sizes. The worst flight counts:
 credit = ladder.credit_from_violations(static violation + worst flight's
@@ -94,21 +98,6 @@ def flight_plan(requirements: Requirements) -> list[dict]:
             for f, s in zip(L.WIND_FACTORS, L.FLIGHT_SEEDS)]
 
 
-def landing_limit_ms(requirements: Requirements) -> Optional[float]:
-    """The highest vertical landing speed (m/s) the main section may have under
-    the prompt, or None when the prompt states no landing limit.
-
-    It is the prompt's value plus its slack (the target's tol, or
-    limits.LANDING_SLACK_DEFAULT when it gives none), never above
-    limits.LANDING_HARD_MAX_MS. A "min" landing target sets no upper limit.
-    """
-    target = requirements.landing_ms
-    if target is None or target.kind == "min":
-        return None
-    slack = target.tol if target.tol is not None else L.LANDING_SLACK_DEFAULT
-    return min(L.LANDING_HARD_MAX_MS, float(target.value) * (1.0 + slack))
-
-
 # --------------------------------------------------------------------------- helpers
 
 def _field_number(d: Any, key: str) -> Optional[float]:
@@ -178,7 +167,7 @@ def _section_label(branch: dict, position: int) -> str:
 
 # --------------------------------------------------------------------------- rules
 
-def _judge_flight(flight: Any, planned_wind: Optional[float], land_limit: Optional[float]) -> _Flight:
+def _judge_flight(flight: Any, planned_wind: Optional[float]) -> _Flight:
     """Every per-flight rule on one flight of the reply."""
     f = flight if isinstance(flight, dict) else {}
     wind = _field_number(f, "wind_ms")
@@ -234,11 +223,11 @@ def _judge_flight(flight: Any, planned_wind: Optional[float], land_limit: Option
             f"{L.BURN_STABILITY_MIN_CAL:g} cal (move mass forward, enlarge the fins, or shorten a coast "
             f"before an upper stage lights)")
 
-    _judge_sections(f, out, land_limit)
+    _judge_sections(f, out)
     return out
 
 
-def _judge_sections(f: dict, out: _Flight, land_limit: Optional[float]) -> None:
+def _judge_sections(f: dict, out: _Flight) -> None:
     """Recovery and landing rules, per section (branch) of one flight."""
     w = out.where
     branches = f.get("branches")
@@ -305,13 +294,6 @@ def _judge_sections(f: dict, out: _Flight, land_limit: Optional[float]) -> None:
                     f"{w} {name} has no recovery device and hits the ground at {_value_text(v, limit)} m/s; a "
                     f"section without recovery must come down at {limit:g} m/s or slower (give it a "
                     f"streamer or parachute, or make it tumble instead of falling nose-first)")
-        if is_main and land_limit is not None:
-            size = ladder.over_limit(v, land_limit)
-            out.add("landing_prompt", size,
-                    f"{w} the landing speed of {name} {unknown}; the prompt allows at most "
-                    f"{land_limit:.2f} m/s" if v is None else
-                    f"{w} {name} lands at {_value_text(v, land_limit)} m/s vertical speed; the prompt's landing "
-                    f"limit with its slack is {land_limit:.2f} m/s (use a larger parachute)")
 
     # Recovery timing, once per flight over every section that opened something.
     if any(flag is True for flag in burn_flags):
@@ -397,12 +379,10 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
 
     info carries: "metrics" (the nominal flight's numbers), "worst_flight"
     (its index in the plan), "flight_violations" (per flight, a list of
-    {"rule", "size"}), "flight_totals", "static_violation", "landing_limit_ms"
-    and "winds_ms".
+    {"rule", "size"}), "flight_totals", "static_violation" and "winds_ms".
     """
     rep = reply if isinstance(reply, dict) else {}
     plan = flight_plan(requirements)
-    land_limit = landing_limit_ms(requirements)
     flights = rep.get("flights")
     flights = list(flights) if isinstance(flights, list) else []
     # A flight the reply leaves out counts as one that never flew.
@@ -410,7 +390,7 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
     flights += [{}] * (count - len(flights))
     planned = [p["wind_ms"] for p in plan] + [None] * (count - len(plan))
 
-    judged = [_judge_flight(f, w, land_limit) for f, w in zip(flights, planned)]
+    judged = [_judge_flight(f, w) for f, w in zip(flights, planned)]
     static_size, static_reason, static_value = _pad_stability(rep)
 
     totals = [j.total for j in judged]
@@ -438,7 +418,6 @@ def check_flight(reply: dict, requirements: Requirements) -> StageCheck:
         "flight_violations": [[{"rule": r, "size": round(s, 6)} for r, s, _ in j.items] for j in judged],
         "static_violation": round(static_size, 6),
         "static_stability_cal": static_value,
-        "landing_limit_ms": land_limit,
         "winds_ms": [j.wind for j in judged],
     }
     return StageCheck(stage=STAGE_KEY, passed=passed, credit=credit if not passed else 1.0,

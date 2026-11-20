@@ -5,8 +5,12 @@ thin as paper, a parachute with fifty times the real drag, fins many times the
 body width used as air brakes, a part type nobody has heard of, a material
 the reward cannot give a real density, walls or fins of foam film, oversized
 launch lugs, rail buttons or tube fins, and designs with so many parts that
-one answer would take a minute to fly. Every bound lives in limits.py with its
-source; this file only applies them.
+one answer would take a minute to fly. Also absurd sizes and places: a nose
+cone with a base radius of 0 (only the word "auto" means "take the next
+part's size"), a fin with no root, a 25 m packed parachute, negative or
+broken counts, a delay of 1e308 s, a part placed kilometres away and a heavy
+weight the size of a coin. Every bound lives in limits.py with its source;
+this file only applies them.
 
 Each broken rule adds a violation size (see ladder.py and DESIGN.md, "How
 credit is computed"), and the stage credit is 1 / (1 + sum of sizes), so a
@@ -18,6 +22,7 @@ result.
 """
 from __future__ import annotations
 
+import math
 import re
 from typing import Any, Optional
 
@@ -45,27 +50,55 @@ NON_NEGATIVE = frozenset({
     "packedlength", "packedradius", "striplength", "stripwidth", "cordlength",
     "linelength", "aftshoulderlength", "aftshoulderradius", "aftshoulderthickness",
     "foreshoulderlength", "foreshoulderradius", "foreshoulderthickness", "cd",
-    "overridemass", "overridecd", "overridecg",
+    "baseheight", "flangeheight", "screwheight", "innerdiameter", "outerdiameter",
+    "deploydelay", "deployaltitude", "separationdelay", "separationaltitude",
+    "clusterscale", "filletradius", "tabheight", "tablength", "shapeparameter",
 })
 
 # The unit of each size field, so a reason can say "-0.9 m" and not just "-0.9".
-_UNITS = {"mass": "kg", "overridemass": "kg", "cd": "", "overridecd": ""}
+_UNITS = {"mass": "kg", "cd": "", "deploydelay": "s",
+          "separationdelay": "s", "clusterscale": "", "shapeparameter": ""}
 
-_SUBCOMPONENT_SWITCHES = ("overridesubcomponents", "overridesubcomponentsmass")
+RING_PARTS = frozenset({"centeringring", "bulkhead", "engineblock"})
+PACKED_PARTS = frozenset({"parachute", "streamer", "shockcord", "masscomponent"})
+SHOULDERED = frozenset({"nosecone", "transition"})
+LIMITED_FINS = frozenset({"trapezoidfinset", "ellipticalfinset"})  # fins with a written root chord and span
 
 # Range rules: (component types or None for every type, field, lowest, highest,
-# unit, zero means "auto"). A zero radius means "take it from the neighbouring
-# part" in OpenRocket, so it is skipped. A missing field is OpenRocket's default
-# and is not a violation.
+# unit, zero allowed on an empty part). Only the word "auto" (alone or as
+# "auto 0.025") takes a size from the neighbouring part in OpenRocket; a
+# written 0 is a part of no size. With the last flag, a 0 passes on a part of
+# length 0, which the references use as an empty holder for other parts. A
+# missing field is OpenRocket's default and is not a violation.
 _RANGE_RULES: tuple[tuple[Optional[frozenset], str, Optional[float], Optional[float], str, bool], ...] = (
     (frozenset({"bodytube"}), "radius", L.TUBE_RADIUS_MIN_M, L.TUBE_RADIUS_MAX_M, "mm", True),
     (frozenset({"innertube", "tubecoupler"}), "outerradius", None, L.TUBE_RADIUS_MAX_M, "mm", True),
     (frozenset({"bodytube", "innertube", "tubecoupler"}), "length", None, L.TUBE_LENGTH_MAX_M, "m", False),
     (frozenset({"nosecone"}), "length", None, L.NOSE_LENGTH_MAX_M, "m", False),
-    (frozenset({"nosecone"}), "aftradius", None, L.SHELL_RADIUS_MAX_M, "mm", True),
+    (frozenset({"nosecone"}), "aftradius", L.SHELL_RADIUS_MIN_M, L.SHELL_RADIUS_MAX_M, "mm", True),
     (frozenset({"transition"}), "length", None, L.TRANSITION_LENGTH_MAX_M, "m", False),
-    (frozenset({"transition"}), "foreradius", None, L.SHELL_RADIUS_MAX_M, "mm", True),
-    (frozenset({"transition"}), "aftradius", None, L.SHELL_RADIUS_MAX_M, "mm", True),
+    (frozenset({"transition"}), "foreradius", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (frozenset({"transition"}), "aftradius", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (SHOULDERED, "foreshoulderlength", None, L.SHOULDER_LENGTH_MAX_M, "m", False),
+    (SHOULDERED, "aftshoulderlength", None, L.SHOULDER_LENGTH_MAX_M, "m", False),
+    (SHOULDERED, "foreshoulderradius", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (SHOULDERED, "aftshoulderradius", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (SHOULDERED, "foreshoulderthickness", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (SHOULDERED, "aftshoulderthickness", None, L.SHELL_RADIUS_MAX_M, "mm", False),
+    (SHOULDERED, "shapeparameter", None, L.SHAPE_PARAMETER_MAX, "", False),
+    (RING_PARTS, "outerradius", None, L.TUBE_RADIUS_MAX_M, "mm", False),
+    (RING_PARTS, "innerradius", None, L.TUBE_RADIUS_MAX_M, "mm", False),
+    (RING_PARTS, "length", None, L.TUBE_LENGTH_MAX_M, "m", False),
+    (None, "thickness", None, L.TUBE_RADIUS_MAX_M, "mm", False),
+    (frozenset({"innertube"}), "clusterscale", None, L.CLUSTER_SCALE_MAX, "", False),
+    (PACKED_PARTS, "packedlength", None, L.PACKED_LENGTH_MAX_M, "m", False),
+    (PACKED_PARTS, "packedradius", None, L.PACKED_RADIUS_MAX_M, "mm", False),
+    (frozenset({"parachute"}), "linelength", None, L.LINE_LENGTH_MAX_M, "m", False),
+    (frozenset({"shockcord"}), "cordlength", None, L.CORD_LENGTH_MAX_M, "m", False),
+    (frozenset({"parachute", "streamer"}), "deploydelay", None, L.DEPLOY_DELAY_MAX_S, "s", False),
+    (frozenset({"parachute", "streamer"}), "deployaltitude", None, L.DEPLOY_ALTITUDE_MAX_M, "m", False),
+    (frozenset({"stage", "parallelstage"}), "separationdelay", None, L.DEPLOY_DELAY_MAX_S, "s", False),
+    (frozenset({"stage", "parallelstage"}), "separationaltitude", None, L.DEPLOY_ALTITUDE_MAX_M, "m", False),
     (frozenset({"parachute"}), "diameter", L.CHUTE_DIAMETER_MIN_M, L.CHUTE_DIAMETER_MAX_M, "m", False),
     (frozenset({"parachute"}), "cd", L.CHUTE_CD_MIN, L.CHUTE_CD_MAX, "", False),
     (frozenset({"streamer"}), "striplength", None, L.STREAMER_LENGTH_MAX_M, "m", False),
@@ -76,11 +109,45 @@ _RANGE_RULES: tuple[tuple[Optional[frozenset], str, Optional[float], Optional[fl
     (frozenset({"launchlug"}), "length", None, L.LAUNCH_LUG_LENGTH_MAX_M, "m", False),
     (frozenset({"railbutton"}), "outerdiameter", None, L.RAIL_BUTTON_DIAMETER_MAX_M, "mm", False),
     (frozenset({"railbutton"}), "height", None, L.RAIL_BUTTON_HEIGHT_MAX_M, "mm", False),
+    (frozenset({"railbutton"}), "baseheight", None, L.RAIL_BUTTON_HEIGHT_MAX_M, "mm", False),
+    (frozenset({"railbutton"}), "flangeheight", None, L.RAIL_BUTTON_HEIGHT_MAX_M, "mm", False),
+    (frozenset({"railbutton"}), "screwheight", None, L.RAIL_BUTTON_HEIGHT_MAX_M, "mm", False),
+    (frozenset({"railbutton"}), "innerdiameter", None, L.RAIL_BUTTON_DIAMETER_MAX_M, "mm", False),
+    (frozenset({"launchlug"}), "thickness", None, L.LAUNCH_LUG_RADIUS_MAX_M, "mm", False),
     (FIN_SETS, "rootchord", None, L.FIN_CHORD_MAX_M, "m", False),
     (FIN_SETS, "tipchord", None, L.FIN_CHORD_MAX_M, "m", False),
-    (None, "overridemass", None, L.OVERRIDE_MASS_MAX_KG, "kg", False),
-    (None, "overridecd", None, L.OVERRIDE_CD_MAX, "", False),
-    (None, "overridecg", None, L.OVERRIDE_CG_MAX_M, "m", False),
+    (LIMITED_FINS, "rootchord", L.FIN_ROOT_CHORD_MIN_M, None, "mm", False),
+    (LIMITED_FINS, "height", L.FIN_HEIGHT_MIN_M, None, "mm", False),
+    (FIN_SETS, "tablength", None, L.FIN_CHORD_MAX_M, "m", False),
+    (FIN_SETS, "tabheight", None, L.FIN_TAB_HEIGHT_MAX_M, "mm", False),
+    (FIN_SETS, "filletradius", None, L.FILLET_RADIUS_MAX_M, "mm", False),
+    (frozenset({"tubefinset"}), "length", None, L.FIN_CHORD_MAX_M, "m", False),
+)
+
+# Signed settings bounded in size either way: (field, largest size, unit).
+# A position may be negative (ahead of the reference point) and an angle may
+# turn either way, but a part placed kilometres away or turned 1e308 degrees
+# is a trick value. Stage 5 judges the fit on OpenRocket's own placement.
+_SIZE_RULES: tuple[tuple[str, float, str], ...] = (
+    ("position", L.POSITION_MAX_M, "m"),
+    ("axialoffset", L.POSITION_MAX_M, "m"),
+    ("tabposition", L.POSITION_MAX_M, "m"),
+    ("instanceseparation", L.POSITION_MAX_M, "m"),
+    ("radialposition", L.RADIAL_OFFSET_MAX_M, "m"),
+    ("radiusoffset", L.RADIAL_OFFSET_MAX_M, "m"),
+    ("sweeplength", L.FIN_SWEEP_MAX_M, "m"),
+    ("angleoffset", L.ANGLE_MAX_DEG, "deg"),
+    ("rotation", L.ANGLE_MAX_DEG, "deg"),
+    ("radialdirection", L.ANGLE_MAX_DEG, "deg"),
+    ("clusterrotation", L.ANGLE_MAX_DEG, "deg"),
+)
+
+# Counts that must be a whole number in a range: (component types, field,
+# lowest, highest or None). Fin counts have their own rule (_check_fin_count);
+# the highest copy count is judged with the other counts (_check_counts).
+_COUNT_RULES: tuple[tuple[frozenset, str, int, Optional[int]], ...] = (
+    (frozenset({"parachute"}), "linecount", L.LINE_COUNT_MIN, L.LINE_COUNT_MAX),
+    (L.KNOWN_COMPONENT_TYPES - FIN_SETS - {"tubefinset"}, "instancecount", L.PART_INSTANCES_MIN, None),
 )
 
 
@@ -110,38 +177,14 @@ def _field(component: Node, tag: str) -> Optional[float]:
     return read_number(body_of(c).get("value"))[0]
 
 
-def _switched_on(component: Node, tags: tuple[str, ...]) -> bool:
-    """True when one of these yes/no settings is on (true, "true" or a non-zero number)."""
-    for tag in tags:
-        c = last_child(component, tag)
-        if c is None:
-            continue
-        v = body_of(c).get("value")
-        if v is True or (isinstance(v, str) and v.strip().lower() == "true"):
-            return True
-        n, _ = read_number(v)
-        if n is not None and n != 0:
-            return True
-    return False
-
-
-def _overrides_mass(comp: Node) -> bool:
-    """True when the part sets its own mass with a usable "overridemass"."""
-    m = _field(comp, "overridemass")
-    return m is not None and m >= 0
-
-
-def _overrides_inside(comp: Node) -> bool:
-    """True when the part's mass override also stands for everything inside it."""
-    return _overrides_mass(comp) and _switched_on(comp, _SUBCOMPONENT_SWITCHES)
-
-
 # ------------------------------------------------------------------ formatting
 
 def _fmt(x: float, unit: str) -> str:
     """A number with its unit, in the unit a student would use."""
-    if unit == "mm":
+    if unit == "mm" and abs(x) < 1e300:
         return f"{x * 1000:.4g} mm"
+    if unit == "mm":
+        return f"{x:.4g} m"   # too large to write in millimetres
     if unit == "m" and abs(x) < 0.1:
         return f"{x * 1000:.4g} mm"
     return f"{x:.4g} {unit}".rstrip()
@@ -292,8 +335,7 @@ def _check_areal_density(name: str, comp: Node, thickness: float, limit: float, 
 
 
 def _check_fin_set(name: str, comp: Node, parent: Optional[Node], largest: Optional[float],
-                   out: _Findings, mass_overridden: bool = False,
-                   materials: Optional[MaterialTable] = None) -> None:
+                   out: _Findings, materials: Optional[MaterialTable] = None) -> None:
     _check_fin_count(name, comp, out)
     cant = _field(comp, "cant")
     if cant is not None:
@@ -301,7 +343,7 @@ def _check_fin_set(name: str, comp: Node, parent: Optional[Node], largest: Optio
     thick = _field(comp, "thickness")
     if thick is not None:
         out.below(thick, L.FIN_THICKNESS_MIN_M, "mm", f"{name}'s fin thickness")
-        if not mass_overridden and materials is not None:
+        if materials is not None:
             _check_areal_density(name, comp, thick, L.FIN_AREAL_DENSITY_MIN_KG_M2, "fins", materials, out)
     if tag_of(comp) == "freeformfinset":
         span = _fin_points(name, comp, out)
@@ -316,44 +358,169 @@ def _check_fin_set(name: str, comp: Node, parent: Optional[Node], largest: Optio
                     f"{ratio:.3g} times its width (limit {L.FIN_SPAN_PER_DIAMETER_MAX:g} times)")
 
 
+def _auto_number(component: Node, tag: str) -> Optional[float]:
+    """The number after the word "auto" in a setting such as "auto 0.025", else None.
+    OpenRocket keeps that number and uses it where the automatic size cannot be
+    found, so it is judged like a written size."""
+    c = last_child(component, tag)
+    raw = body_of(c).get("value") if c is not None else None
+    if not isinstance(raw, str):
+        return None
+    words = raw.split()
+    if len(words) != 2 or words[0].lower() != "auto":
+        return None
+    return read_number(words[1])[0]
+
+
+# Holders of stage separation settings: a stage writes them directly and in
+# its "separationconfiguration".
+_SEPARATION_HOLDERS = ("separationconfiguration",)
+
+
 def _check_ranges(name: str, comp: Node, out: _Findings) -> None:
     t = tag_of(comp)
-    for c in children_of(comp):
-        field = tag_of(c)
-        if field in NON_NEGATIVE:
-            x = read_number(body_of(c).get("value"))[0]
-            if x is not None and x < 0:
-                out.add(MAX_VIOLATION, f"{name}'s {field} is {_fmt(x, _UNITS.get(field, 'm'))}; "
-                                       "a size cannot be negative")
-    for types, field, low, high, unit, zero_is_auto in _RANGE_RULES:
+    holders = [comp] + [h for tag in _SEPARATION_HOLDERS for h in children_named(comp, tag) if is_node(h)]
+    for holder in holders:
+        for c in children_of(holder):
+            field = tag_of(c)
+            if field in NON_NEGATIVE:
+                x = read_number(body_of(c).get("value"))[0]
+                if x is None:
+                    x = _auto_number(holder, field) if last_child(holder, field) is c else None
+                if x is not None and x < 0:
+                    out.add(MAX_VIOLATION, f"{name}'s {field} is {_fmt(x, _UNITS.get(field, 'm'))}; "
+                                           "a size cannot be negative")
+    for types, field, low, high, unit, zero_when_empty in _RANGE_RULES:
         if types is not None and t not in types:
             continue
+        for holder in holders:
+            _check_range(name, comp, holder, field, low, high, unit, zero_when_empty, out)
+    for field, high, unit in _SIZE_RULES:
         x = _field(comp, field)
-        if x is None or x < 0 or (zero_is_auto and x == 0):
+        if x is not None and abs(x) > high:
+            out.add(over_limit(abs(x), high), f"{name}'s {field} is {_fmt(x, unit)}, more than "
+                                              f"{_fmt(high, unit)} either way: put the part where it belongs")
+
+
+def _check_range(name: str, comp: Node, holder: Node, field: str, low: Optional[float], high: Optional[float],
+                 unit: str, zero_when_empty: bool, out: _Findings) -> None:
+    """One range rule on one setting (written as a number, or as the number after "auto")."""
+    x = _field(holder, field)
+    after_auto = x is None
+    if after_auto:
+        x = _auto_number(holder, field)
+    if x is None or x < 0 or (zero_when_empty and x == 0 and _field(comp, "length") == 0):
+        return
+    what = f"{name}'s {field}" + (" (the number after \"auto\")" if after_auto else "")
+    if low is not None and x < low:
+        if x == 0:
+            out.add(MAX_VIOLATION, f"{what} is 0, a part of no size; write at least {_fmt(low, unit)}"
+                                   + (' or the word "auto"' if field.endswith("radius") and not after_auto else ""))
+        else:
+            out.add(under_limit(x, low), f"{what} is {_fmt(x, unit)}, less than the limit of "
+                                         f"{_fmt(low, unit)}: make it larger")
+    if high is not None:
+        out.above(x, high, unit, what)
+
+
+def _check_whole_counts(name: str, comp: Node, out: _Findings) -> None:
+    """Shroud lines and copies of a part are whole numbers in a range.
+    A count within a millionth of a whole number is that number."""
+    t = tag_of(comp)
+    for types, field, low, high in _COUNT_RULES:
+        if t not in types:
             continue
-        if low is not None:
-            out.below(x, low, unit, f"{name}'s {field}")
-        if high is not None:
-            out.above(x, high, unit, f"{name}'s {field}")
+        n = _field(comp, field)
+        if n is None:
+            continue
+        whole = round(n)
+        if abs(n - whole) <= L.FIN_COUNT_WHOLE_TOLERANCE:
+            n = float(whole)
+        if n < low:
+            out.add(MAX_VIOLATION, f"{name}'s {field} is {n:.6g}; it must be a whole number of at least {low}")
+        elif n != whole:
+            out.add(max(YES_NO_VIOLATION, over_limit(n, high) if high is not None else 0.0),
+                    f"{name}'s {field} is {n:.6g}; it must be a whole number"
+                    + (f" no more than {high}" if high is not None and n > high else ""))
+        elif high is not None:
+            out.above(n, float(high), "", f"{name}'s {field}")
 
 
-def _check_wall(name: str, comp: Node, mass_overridden: bool, out: _Findings,
+def _check_fin_shape(name: str, comp: Node, out: _Findings) -> None:
+    """A trapezoid fin's tip may not be many times longer than its root: the
+    root is what holds the fin on the body."""
+    if tag_of(comp) != "trapezoidfinset":
+        return
+    root, tip = _field(comp, "rootchord"), _field(comp, "tipchord")
+    if root is None or tip is None or root <= 0 or tip <= 0:
+        return
+    ratio = tip / root
+    if ratio > L.FIN_TIP_PER_ROOT_MAX:
+        out.add(over_limit(ratio, L.FIN_TIP_PER_ROOT_MAX),
+                f"{name}'s tip chord ({_fmt(tip, 'mm')}) is {ratio:.3g} times its root chord ({_fmt(root, 'mm')}), "
+                f"more than {L.FIN_TIP_PER_ROOT_MAX:g} times: a fin hangs from its root, so make the root longer")
+
+
+def _check_mass_density(name: str, comp: Node, out: _Findings) -> None:
+    """A mass component with a size must not be denser than any material
+    could make it, by a wide margin (limits.MASS_COMPONENT_DENSITY_MAX_KG_M3):
+    a heavy weight the size of a coin is not physical. A point mass (length or
+    radius 0, or "auto") is not judged here."""
+    if tag_of(comp) != "masscomponent":
+        return
+    m, length, radius = _field(comp, "mass"), _field(comp, "packedlength"), _field(comp, "packedradius")
+    if m is None or length is None or radius is None or m <= 0 or length <= 0 or radius <= 0:
+        return
+    density = m / (math.pi * radius * radius * length)
+    if density > L.MASS_COMPONENT_DENSITY_MAX_KG_M3:
+        out.add(over_limit(density, L.MASS_COMPONENT_DENSITY_MAX_KG_M3),
+                f"{name} packs {_fmt(m, 'kg')} into {_fmt(length, 'mm')} of length and {_fmt(radius, 'mm')} of "
+                f"radius, {density:.4g} kg/m3, more than the limit of {L.MASS_COMPONENT_DENSITY_MAX_KG_M3:.4g} "
+                f"kg/m3: give the mass component its real size or make it lighter")
+
+
+def _check_mounts(name: str, comp: Node, out: _Findings) -> None:
+    """A motor mount's ignition delays and overhang, and its motors' ejection
+    delays, must be sensible numbers."""
+    for mount in children_named(comp, "motormount"):
+        if not is_node(mount):
+            continue
+        for holder in [mount] + children_named(mount, "ignitionconfiguration"):
+            d = _field(holder, "ignitiondelay") if is_node(holder) else None
+            if d is not None and d < 0:
+                out.add(MAX_VIOLATION, f"{name}'s motor ignition delay is {d:.4g} s; a delay cannot be negative")
+            elif d is not None:
+                out.above(d, L.IGNITION_DELAY_MAX_S, "s", f"{name}'s motor ignition delay")
+        hang = _field(mount, "overhang")
+        if hang is not None and abs(hang) > L.POSITION_MAX_M:
+            out.add(over_limit(abs(hang), L.POSITION_MAX_M),
+                    f"{name}'s motor overhang is {_fmt(hang, 'm')}, more than {_fmt(L.POSITION_MAX_M, 'm')} "
+                    f"either way: put the motor in its mount")
+        for motor in children_named(mount, "motor"):
+            d = _field(motor, "delay") if is_node(motor) else None
+            if d is not None and d < 0:
+                out.add(MAX_VIOLATION, f"{name}'s motor ejection delay is {d:.4g} s; a delay cannot be negative")
+            elif d is not None:
+                out.above(d, L.MOTOR_DELAY_MAX_S, "s", f"{name}'s motor ejection delay")
+
+
+def _check_wall(name: str, comp: Node, out: _Findings,
                 materials: Optional[MaterialTable] = None) -> None:
     """Outer shell walls must not be paper-thin: a thin wall makes a light
     rocket. A wall of exactly 0 mm is a shell with no wall and so no mass, the
     far end of that trick, so it costs the most (as a zero value does,
     DESIGN.md). The word "filled" is OpenRocket's solid part and is fine.
 
-    A part whose mass is overridden is skipped: its wall no longer changes
-    its mass, so no wall, thin or zero, can gain anything there. The same
-    holds for a 0 mm wall on a part of length 0 (one reference rocket uses
-    such an empty tube to hold other parts).
+    A 0 mm wall on a part of length 0 is skipped: there is no shell to weigh,
+    so the wall changes nothing (one reference rocket uses such an empty tube
+    to hold other parts). No override excuses a wall: the cleaning removes
+    every override, so every wall gives its part its mass.
 
     With the material table, the wall must also weigh at least
     limits.WALL_AREAL_DENSITY_MIN_KG_M2 (thickness times density), so a
     catalogue-thin wall of foam does not pass as a light rocket.
     """
-    if tag_of(comp) not in SHELL_WALLS or mass_overridden:
+    if tag_of(comp) not in SHELL_WALLS:
         return
     c = last_child(comp, "thickness")
     if c is None:
@@ -443,21 +610,16 @@ def _materials_of(comp: Node, materials: MaterialTable):
         yield mtag, kind, name, a.get("density"), materials.match(kind, name)
 
 
-def _check_materials(name: str, comp: Node, mass_overridden: bool, out: _Findings,
-                     materials: MaterialTable) -> None:
+def _check_materials(name: str, comp: Node, out: _Findings, materials: MaterialTable) -> None:
     """A density must never be negative. The cleaning gives every material
     the table knows its table density, so the physical ranges (limits.py,
-    "material densities") are judged only on names the table does not know,
-    and are skipped on a part whose mass is overridden, because OpenRocket
-    then never uses the density."""
+    "material densities") are judged only on names the table does not know."""
     for c in children_of(comp):
         if tag_of(c) not in MATERIAL_TAGS:
             continue
         d, _ = read_number(attrs_of(c).get("density"))
         if d is not None and d < 0:
             out.add(MAX_VIOLATION, f"{name}'s {tag_of(c)} density is {d:.4g}; a density cannot be negative")
-    if mass_overridden:
-        return
     for mtag, kind, _, density, hit in _materials_of(comp, materials):
         d, _ = read_number(density)
         if hit is not None or d is None or d < 0:
@@ -472,7 +634,7 @@ def _check_materials(name: str, comp: Node, mass_overridden: bool, out: _Finding
             out.above(d, L.LINE_DENSITY_MAX_KG_M, "kg/m", what)
 
 
-def _collect_unknown_names(name: str, comp: Node, own_mass_overridden: bool, materials: MaterialTable,
+def _collect_unknown_names(name: str, comp: Node, materials: MaterialTable,
                            found: dict[tuple[str, str], dict[str, Any]]) -> None:
     """Record every material name on this part that the table does not know,
     keyed by its type and its name up to case and spacing."""
@@ -480,10 +642,8 @@ def _collect_unknown_names(name: str, comp: Node, own_mass_overridden: bool, mat
         if hit is not None:
             continue
         rec = found.setdefault((kind, loose_name(mname[:200])), {
-            "name": mname, "kind": kind, "parts": [], "counted_parts": [], "density": density})
+            "name": mname, "kind": kind, "parts": [], "density": density})
         rec["parts"].append(f"{name}'s {mtag}")
-        if not own_mass_overridden:
-            rec["counted_parts"].append(f"{name}'s {mtag}")
 
 
 def _shown_parts(parts: list[str]) -> str:
@@ -491,30 +651,23 @@ def _shown_parts(parts: list[str]) -> str:
 
 
 def check_material_names(found: dict[tuple[str, str], dict[str, Any]],
-                         materials: MaterialTable) -> tuple[list[tuple[float, str]], list[str]]:
+                         materials: MaterialTable) -> list[tuple[float, str]]:
     """Every material name must be one the material table knows, so the reward
     can give it its real density.
 
     `found` is what _collect_unknown_names recorded. Each distinct unknown name
-    is a yes/no violation (at most MATERIAL_NAMES_COUNTED_MAX of them count),
-    unless every part using it overrides its own mass: the material then does
-    not change the rocket, and the name is only noted. Returns (violation
-    size, reason) pairs and the notes.
+    is a yes/no violation (at most MATERIAL_NAMES_COUNTED_MAX of them count):
+    the cleaning removes every mass override, so every material gives its part
+    its mass. Returns (violation size, reason) pairs.
     """
     pairs: list[tuple[float, str]] = []
-    notes: list[str] = []
-    counted = [r for r in found.values() if r["counted_parts"]]
-    for r in found.values():
-        if r["counted_parts"]:
-            continue
-        notes.append(f"material {r['name'][:60]!r} ({r['kind']}) is not in the material table, but every part "
-                     f"using it ({_shown_parts(r['parts'])}) overrides its own mass, so it changes nothing")
+    counted = list(found.values())
     for i, r in enumerate(counted[:MATERIAL_NAMES_COUNTED_MAX]):
         d, _ = read_number(r["density"])
         written = f"{d:.4g} {UNITS[r['kind']]}" if d is not None else "no usable density"
         near = materials.closest(r["kind"], r["name"])
-        verb = "uses" if len(r["counted_parts"]) == 1 else "use"
-        reason = (f"{_shown_parts(r['counted_parts'])} {verb} material {r['name'][:60]!r}, which is not in the "
+        verb = "uses" if len(r["parts"]) == 1 else "use"
+        reason = (f"{_shown_parts(r['parts'])} {verb} material {r['name'][:60]!r}, which is not in the "
                   f"material table of {r['kind']} materials, so the reward cannot give it its real density "
                   f"(the design wrote {written}); "
                   + (f"use a known material name, for example {near!r}" if near else
@@ -525,7 +678,7 @@ def check_material_names(found: dict[tuple[str, str], dict[str, Any]],
             reason += (f"; {len(rest)} more unknown material name(s) are not counted: "
                        + ", ".join(repr(x["name"][:40]) for x in rest[:3]) + (" ..." if len(rest) > 3 else ""))
         pairs.append((YES_NO_VIOLATION, reason))
-    return pairs, notes
+    return pairs
 
 
 def _cluster_count(component: Node) -> float:
@@ -592,8 +745,8 @@ def check_limits(root: Node, table: Any, materials: Optional[MaterialTable] = No
     motor table (motors.MotorTable); `materials` is the material table (by
     default the packaged one). Returns a StageCheck whose credit is
     1 / (1 + sum of violation sizes); it passes only with no violation.
-    Unknown material names on parts that override their own mass are listed
-    in info["notes"] without a cost.
+    No override setting excuses anything here: scoring checks the cleaned
+    copy, which holds none.
     """
     materials = materials if materials is not None else default_material_table()
     out = _Findings()
@@ -611,38 +764,32 @@ def check_limits(root: Node, table: Any, materials: Optional[MaterialTable] = No
                        if x is not None and 0 < x <= L.TUBE_RADIUS_MAX_M), default=None)
         seen: dict[str, int] = {}
         unknown_names: dict[tuple[str, str], dict[str, Any]] = {}
-        # Parts whose mass a part around them overrides, found in one pass
-        # (parents come before children), so deep trees stay fast.
-        covered: set[int] = set()
-        for comp, parents in comps:
-            if parents and (id(parents[-1]) in covered or _overrides_inside(parents[-1])):
-                covered.add(id(comp))
         for comp, parents in comps:
             t = tag_of(comp)
             if t not in L.KNOWN_COMPONENT_TYPES:
                 continue
             seen[t] = seen.get(t, 0) + 1
             name = f"{t} #{seen[t]}"
-            own = _overrides_mass(comp)
-            overridden = id(comp) in covered or own
             if t == "tubefinset":
                 _check_fin_count(name, comp, out)
                 _check_tube_fins(name, comp, parents[-1] if parents else None, largest, out)
             if t in FIN_SETS:
-                _check_fin_set(name, comp, parents[-1] if parents else None, largest, out, overridden, materials)
+                _check_fin_set(name, comp, parents[-1] if parents else None, largest, out, materials)
             _check_ranges(name, comp, out)
-            _check_wall(name, comp, overridden, out, materials)
-            _check_materials(name, comp, overridden, out, materials)
-            _collect_unknown_names(name, comp, own, materials, unknown_names)
+            _check_whole_counts(name, comp, out)
+            _check_fin_shape(name, comp, out)
+            _check_mass_density(name, comp, out)
+            _check_mounts(name, comp, out)
+            _check_wall(name, comp, out, materials)
+            _check_materials(name, comp, out, materials)
+            _collect_unknown_names(name, comp, materials, unknown_names)
         info["total_impulse_ns"] = round(_check_total_impulse(root, rocket, table, out), 3)
         info["components"] = len(comps)
         info["counts"] = _check_counts(comps, out)
-        pairs, notes = check_material_names(unknown_names, materials)
+        pairs = check_material_names(unknown_names, materials)
         # Listed first: naming a real material fixes its density too.
         out.sizes[:0] = [size for size, _ in pairs]
         out.reasons[:0] = [reason for _, reason in pairs]
-        if notes:
-            info["notes"] = notes
     return _result(out, info)
 
 

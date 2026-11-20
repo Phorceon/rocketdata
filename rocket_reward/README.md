@@ -110,7 +110,7 @@ many answers use one pool and `score_many`, which keeps the input order:
 from rocket_reward.scoring import score_many
 from rocket_reward.sim import SimPool
 
-with SimPool(4) as pool:                  # 4 helpers: about 0.15-0.2 s per answer
+with SimPool(4) as pool:                  # 4 helpers: about 0.15-0.3 s per answer once warm
     results = score_many(answers, requirements_list, simulator=pool)
 ```
 
@@ -132,7 +132,8 @@ answer, or a `.jsonl` of rows with `"id"` and `"requirements"` (like
 `prompts/rl_prompts_v1.jsonl`). The table shows each answer's stage, score and
 first reason, then the count per stage; `--json` prints every answer's stage,
 score, reasons, defects, flight numbers and shadow flight as JSON. Example
-with the files the tests use (about 15 s with Java; without Java it stops with
+with the files the tests use (about 25 s with Java, starting the helpers
+included; without Java it stops with
 a setup error once an answer reaches stage 5):
 
 ```
@@ -166,7 +167,9 @@ python -m rocket_reward score rocket_reward/tests/data/model_val.jsonl.gz rocket
 * `metrics`: the numbers of the 1x-wind flight when the design was flown.
 * `flags`: extra facts: `truncated`, `shadow` (for an unknown motor: the real
   motor it was flown with instead and how far that got), `clean_notes` (what the
-  cleaning changed), `stage_info` (the stopping stage's own numbers), `quarantined`.
+  cleaning changed), `overrides_removed` (how many override settings the
+  cleaning removed, when there were any), `stage_info` (the stopping stage's
+  own numbers), `quarantined`.
 
 ## When it stops with a setup error
 
@@ -188,10 +191,11 @@ From the repository root:
 python -m pytest rocket_reward/tests -q -p no:cacheprovider
 ```
 
-Without Java the tests marked `needs_java` are skipped (about 100), and
-everything else runs in about a minute. With `ROCKET_REWARD_JAVA_HOME` and
-`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) they all run, in
-about three minutes. Two tests of the prompt data also need
+Without Java the 95 tests marked `needs_java` are skipped, and the other
+2,176 run in about a minute and a half. With `ROCKET_REWARD_JAVA_HOME` and
+`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) all 2,271 run, in
+about three minutes (times measured on 2026-11-19 on a PC shared with other
+jobs). Two tests of the prompt data also need
 `ROCKET_REWARD_PROMPT_META` set to the reference meta file
 (`sft_v5_meta_c94ffa5.jsonl`); they are skipped without it.
 
@@ -199,7 +203,7 @@ about three minutes. Two tests of the prompt data also need
 
 1. The number goes in `limits.py` (a physical limit, with a one-line note on
    where it comes from: which reference value it clears and by how much) or in
-   `ladder.py` (only if it shapes the score itself, such as a band or a weight).
+   `ladder.py` (only if it shapes the score itself, such as a band or a credit).
    No other file holds a tuning number.
 2. The check goes in the stage's own file: `limit_checks.py` (stage 4, the
    design tree), `fit.py` (stage 5, the positions OpenRocket reports), `flight.py`
@@ -210,8 +214,12 @@ about three minutes. Two tests of the prompt data also need
    `test_launch_lug_and_rail_button_counts` and `test_more_lugs_never_score_better`),
    `tests/test_fit.py` (`test_tube_fins_past_the_back_of_their_part`) or
    `tests/test_flight.py`. Test just under the limit, a little over and far
-   over, and that a smaller violation never scores lower.
-4. If it blocks a cheat, add an operator to `tools/mutate.py` and re-make
+   over, and that a smaller violation never scores lower. A rule judges the
+   cleaned design, which never holds an override setting, so it needs no
+   exception for one.
+4. If it blocks a cheat, add an operator to `tools/mutate.py` that says what
+   the reward must do with it (stop at a given stage, score the same, or stay
+   in the targets stage and score lower) and re-make
    `tests/data/mutation_expected.json` (the command is in `tests/test_mutations.py`).
 5. Re-run the calibration and check that no sound reference moved:
    `python -X utf8 -m rocket_reward.tools.calibrate --meta sft_v5_meta_c94ffa5.jsonl --prompts parsed_prompts.jsonl --out calib.md --json calib.json`
@@ -219,7 +227,9 @@ about three minutes. Two tests of the prompt data also need
    prompt states; they are not in this package (ask the data owners), so give
    their full paths.
    If the model answers move, regenerate `tests/data/model_val_scored.json` on
-   purpose and say why in `tests/test_model_scores.py`. Update DESIGN.md.
+   purpose and say why in `tests/test_model_scores.py`. If a reference changes
+   stage, rebuild the RL prompts (below) and update REFERENCE_ROCKETS.md.
+   Update DESIGN.md.
 
 ## Rebuilding the data files
 
@@ -245,13 +255,44 @@ Every tool prints its arguments with `--help`.
 * The verifiers adapter follows the verifiers 0.4.1 source but has never been
   run against the real library.
 * One answer with many parts and a long descent (huge parachutes) can take
-  tens of seconds; such answers score no more than 0.40. Set trainer timeouts with that in mind.
-* 32 of the 197 reference designs (96 of the 594 rows) do not pass, and 4 more
-  carry a defect; [REFERENCE_ROCKETS.md](REFERENCE_ROCKETS.md) lists them for
-  the data owners. The RL prompt file leaves them out.
+  far longer than the usual fraction of a second. A run that takes longer
+  than the helper's wall-clock limit (30 s plus 10 s per flight, `sim.py`) is
+  tried once more on a fresh helper, and if it is still stuck it scores 0.40,
+  the floor of the build stage. Set trainer timeouts with that in mind.
+* 38 of the 197 reference designs (114 of the 594 rows) do not pass, and 1 more
+  (3 rows) passes with a defect; [REFERENCE_ROCKETS.md](REFERENCE_ROCKETS.md)
+  lists them for the data owners. The RL prompt file leaves them out.
 * The stage 6 limits were measured on the references with their own written
-  densities, while the reward flies the material table's densities (see the
-  V4-0171 note in REFERENCE_ROCKETS.md).
+  densities and their mass overrides, while the reward flies the material
+  table's densities and no overrides (see the V4-0171 note in
+  REFERENCE_ROCKETS.md).
+* Override settings (`overridemass`, `overridecg`, `overridecd` and their
+  `overridesubcomponents` switches) are removed, so a design is scored without
+  the overrides it writes. To add mass, add a mass component. Six reference
+  designs pass only with their overrides and now fail (REFERENCE_ROCKETS.md,
+  "Sound only with their overrides").
+* A mass component written as a point (length or radius 0) is not
+  density-checked, so heavy nose ballast is accepted as real mass. Moving
+  V4-0205's 12.69 kg point mass to the nose tip raises its stability from
+  2.18 to 5.12 calibres and still scores 0.835.
+* Inner tubes, tube couplers and centering rings may have zero wall thickness
+  and then weigh nothing. A minimum would fail sound references (33 inner
+  tubes and 15 couplers in the references have a 0 wall once their overrides
+  are removed).
+* A wrong named motor only halves the targets credit (`ladder.MOTORS_CREDIT_MIN`),
+  so flying another real motor can pay when the named one would miss an
+  `about` apogee target by more than about 1.35 times (`ladder.closeness`
+  gives 0.4987 there, under the swap's 0.5). With both `motors` and
+  `motor_class` stated and the class two or more letters away, the swap earns
+  0.25 and pays only past about 2.2 times (0.2503 there).
+* A landing faster than the prompt asks but under 9 m/s now stays in the
+  targets stage with a lower score, where it used to stop at flight: 1% over
+  a limit given with tolerance 0 scores 0.9885, twice the limit 0.7795, and a
+  rocket asked for at most 3 m/s (tolerance 0) that lands at 8.9 m/s 0.756.
+* Any rocket that flies safely in every wind still scores at least 0.70,
+  however far it misses the targets: on the 400 designs of the review's
+  attack search, the
+  57 that miss the apogee by more than 50% score 0.702-0.806.
 
 ## Files
 

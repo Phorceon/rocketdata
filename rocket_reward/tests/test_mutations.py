@@ -16,6 +16,46 @@ Re-make the snapshot on purpose (and say why) with:
         --designs <the "designs" list of the snapshot> --operators <its "operators" list> \\
         --out report.md --write-expected rocket_reward/tests/data/mutation_expected.json
 
+Re-made 2026-11-19 after three changes made the same day ("targets": stage 7
+is the product of the target credits and the prompt's landing number moved
+from stage 6 to stage 7; "overrides": the cleaning removes every override
+setting; "sizes": parts are judged by how far they lie outside the airframe,
+and stage 4 bounds many more sizes). Same 10 designs; 91 cases -> 131.
+Changes from the snapshot before them (2 cases dropped, 42 added):
+  * 13 operators added, 42 cases: override_over_limit, override_negative,
+    unstable_fake_cg_override and light_stage_mass_override (overrides; each
+    scores exactly as its copy without the tags), far_away_thin_part,
+    far_away_mass, far_away_recovery, pod_part_far_away, lug_behind_tail and
+    closed_tail (sizes; all stop at build), chute_too_small_for_prompt,
+    landing_just_under_hard_limit and swap_to_unnamed_motor (targets; each
+    stays in targets with a lower score). pod_part_far_away has no case
+    here: none of these designs has a pod.
+  * ballast_overrides, ballast_cg_override, lighten_rocket_override and
+    lighten_one_stage_override (17 cases): build 0.41-0.43 -> targets 1.0,
+    like their originals (overrides)
+  * chute_far_too_small no longer applies to row-007 (largest parachute
+    0.38 m) and row-016 (0.30 m): the 0.15 m floor shrinks them less than four
+    times, and row-016 landed at 7.8 m/s, under the 9 m/s limit;
+    chute_too_small_for_prompt covers that case. On row-001, -028 and -040 it
+    stays at flight and scores higher, 0.5310 -> 0.5492, 0.5391 -> 0.5647 and
+    0.5379 -> 0.5667: no prompt-landing violation on top of the 9 m/s one
+    (targets; -028 and -040 also fly without their overrides)
+  * weaker_motor: row-001 0.8712 -> 0.7854, row-007 0.8678 -> 0.7819, row-016
+    0.8852 -> 0.8086, row-040 0.8817 -> 0.8015; the apogee miss now
+    multiplies instead of being averaged with the met targets (targets;
+    -007 and -040 also fly without their overrides); row-028 flight
+    0.6723 -> 0.6746 (overrides)
+  * booster_without_recovery on row-007 0.5919 -> 0.5917 and
+    zero_ejection_delay on row-040 0.5536 -> 0.5538: flown without overrides
+  * model:row-013: motor 0.2471 -> 0.2423, and its repair_motor_spelling case
+    build 0.4243 -> limits 0.3400: an unknown line material is no longer
+    excused by a mass override (overrides)
+  * model:row-048: motor 0.2740 -> 0.2651 (its shadow flight is scored by the
+    product and flies without overrides), and its repair_motor_spelling case
+    targets 0.9910 -> 0.9395: its 2.34 kg against the asked 2.20 kg (credit
+    0.80) now counts in full (targets), and without overrides it weighs
+    2.34 kg, not 2.38 kg (overrides)
+
 Known findings (KNOWN_FINDINGS below) are cases where the reward does not yet
 do what the operator says it must. They are left for the owner to decide; the
 test checks that they still behave as recorded, so a fix shows up here.
@@ -46,11 +86,16 @@ REFERENCE_OPS = [op for op in M.OPERATORS if not op.repair]
 REPAIR_OPS = [op for op in M.OPERATORS if op.repair]
 
 
+REQUIREMENTS = json.loads(REQUIREMENTS_PATH.read_text(encoding="utf-8"))
+
+
 def _tm_cases(rows: list, key: str) -> list:
-    """One DesignCase per row (no merging), as collect_designs builds them."""
+    """One DesignCase per row (no merging), as collect_designs builds them,
+    with the row's own requirements (some operators size parts from them)."""
     out = []
     for r in rows:
-        found, _ = M.collect_designs([{"id": r["id"], "answer": r.get(key) or "", "requirements": {}}])
+        found, _ = M.collect_designs([{"id": r["id"], "answer": r.get(key) or "",
+                                       "requirements": REQUIREMENTS.get(r["id"]) or {}}])
         out.extend(found)
     return out
 
@@ -82,12 +127,23 @@ def test_operator_list_is_well_formed():
     # Every cheat named in the brief is covered, and each stage 1-6 has operators.
     assert {op.expect for op in M.OPERATORS} >= set(M.STOP_STAGES)
     assert len(M.OPERATORS) >= 40
+    # The cheats the 2026-11-19 targets and sizes reviews asked for, with the stage that must stop them.
+    wanted = {"far_away_thin_part": "build", "far_away_mass": "build", "far_away_recovery": "build",
+              "pod_part_far_away": "build", "lug_behind_tail": "build", "closed_tail": "build",
+              "zero_width_nose": "limits", "auto_negative": "limits", "giant_packed_chute": "limits",
+              "floating_fin_root": "limits", "absurd_rail_button": "limits", "broken_counts": "limits",
+              "endless_delay": "limits", "coin_weight": "limits", "absurd_angle_or_offset": "limits",
+              "chute_far_too_small": "flight", "chute_too_small_for_prompt": M.EXPECT_LOWER_IN_TARGETS,
+              "swap_to_unnamed_motor": M.EXPECT_LOWER_IN_TARGETS,
+              "landing_just_under_hard_limit": M.EXPECT_LOWER_IN_TARGETS}
+    assert {n: M.operator_named(n).expect for n in wanted} == wanted
 
 
 def test_every_reference_operator_applies_to_some_val_design(mutation_gold_cases):
     table = default_motor_table()
     for op in REFERENCE_OPS:
-        applied = sum(M.apply_operator(op, c.design, table) is not None for c in mutation_gold_cases)
+        applied = sum(M.apply_operator(op, c.design, table, c.requirements) is not None
+                      for c in mutation_gold_cases)
         assert applied >= 3, f"{op.name} applies to {applied} of 48 reference answers"
 
 
@@ -96,8 +152,23 @@ def test_operators_never_change_their_input(mutation_gold_cases):
     case = mutation_gold_cases[0]
     before = json.dumps(case.design, sort_keys=True)
     for op in M.OPERATORS:
-        M.apply_operator(op, case.design, table)
+        M.apply_operator(op, case.design, table, case.requirements)
+        M.apply_untagged(op, case.design, table, case.requirements)
     assert json.dumps(case.design, sort_keys=True) == before
+
+
+def test_requirement_operators_need_a_landing_number(mutation_gold_cases):
+    """The operators that size parachutes from the prompt's landing number do
+    not apply without it, and the others do not look at the requirements."""
+    table = default_motor_table()
+    case = next(c for c in mutation_gold_cases if c.id.startswith("row-016"))
+    users = [op for op in M.OPERATORS if op.uses_requirements]
+    assert {op.name for op in users} == {"chute_too_small_for_prompt", "landing_just_under_hard_limit"}
+    for op in users:
+        assert M.apply_operator(op, case.design, table, case.requirements) is not None, op.name
+        assert M.apply_operator(op, case.design, table) is None, op.name
+        no_landing = {k: v for k, v in case.requirements.items() if k != "landing_ms"}
+        assert M.apply_operator(op, case.design, table, no_landing) is None, op.name
 
 
 def test_the_original_is_rewritten_the_same_way(mutation_gold_cases):
@@ -119,7 +190,7 @@ def test_operator_stops_where_it_must(mutation_gold_cases, name):
     table = default_motor_table()
     applied = 0
     for c in mutation_gold_cases:
-        m = M.apply_operator(op, c.design, table)
+        m = M.apply_operator(op, c.design, table, c.requirements)
         if m is None:
             continue
         applied += 1
@@ -160,7 +231,8 @@ def test_repairs_apply_to_real_model_answers_and_get_further(mutation_model_case
 def test_repairs_leave_sound_and_other_answers_alone(mutation_gold_cases):
     table = default_motor_table()
     for op in REPAIR_OPS:
-        assert all(M.apply_operator(op, c.design, table) is None for c in mutation_gold_cases), op.name
+        assert all(M.apply_operator(op, c.design, table, c.requirements) is None
+                   for c in mutation_gold_cases), op.name
 
 
 # ------------------------------------------------------------------ judging and the report
@@ -173,6 +245,12 @@ def test_repairs_leave_sound_and_other_answers_alone(mutation_gold_cases):
     (M.EXPECT_LOWER, ("targets", 0.9), ("targets", 0.8), True),
     (M.EXPECT_LOWER, ("targets", 0.9), ("targets", 0.9), False),
     (M.EXPECT_LOWER, ("flight", 0.55), ("flight", 0.6), None),
+    (M.EXPECT_LOWER, ("targets", 0.9), ("flight", 0.6), True),
+    (M.EXPECT_LOWER_IN_TARGETS, ("targets", 1.0), ("targets", 0.8), True),
+    (M.EXPECT_LOWER_IN_TARGETS, ("targets", 1.0), ("flight", 0.6), False),
+    (M.EXPECT_LOWER_IN_TARGETS, ("targets", 1.0), ("targets", 1.0), False),
+    (M.EXPECT_LOWER_IN_TARGETS, ("targets", 0.9), ("targets", 0.95), None),   # the original misses a target
+    (M.EXPECT_LOWER_IN_TARGETS, ("build", 0.42), ("build", 0.41), None),
     (M.EXPECT_SAME, ("targets", 0.9), ("targets", 0.9), True),
     (M.EXPECT_SAME, ("targets", 0.9), ("targets", 0.91), False),
     (M.EXPECT_SAME_OR_HIGHER, ("targets", 0.9), ("targets", 0.95), True),
@@ -268,7 +346,7 @@ def test_ordering_promises(mutation_subset_results):
             broken.append(f"{key}: must {row['expect']}, {row['words']}")
     assert not broken, "\n".join(broken)
     judged = [r for r in summary["rows"] if r["ok"] is not None]
-    assert {r["expect"] for r in judged} >= {"build", "flight", M.EXPECT_LOWER, M.EXPECT_SAME,
-                                             M.EXPECT_SAME_OR_HIGHER, M.EXPECT_HIGHER}
+    assert {r["expect"] for r in judged} >= {"build", "flight", M.EXPECT_LOWER, M.EXPECT_LOWER_IN_TARGETS,
+                                             M.EXPECT_SAME, M.EXPECT_SAME_OR_HIGHER, M.EXPECT_HIGHER}
     repairs = [r for r in summary["rows"] if r["expect"] == M.EXPECT_HIGHER]
     assert len(repairs) == 5 and all(r["score"] > r["before_score"] for r in repairs)

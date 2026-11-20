@@ -10,7 +10,7 @@ import json
 import pytest
 
 from answers import design_of
-from rocket_reward.clean import DRAG_OVERRIDE_TAGS, clean_design
+from rocket_reward.clean import OVERRIDE_TAG_PREFIX, clean_design
 from rocket_reward.materials import default_material_table, means_no_material
 from rocket_reward.ork import FILE_VERSION
 from rocket_reward.tree import (MATERIAL_TAGS, attrs_of, child as kid, child_value, rocket_of as rocket, tag_of,
@@ -134,13 +134,15 @@ def test_reference_designs_lose_only_what_the_reward_sets(gold_rows):
         out, _ = clean_design(d, TABLE)
         assert "simulations" not in tags(out)
         assert value(rocket(out), "referencetype") == "maximum"
-        # every part, mass and balance override tag and setting outside the
-        # simulations is kept; only a setting repeated with identical content
-        # loses its extra copy, drag overrides go, and so does a material
-        # with no name ("RS:" shroud lines)
-        gone = ("motor_id",) + DRAG_OVERRIDE_TAGS + MATERIAL_TAGS
-        before = [t for t in tags_outside_simulations(without_exact_repeats(d)) if t not in gone]
+        # every part and setting outside the simulations is kept; only a
+        # setting repeated with identical content loses its extra copy, every
+        # override setting goes, and so does a material with no name ("RS:"
+        # shroud lines)
+        gone = ("motor_id",) + MATERIAL_TAGS
+        before = [t for t in tags_outside_simulations(without_exact_repeats(d))
+                  if t not in gone and not t.startswith(OVERRIDE_TAG_PREFIX)]
         after = [t for t in tags_outside_simulations(out) if t not in gone]
+        assert not any(t.startswith(OVERRIDE_TAG_PREFIX) for t in after), row["id"]
         assert before == after, row["id"]
         named = [n for n in walk(without_exact_repeats(d)) if tag_of(n) in MATERIAL_TAGS
                  and not means_no_material(value_of(n, ""))]
@@ -251,10 +253,11 @@ def test_motor_keeps_only_known_settings_and_the_table_digest():
     assert kid(m, "thrust") is None and value(m, "type") == "reload"
 
 
-def test_override_tags_are_kept_for_now():
-    out, _ = clean_design(small_design([]), TABLE)
+def test_override_tags_are_removed():
+    out, notes = clean_design(small_design([]), TABLE)
     t = tags(out)
-    assert "overridemass" in t and "overridecg" in t
+    assert "overridemass" not in t and "overridecg" not in t
+    assert any("removed 2 override setting(s)" in n for n in notes)
 
 
 def test_no_step_is_left_for_later():
@@ -262,17 +265,17 @@ def test_no_step_is_left_for_later():
     assert "LATER STEP" not in open(clean.__file__, encoding="utf-8").read()
 
 
-def test_natural_copy_removes_every_override_and_nothing_else():
+def test_cleaning_removes_every_override_and_nothing_else():
     from rocket_reward import clean
     tree = {"openrocket": {"children": [{"rocket": {"children": [{"subcomponents": {"children": [
         {"stage": {"children": [{"subcomponents": {"children": [{"bodytube": {"children": [
             {"overridemass": {"value": 0.2}}, {"overridesubcomponentsmass": {"value": "true"}},
             {"overridecg": {"value": 0.1}}, {"length": {"value": 0.5}}]}}]}}]}}]}}]}}]}}
     before = json.dumps(tree)
-    natural, removed = clean.natural_copy(tree)
-    assert removed == 3 and clean.override_count(tree) == 3 and clean.override_count(natural) == 0
+    out, _ = clean_design(tree, TABLE)
+    assert clean.override_count(tree) == 3 and clean.override_count(out) == 0
     assert json.dumps(tree) == before
-    assert "length" in json.dumps(natural)
+    assert "length" in json.dumps(out)
 
 
 # ------------------------------------------------------------------ file version, drag, materials
@@ -290,7 +293,7 @@ def test_file_version_is_forced(version):
     assert clean_design(out, TABLE)[1] == []
 
 
-def test_drag_overrides_are_removed_mass_and_balance_overrides_stay():
+def test_drag_mass_and_balance_overrides_are_all_removed():
     d = small_design([])
     for n in walk({"openrocket": d["openrocket"]}):
         if tag_of(n) in ("nosecone", "bodytube"):
@@ -299,8 +302,8 @@ def test_drag_overrides_are_removed_mass_and_balance_overrides_stay():
     out, notes = clean_design(d, TABLE)
     t = tags(out)
     assert "overridecd" not in t and "overridesubcomponentscd" not in t
-    assert "overridemass" in t and "overridecg" in t
-    assert any("drag override" in n for n in notes)
+    assert "overridemass" not in t and "overridecg" not in t
+    assert any("removed 6 override setting(s)" in n for n in notes)
 
 
 MATERIALS = default_material_table()

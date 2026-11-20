@@ -21,10 +21,10 @@ What happens to one reference row:
    while every sibling prompt of the same design agrees with it, is rewritten
    to the reference wind (the one known case is V4-0099 casual).
 2. Measure. The reference answer is scored through the whole ladder with the
-   record parsed from the prompt, except that a stated landing limit is set to
-   limits.LANDING_HARD_MAX_MS for this run: an old landing number must not stop
-   a sound rocket before it is measured. The measured values are the ones the
-   targets stage reads (Result.flags["stage_info"]["targets"]).
+   record parsed from the prompt. The prompt's numbers only shape the targets
+   stage's credit (stage 6 judges no prompt number), so an old number cannot
+   stop a sound rocket before it is measured. The measured values are the ones
+   the targets stage reads (Result.flags["stage_info"]["targets"]).
 3. Keep only references that pass stages 1-6, fly every motor the prompt names
    and are of the class it names. Everything else is excluded with the stage
    and the reason.
@@ -431,15 +431,6 @@ def _target_credits(result: Result) -> dict[str, float]:
     return {r["target"]: r.get("credit") for r in rows or [] if isinstance(r, dict) and "target" in r}
 
 
-def _measure_record(rec: dict[str, Any]) -> dict[str, Any]:
-    """The record used to measure: the prompt's own, with a stated landing
-    limit at the hard landing limit so an old number cannot stop a sound rocket."""
-    out = json.loads(json.dumps(rec))
-    if "landing_ms" in out:
-        out["landing_ms"] = {"value": limits.LANDING_HARD_MAX_MS, "kind": "max", "tol": 0.0}
-    return out
-
-
 def _system_of(row: dict[str, Any]) -> Optional[str]:
     for m in row.get("messages") or []:
         if isinstance(m, dict) and m.get("role") == "system":
@@ -483,7 +474,7 @@ def build_rows(rows: Sequence[dict[str, Any]], scorer: Scorer) -> list[Outcome]:
 
     todo = [i for i in range(len(rows)) if recs0[i] is not None]
     results = scorer([_answer_text(rows[i]) for i in todo],
-                     [Requirements.from_dict(_measure_record(recs0[i])) for i in todo])
+                     [Requirements.from_dict(recs0[i]) for i in todo])
     proof: list[tuple[int, dict[str, Any], str]] = []
     for i, res in zip(todo, results):
         r, o = rows[i], outcomes[i]
@@ -594,8 +585,8 @@ def readme_text(rows: Sequence[dict[str, Any]], outcomes: Sequence[Outcome], met
            + (", ".join(f"{o.row_id} {o.wind_fix.old_text} -> {o.wind_fix.new_text} m/s"
                         for o in outcomes if o.wind_fix) or "none") + ").",
            "2. The reference answer is scored through the whole ladder with the record parsed from its prompt "
-           f"(a stated landing limit is set to {limits.LANDING_HARD_MAX_MS:g} m/s for this run only, so an old "
-           "number cannot stop a sound rocket before it is measured). The measured values are the ones the "
+           "(the prompt's numbers only shape the targets stage's credit, so an old number cannot stop a sound "
+           "rocket before it is measured). The measured values are the ones the "
            "targets stage reads from the 1x-wind flight: times from the first ignition, the main section's "
            "landing speed, the widest main-body tube, the liftoff mass.",
            "3. Only references that pass stages 1-6 and fly the motors the prompt names are kept.",

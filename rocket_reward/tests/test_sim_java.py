@@ -235,7 +235,8 @@ def test_landing_speed_is_read_at_the_touchdown_sample(helper):
 def test_landing_speed_is_the_touchdown_speed_when_openrocket_keeps_simulating(helper, model_rows):
     """Model answer row-023 lands while its motor still burns; OpenRocket keeps
     simulating it on the ground, so its last sample is at rest. The landing
-    speeds are read at the GROUND_HIT moment instead (about 8.4 m/s)."""
+    speeds are read at the GROUND_HIT moment instead (about 6.9 m/s since the
+    cleaning removes its mass overrides; 8.4 m/s with them)."""
     from rocket_reward import Requirements, scoring
     from rocket_reward.flight import flight_plan, rail_length_m
 
@@ -247,7 +248,7 @@ def test_landing_speed_is_the_touchdown_speed_when_openrocket_keeps_simulating(h
     for f in reply["flights"]:
         main = f["branches"][0]
         assert main["landed"] and main["landing_time_s"] < main["last_time_s"] - 1.0   # kept simulating
-        assert 7.0 < main["landing_vertical_ms"] <= main["landing_total_ms"] < 10.0
+        assert 6.0 < main["landing_vertical_ms"] <= main["landing_total_ms"] < 10.0
         assert main["landing_total_ms"] == pytest.approx(f["ground_hit_ms"], rel=1e-9)
 
 

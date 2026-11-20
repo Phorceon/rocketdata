@@ -1,6 +1,6 @@
 # RL prompts v1
 
-`rl_prompts_v1.jsonl` holds 482 prompts for reinforcement learning, one per line. Each is a reference prompt whose numbers were rewritten from the reward's own flight of the reference design, so the prompt text, its requirements record and the reward's physics agree, and the reference answer scores at least 0.99 on it. `excluded_references.jsonl` lists the 112 reference rows that were left out, with the stage and the reason.
+`rl_prompts_v1.jsonl` holds 474 prompts for reinforcement learning, one per line. Each is a reference prompt whose numbers were rewritten from the reward's own flight of the reference design, so the prompt text, its requirements record and the reward's physics agree, and the reference answer scores at least 0.99 on it. `excluded_references.jsonl` lists the 120 reference rows that were left out, with the stage and the reason.
 
 ## Fields
 
@@ -18,7 +18,7 @@
 Source: `sft_v5_meta_c94ffa5.jsonl` (594 reference rows). For every row:
 
 1. A stated wind that disagrees with the wind the reference flew in, while every sibling prompt of the same design agrees, is set to the reference wind (1 row(s): V4-0099-casual:casual 5.9 -> 4.5 m/s).
-2. The reference answer is scored through the whole ladder with the record parsed from its prompt (a stated landing limit is set to 9 m/s for this run only, so an old number cannot stop a sound rocket before it is measured). The measured values are the ones the targets stage reads from the 1x-wind flight: times from the first ignition, the main section's landing speed, the widest main-body tube, the liftoff mass.
+2. The reference answer is scored through the whole ladder with the record parsed from its prompt (the prompt's numbers only shape the targets stage's credit, so an old number cannot stop a sound rocket before it is measured). The measured values are the ones the targets stage reads from the 1x-wind flight: times from the first ignition, the main section's landing speed, the widest main-body tube, the liftoff mass.
 3. Only references that pass stages 1-6 and fly the motors the prompt names are kept.
 4. Every stated number is rewritten in place, keeping the unit, thousands separators and decimals as written: `about` gets the measured value; `max` the measured value plus a margin, rounded up (landing speed +10% and never above 9 m/s, flight time +5%, mass +5%, body diameter +2%); `min` the measured value minus the margin, rounded down. Wind and motor names are not changed. When the written precision is too coarse (an `about` number more than 2% (or half its tolerance) off the measured value, or a rounded-up limit with more than twice its margin), one more decimal is written. A spelled-out number stays spelled out when a word fits (`four minutes` -> `three minutes`), else it becomes digits (`a minute` -> `1.4 minutes`).
 5. The new text is parsed again and must give the same fields and kinds with no unplaced number; the reference must score at least 0.99 on the new record.
@@ -37,22 +37,22 @@ Kept / all reference rows:
 
 | style | train | val | test | all |
 |---|---|---|---|---|
-| casual | 130 / 159 | 13 / 16 | 18 / 23 | 161 / 198 |
-| engineering | 129 / 159 | 13 / 16 | 17 / 23 | 159 / 198 |
-| original | 131 / 159 | 13 / 16 | 18 / 23 | 162 / 198 |
-| all | 390 / 477 | 39 / 48 | 53 / 69 | 482 / 594 |
+| casual | 128 / 159 | 12 / 16 | 18 / 23 | 158 / 198 |
+| engineering | 128 / 159 | 12 / 16 | 17 / 23 | 157 / 198 |
+| original | 129 / 159 | 12 / 16 | 18 / 23 | 159 / 198 |
+| all | 385 / 477 | 36 / 48 | 53 / 69 | 474 / 594 |
 
-Kept val and test rows whose family has a train row (`leaks_family`): val 18 of 39, test 32 of 53.
+Kept val and test rows whose family has a train row (`leaks_family`): val 18 of 36, test 32 of 53.
 
 Excluded rows by reason:
 
 | stage | reason | rows | by split | by style | designs |
 |---|---|---|---|---|---|
-| flight | stage_flight | 42 | train 33, val 6, test 3 | casual 14, engineering 14, original 14 | V4-0003, V4-0048, V4-0049, V4-0120, V4-0171, V4-0285, V4-0297, V4-0298, V4-0299, V4-0302, V4-0303, V4-0304, V4-0305, V4-0316 |
-| build | stage_build | 30 | train 24, val 3, test 3 | casual 10, engineering 10, original 10 | V4-0002, V4-0062, V4-0195, V4-0210, V4-0213, V4-0215, V4-0222, V4-0227, V4-0229, V4-0230 |
-| limits | stage_limits | 24 | train 15, test 9 | casual 8, engineering 8, original 8 | V4-0021, V4-0075, V4-0101, V4-0163, V4-0165, V4-0167, V4-0172, V4-0232 |
-| targets | proof_below_min | 12 | train 12 | casual 4, engineering 4, original 4 | V4-0045, V4-0162, V4-0168, V4-0189 |
-| targets | motor_not_flown | 4 | train 3, test 1 | casual 1, engineering 3 | V4-0025, V4-0076, V4-0193 |
+| flight | stage_flight | 57 | train 45, val 9, test 3 | casual 19, engineering 19, original 19 | V4-0003, V4-0025, V4-0027, V4-0048, V4-0049, V4-0120, V4-0162, V4-0166, V4-0171, V4-0189, V4-0285, V4-0297, V4-0298, V4-0299, V4-0302, V4-0303, V4-0304, V4-0305, V4-0316 |
+| limits | stage_limits | 36 | train 27, test 9 | casual 12, engineering 12, original 12 | V4-0021, V4-0062, V4-0075, V4-0101, V4-0163, V4-0165, V4-0167, V4-0172, V4-0222, V4-0225, V4-0229, V4-0232 |
+| build | stage_build | 21 | train 15, val 3, test 3 | casual 7, engineering 7, original 7 | V4-0002, V4-0195, V4-0210, V4-0213, V4-0215, V4-0227, V4-0230 |
+| targets | motor_not_flown | 3 | train 2, test 1 | casual 1, engineering 2 | V4-0076, V4-0193 |
+| targets | proof_below_min | 3 | train 3 | casual 1, engineering 1, original 1 | V4-0045 |
 
 ## How far the numbers moved
 
@@ -60,14 +60,14 @@ Over the kept prompts, per field and kind: how many numbers were stated, how man
 
 | field | kind | stated | text changed | median change | median size | largest size | range | one more decimal | words to digits |
 |---|---|---|---|---|---|---|---|---|---|
-| apogee_m | about | 482 | 430 | +0.1% | 0.4% | 39.5% | -39.5% .. +17.2% | 0 | 0 |
-| body_diameter_m | about | 94 | 90 | -8.0% | 8.0% | 20.0% | -20.0% .. +0.0% | 10 | 0 |
-| body_diameter_m | max | 177 | 169 | -9.2% | 9.2% | 18.3% | -18.3% .. +2.2% | 35 | 2 |
-| flight_time_s | about | 155 | 148 | -6.2% | 6.2% | 51.0% | -51.0% .. +3.9% | 19 | 7 |
-| flight_time_s | max | 268 | 243 | +4.4% | 5.0% | 48.0% | -48.0% .. +30.5% | 5 | 0 |
-| landing_ms | max | 480 | 384 | +0.0% | 4.3% | 31.2% | -31.2% .. +14.3% | 39 | 0 |
-| mass_kg | about | 77 | 76 | -13.6% | 13.6% | 17.8% | -17.8% .. +0.0% | 27 | 0 |
-| mass_kg | max | 177 | 142 | -3.6% | 5.0% | 25.7% | -21.4% .. +25.7% | 32 | 0 |
+| apogee_m | about | 474 | 442 | +0.0% | 1.5% | 103.1% | -39.5% .. +103.1% | 0 | 0 |
+| body_diameter_m | about | 92 | 88 | -7.6% | 7.6% | 20.0% | -20.0% .. +0.0% | 10 | 0 |
+| body_diameter_m | max | 174 | 166 | -9.3% | 9.3% | 18.3% | -18.3% .. +2.2% | 32 | 2 |
+| flight_time_s | about | 152 | 145 | -5.1% | 6.2% | 87.7% | -51.0% .. +87.7% | 19 | 7 |
+| flight_time_s | max | 264 | 248 | +3.1% | 5.0% | 116.7% | -48.0% .. +116.7% | 9 | 0 |
+| landing_ms | max | 473 | 393 | +0.0% | 4.7% | 32.5% | -32.5% .. +31.3% | 47 | 0 |
+| mass_kg | about | 74 | 74 | -14.3% | 14.3% | 36.8% | -36.8% .. +4.5% | 33 | 0 |
+| mass_kg | max | 177 | 155 | -4.5% | 6.7% | 52.9% | -37.1% .. +52.9% | 36 | 0 |
 
 ## Families
 

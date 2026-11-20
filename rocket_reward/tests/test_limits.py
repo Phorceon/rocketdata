@@ -134,7 +134,9 @@ def test_model_answers_give_normal_results(model_rows):
         r = check(d)
         assert 0.0 <= r.credit <= 1.0
         seen[row["id"]] = r
-    assert sum(r.passed for r in seen.values()) >= 35
+    # 33 (35 before 2026-11-19: a mass override no longer excuses the unknown
+    # materials of row-013 and row-023)
+    assert sum(r.passed for r in seen.values()) >= 33
     # fins five times the body width, used as air brakes
     assert "times its width" in " ".join(seen["row-017-df7ff989"].reasons)
     # a component type OpenRocket does not have
@@ -223,23 +225,27 @@ def test_wall_thickness(gold):
     for zero in (0, 0.0, "0", "0.0f"):
         r = fails_with(set_field(copy.deepcopy(bare), "bodytube", "thickness", zero), "0 mm")
         assert r.credit <= thin.credit
-    # a part whose own mass is overridden gains nothing from its wall, so any wall passes
+    # a mass override excuses no wall (the cleaning removes every override before stage 4)
     for wall in (0.0, 0.00001):
         d = set_field(set_field(copy.deepcopy(bare), "bodytube", "thickness", wall), "bodytube", "overridemass", 1.2)
-        assert check(d).passed
-    # ... and so does a part inside a stage that overrides the mass of everything in it
+        fails_with(d, "wall")
     stage = next(s for s in nodes(bare, "stage") if T.child(s, "subcomponents") is not None)
     stage["stage"]["children"][:0] = [{"overridemass": {"value": 9.0}}, {"overridesubcomponents": {"value": 1}}]
-    assert check(set_field(copy.deepcopy(bare), "bodytube", "thickness", 0.0)).passed
+    fails_with(set_field(copy.deepcopy(bare), "bodytube", "thickness", 0.0), "0 mm")
 
 
 def test_tube_radius_and_length(gold):
     fails_with(set_field(copy.deepcopy(gold), "bodytube", "radius", 0.5), "radius", "150 mm")
     fails_with(set_field(copy.deepcopy(gold), "bodytube", "radius", 0.001), "radius", "2.5 mm")
     fails_with(set_field(copy.deepcopy(gold), "bodytube", "length", 10.0), "length", "3.66 m")
-    # zero and "auto" radii are taken from the neighbouring part
-    for auto in (0, "auto", "auto 0.025"):
+    # "auto" radii are taken from the neighbouring part
+    for auto in ("auto", "auto 0.025"):
         assert check(set_field(copy.deepcopy(gold), "bodytube", "radius", auto)).passed
+    # Changed on purpose (2026-11-19): a written 0 is not "auto" in OpenRocket but a
+    # tube of no width, so it fails; it passes only on an empty tube of length 0
+    fails_with(set_field(copy.deepcopy(gold), "bodytube", "radius", 0), "radius", "no size")
+    empty = set_field(set_field(copy.deepcopy(gold), "bodytube", "radius", 0), "bodytube", "length", 0.0)
+    assert not any("radius" in r for r in check(empty).reasons)
 
 
 def test_nose_cone_and_transition_sizes(gold):
@@ -376,16 +382,16 @@ def test_each_distinct_unknown_name_counts_once_and_at_most_three(gold):
     assert any("more unknown material name(s) are not counted" in x for x in r.reasons)
 
 
-def test_unknown_name_on_a_part_with_its_own_mass_override_is_only_noted(gold):
+def test_unknown_name_counts_also_on_a_part_with_a_mass_override(gold):
+    """A mass override no longer excuses a material: the cleaning removes it."""
     d = copy.deepcopy(gold)
     tube = nodes(d, "bodytube")[0]
     tube["bodytube"]["children"].append({"overridemass": {"value": 0.5}})
     for c in tube["bodytube"]["children"]:
         if T.tag_of(c) == "material":
             c["material"]["value"] = "Unobtainium"
-    r = check(d)
-    assert r.passed, r.reasons
-    assert any("Unobtainium" in n and "overrides its own mass" in n for n in r.info["notes"])
+    r = fails_with(d, "Unobtainium", "not in the material table")
+    assert "notes" not in r.info
 
 
 def test_density_bounds_apply_only_to_unknown_names(gold):
@@ -442,8 +448,8 @@ def test_failing_stays_inside_the_band(gold):
 def test_every_limit_names_its_source():
     """Each upper-case constant in limits.py is followed by a comment on its line
     (or, for a multi-line value, a comment block just above it). The second of
-    a min/max pair may share the note of the line just above it
-    (OVERRIDE_MASS_RATIO_MIN and _MAX)."""
+    a min/max pair may share the note of the line just above it (a NAME_MIN
+    line followed by NAME_MAX)."""
     src = (PKG / "limits.py").read_text(encoding="utf-8")
     lines = src.splitlines()
     tree = ast.parse(src)
@@ -597,8 +603,9 @@ def test_lighter_wall_is_never_better(gold):
     assert last == 1.0
 
 
-def test_areal_density_skips_parts_whose_mass_is_overridden(gold):
+def test_areal_density_is_judged_also_on_parts_with_a_mass_override(gold):
+    """A mass override no longer excuses a foam wall: the cleaning removes it."""
     d = _materials_named(copy.deepcopy(gold), "bodytube", FOAM, drop_override=False)
     for tube in nodes(d, "bodytube"):
         tube["bodytube"]["children"].append({"overridemass": {"value": 0.2}})
-    assert not any("weighs" in x for x in check(d).reasons)
+    assert any("weighs" in x for x in check(d).reasons)

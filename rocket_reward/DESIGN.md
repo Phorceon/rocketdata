@@ -57,10 +57,10 @@ The table lives in `ladder.py` and nowhere else.
 3. **A broken machine is never a score.** No Java, a wrong jar, missing data files
    or a failed self-test raise `RewardSetupError`. They never turn into a number.
 4. **Skipping a check never beats failing it.** A design the simulator cannot
-   build, or that hangs or crashes it, gets the floor of the build stage (0.40),
-   also when this happens to its natural twin (stage 5).
+   build, or that hangs or crashes it, gets the floor of the build stage (0.40).
 5. **The model cannot set its own physics.** Launch conditions, material
-   densities and motor data are written by the reward (section 5).
+   densities and motor data are written by the reward, and every mass,
+   balance or drag override is removed (section 5).
 6. **Same answer, same score.** Scoring uses fixed seeds and no wall-clock values.
 
 ### How credit is computed
@@ -194,7 +194,8 @@ and give the facts-only credit.
 
 These are bounds no sound rocket crosses. They exist to block trick values, not
 to grade style, and each is set so that the reference rockets pass. Examples:
-finite numbers everywhere; 1 to 8 fins per set; parachute drag coefficient and
+finite numbers everywhere; no part of size 0 where a size is needed (0 is not
+"auto"); 1 to 8 fins per set; parachute drag coefficient and
 diameter within catalogue range; tube walls and fins not paper-thin; tube sizes
 within catalogue range; fin span not many times the body width; only known
 component types; total motor impulse within the contract limit. Credit uses
@@ -208,13 +209,10 @@ three count, `ladder.MATERIAL_NAMES_COUNTED_MAX`); the reason names it and
 suggests a known name only when one is spelled closely (at least
 `materials.CLOSE_NAME_RATIO_MIN` = 0.7 alike; text only, it never changes a
 score), else it says no name in OpenRocket's list is spelled like it and
-points to the list in `data/material_table.json`. On a part that overrides its own mass the
-material changes nothing, so the name is only noted (`info["notes"]`).
-First bounds on single values stay as a guard before anything is flown (stage 5
-bounds what the overrides do to the whole rocket): mass and balance
-overrides (never negative; at most 20 kg and 3.66 m), and the density of an
-unknown name (never negative; bulk 10 to 25,000 kg/m3, surface up to 5 kg/m2,
-line up to 1 kg/m; skipped on a part whose mass is overridden). A material is
+points to the list in `data/material_table.json`. Every unknown name counts:
+the cleaning removes every override, so no part's mass hides its material.
+The density written for an unknown name is bounded too: never negative; bulk
+10 to 25,000 kg/m3, surface up to 5 kg/m2, line up to 1 kg/m. A material is
 judged as the type OpenRocket loads (`materials.loaded_type`): each slot holds
 one type (a parachute or streamer's cloth is surface, a shock cord and shroud
 lines are line, everything else bulk).
@@ -229,13 +227,42 @@ tall, tube fins no wider than the body they sit on. A count past its limit is
 judged with the "no more than" formula, so a design with hundreds of tiny
 parts stops here in milliseconds instead of taking a minute to fly.
 
+Sizes, positions and counts (added 2026-11-19 after the review; every bound
+clears the references with their overrides removed):
+
+* A written 0 is a part of no size, not "auto". Only the word "auto" (alone or
+  as "auto 0.025") takes the next part's size, and the number after it is
+  judged like a written size. A nose cone base radius must be at least 1 mm.
+  A body tube radius or a nose cone base radius of 0 passes only on a part of
+  length 0 (an empty holder). A transition may end in a point (stage 5's tail
+  rule still needs room for the motor).
+* Trapezoid and elliptical fins need a root chord and a span of at least
+  2 mm, and a trapezoid tip may be at most 3 times its root. Sweep at most 1 m
+  either way, tab height at most 150 mm, fillet radius at most 50 mm.
+* Packed length at most 1.5 m; packed radius at most 150 mm; shroud lines at
+  most 8 m; shock cords at most 25 m.
+* Shroud line count a whole number from 1 to 48. Every `instancecount` a whole
+  number of at least 1.
+* Deployment and stage separation delays at most 20 s and altitudes at most
+  3,000 m, never negative (also inside `separationconfiguration`).
+* Rail button base, flange and screw heights at most 30 mm and inner diameter
+  at most 40 mm, never negative.
+* Positions, axial offsets, tab positions, instance separations and mount
+  overhangs at most 5 m either way. Angles at most 360 degrees either way.
+  Radial positions and offsets at most 0.3 m either way.
+* Motor ejection delay at most 30 s; mount ignition delay at most 20 s.
+* Shoulders at most 0.5 m long; shape parameter at most 1; cluster scale at
+  most 60.
+* A mass component with a packed length and radius may be at most
+  1,000,000 kg/m3 dense. A point mass (length or radius 0) is not judged.
+
 Walls and fins must also weigh enough per area (thickness times the density
 the part flies with: the table's for a known name): a body tube, nose cone,
 transition or tube fin wall at least 0.045 kg/m2 (lightest sound reference:
 0.095, a 0.14 mm cardboard wall), fins at least 0.12 kg/m2 (lightest sound
 reference: 0.27, 1/16 inch balsa). A catalogue-thin wall of foam is not a
-light rocket. Parts whose mass is overridden, solid ("filled") parts and a
-0 mm wall on a part of length 0 are skipped, as for the wall rule.
+light rocket. Solid ("filled") parts and a 0 mm wall on a part of length 0
+are skipped, as for the wall rule.
 
 Every number is in `limits.py` with a one-line note saying where it came from.
 
@@ -254,7 +281,8 @@ positions OpenRocket computed, never on our own copy of its placement rules:
 | fin root past the back / front end of its parent (tube fins: the tubes, in tube lengths) | 0.5 / 1.0 root chord |
 | rigid inside part (ring, bulkhead, engine block, inner tube, coupler) over the airframe's inner radius | 1.08 times |
 | packed inside part (parachute, streamer, shock cord, mass) over the airframe's inner radius | 1.30 times |
-| motor tube behind the airframe / ring, bulkhead or engine block outside it | 50 mm / 20 mm |
+| how far a part lies outside its airframe along the axis, as a distance (not its own uncovered length; a part in a pod or side booster is judged against that pod's shell; a ring, bulkhead, engine block or coupler may also sit on the motor tube holding it): inner (motor) tube / ring, bulkhead, engine block or tube coupler / mass component, shock cord, parachute, streamer, launch lug or rail button | 50 mm / 20 mm / 50 mm |
+| aft radius of a stage's last shell over the radius of a motor firing out of it (pods and side boosters excepted) | at least 0.35 times |
 | motor diameter over its mount's inner diameter | 1.05 times |
 | motor hanging out behind its mount | half its length |
 | back end of a motor ahead of the back end of its stage's airframe (pods and side boosters excepted) | 0.15 m |
@@ -263,23 +291,9 @@ positions OpenRocket computed, never on our own copy of its placement rules:
 | two fin sets on one part at the same angles (within 2 degrees) | not allowed |
 | two rings, bulkheads or engine blocks pushed into each other | 3.5 mm |
 | a motor of the flown configuration missing after loading | yes/no, per motor |
-| liftoff mass with overrides over without | 0.6 to 1.8 times |
-| each stage's own parts (no motors) with overrides over without | at least 0.6 times |
-| balance point moved by overrides | 1.5 calibres either way |
 
-The last three rules compare the rocket with its "natural" twin: when the cleaned
-design has mass or balance overrides (any setting whose tag starts with
-`override`), the same design without them (`clean.natural_copy`) is also built
-by OpenRocket, with one flight cut short after 0.05 s (only its mass and
-balance point are read; on all 158 reference designs with overrides they are
-identical to a full flight's). Building the twin is part of this stage: when
-OpenRocket rejects, cannot build, hangs or crashes on the twin, or its flight
-cannot start, the design gets credit 0 (score 0.40), exactly as if that had
-happened to the design itself, and the reason says what happened without the
-overrides. The per-stage rule sums each stage's parts as OpenRocket reports
-them (a part whose mass an enclosing override stands for is not counted
-again); it stops a heavy booster and its motors from hiding a nearly
-weightless sustainer.
+The cleaned design holds no override settings, so OpenRocket builds and flies
+it from its parts and materials alone, in one simulator run.
 
 Inside parts are judged against the inner radius of the nearest enclosing
 nose cone, body tube or transition. When that frame has no room inside
@@ -287,9 +301,10 @@ nose cone, body tube or transition. When that frame has no room inside
 frame's outer radius instead (nose weight cast into a solid nose cone), never
 skipped. A violation smaller than 0.5
 (`ladder.FIT_DEFECT_BELOW`, about 1.41 times the limit) is a defect; larger
-ones fail the stage with the violation formula. On the references, 10 designs
-fail here and 4 have defects only, all of them on the measurement's broken list
-or within a few percent of a limit (REFERENCE_ROCKETS.md lists them).
+ones fail the stage with the violation formula. On the references (the
+2026-11-19 calibration, overrides removed), 7 designs fail here and 3 pass it
+with a fit defect: V4-0045, which passes the whole ladder, and V4-0162 and
+V4-0189, which stop at stage 6 (REFERENCE_ROCKETS.md lists them).
 
 ### Stage 6: flight (`flight.py`, numbers in `limits.py`)
 
@@ -308,26 +323,30 @@ nothing at all is broken:
 * every section with a recovery device opens it (yes/no), nothing opens while a
   motor burns (yes/no), and the fastest opening is at 60 m/s or slower
 * every section lands (else 3); a section with a recovery device, and the main
-  section always, lands at 9 m/s or slower (vertical); the main section also
-  within the prompt's landing limit plus 15% slack (never above 9 m/s); a
-  section without recovery (a spent booster) at 25 m/s or slower. The
-  vertical landing speed is downward and positive: a landed section reported
-  at 0 m/s or moving up is an odd reply and counts as unknown (3), never as a
-  soft landing
+  section always, lands at 9 m/s or slower (vertical); a section without
+  recovery (a spent booster) at 25 m/s or slower. Stage 6 judges only safety
+  that holds for every rocket: the prompt's own landing limit is a stage 7
+  target. The vertical landing speed is downward and positive: a landed
+  section reported at 0 m/s or moving up is an odd reply and counts as
+  unknown (3), never as a soft landing
 
 Credit = `1 / (1 + pad violation + the worst flight's violations)`. Any number
 a rule needs that the reply leaves out counts as 3, never as a pass.
 
 ### Stage 7: targets (`targets.py`)
 
-`t` is the weighted mean of one credit per stated target, read from the
-1x-wind flight. Each target has a kind:
+`t` is the product of one credit per stated target, read from the 1x-wind
+flight. There are no weights: every target counts the same way, and missing two
+targets never scores above missing one of them. Each target has a kind:
 
 * `about`: full credit within the tolerance, then `1 / (1 + d / 0.25)` where
   `d = |ln(value / target)| - ln(1 + tol)`. Credit never reaches zero, so twice
   off always beats four times off.
 * `max` / `min`: full credit on the right side of the limit, the same falling
-  curve past it. A `max` landing speed also earns less below a comfort floor
+  curve past it. A `max` landing target without a tolerance gets 15% slack
+  (`limits.LANDING_SLACK_DEFAULT`; the prompts were written from one flight);
+  a tolerance that is given, 0 included, is used as given. A `max` landing
+  speed also earns less below a comfort floor
   (3.5 m/s or 60% of the limit, whichever is lower), in proportion: a
   needlessly large parachute drifts far.
 
@@ -338,10 +357,21 @@ that waits on the pad gains nothing. Landing speed is the main section's
 vertical speed (none when it is not above 0); body diameter is the widest
 main-body tube OpenRocket built (tubes in pods and side boosters do not
 count); mass is the liftoff mass. `motors`
-earns the share of named motors the rocket really flies; `motor_class` earns 1
-for the right class letter, 0.5 for one letter off. Apogee has weight 3, every
-other stated target weight 1. A missing measured value earns 0. Every target
-that loses credit gets a reason with both numbers and the credit.
+earns 0.5 plus 0.5 times the share of named motors the rocket really flies
+(`ladder.MOTORS_CREDIT_MIN`); `motor_class` earns 1 for the right class letter,
+0.75 for one letter off and 0.5 otherwise, also when no flown motor has a known
+impulse (`ladder.MOTOR_CLASS_NEAR_CREDIT`, `MOTOR_CLASS_FAR_CREDIT`): a design
+that flies a different real motor has still answered the rest of the prompt, so
+the miss halves the credit instead of zeroing the product. A missing measured
+value earns 0 (so t is 0). Every target that loses credit gets a reason with
+both numbers and the credit.
+
+Worked example: an `about` apogee target with the default 5% tolerance, flown
+to ten times the asked height, earns `1 / (1 + (ln 10 - ln 1.05) / 0.25)`,
+about 0.10, so the design scores about 0.730 if every other target is met,
+and the same 0.270 is lost whatever else the prompt states (measured on 14
+references: 0.730). A landing 1% faster than a `max` landing target with
+tolerance 0 scores 0.9885, and twice as fast (still under 9 m/s) 0.7795.
 
 ### Defects
 
@@ -356,7 +386,7 @@ count. This keeps a sound rocket with a tiny flaw above a rocket that crashes.
 |---------------|----------------------|
 | Java missing, wrong jar, data file missing, self-test rocket fails, the simulator was closed, `ROCKET_REWARD_WORKERS` is not a whole number of 1 or more | raise `RewardSetupError` with a message saying what to fix |
 | the design cannot be written as an OpenRocket file | score 0.40, the floor of the build stage |
-| OpenRocket rejects (`load`), cannot build (`build`), hangs on (`hang`) or crashes on (`crash`) this design or its natural twin (stage 5), or a flight cannot start or crashes, also after a retry on a fresh helper that flew the self-test rocket | score 0.40, the floor of the build stage |
+| OpenRocket rejects (`load`), cannot build (`build`), hangs on (`hang`) or crashes on (`crash`) this design, or a flight cannot start or crashes, also after a retry on a fresh helper that flew the self-test rocket | score 0.40, the floor of the build stage |
 | an odd reply (missing fields, nulls, wrong types) | a normal result: a missing number counts as the largest violation |
 | an unexpected error inside a check on one answer | save the answer to the quarantine folder, return `score=None` (the answer is left out of training), count it |
 | more than 1% of the last 500 answers, or 5 in a row, hit unexpected errors | raise `RewardSetupError` |
@@ -370,8 +400,12 @@ first time a design must be flown and closed when Python exits.
 `score_many(answers, requirements_list, truncated=None, simulator=None)` scores
 a batch in parallel threads (twice as many as helpers) and keeps the order; each
 answer gets exactly the result `score` would give it. A pool may be shared by
-any number of threads: each run takes one free helper. With 4 helpers an answer
-takes about 0.14-0.2 s (more when many answers need a shadow flight).
+any number of threads: each run takes one free helper. With 4 helpers a warm
+pool took 0.14-0.30 s per answer on 2026-11-19 (on a PC shared with other
+jobs: 0.14-0.18 s on the 48 val answers and the model's 48 answers, 0.27 s on
+the 594 reference rows, 0.29-0.30 s on 100 reference answers), more when many
+answers need a shadow flight. The 2026-11-19 changes did not slow it: the
+package before them took 0.30-0.34 s on the same 100 answers.
 
 ## 4. Requirements
 
@@ -402,6 +436,17 @@ Before anything is checked or flown, `clean.py` makes a cleaned copy in which:
 
 * every `simulations` block is removed, wherever it sits (launch rail, wind,
   launch site and time step are set by the reward)
+* every override setting (any tag starting with `override`: `overridemass`,
+  `overridecg`, `overridecd` and their `overridesubcomponents...` switches)
+  is removed, right after the `simulations` blocks and before anything is
+  checked: the drag, mass and balance point are the ones OpenRocket computes
+  from the parts and materials, and mass a designer wants to add must be a
+  real mass component. The cleaning notes say how many were removed, and
+  `Result.flags["overrides_removed"]` holds the count. Until 2026-11-19 mass
+  and balance overrides were kept and bounded; a review showed they could
+  still fake about 2 calibres of stability and hide a too-fast landing
+  (section 7). 165 of the 197 reference designs write override settings
+  (3,522 in all), so they are judged on their parts alone.
 * the stability reference is forced to OpenRocket's default and custom
   reference lengths are removed
 * only the flown motor configuration is kept, with the motors and settings
@@ -419,13 +464,9 @@ Before anything is checked or flown, `clean.py` makes a cleaned copy in which:
   settings (except type and delay) are removed
 * the file format version is `1.10`, the one OpenRocket 24.12 writes (the
   version changes how OpenRocket reads a file: below 1.4 it ignores the motor
-  digest). On the 72 reference designs that wrote another version, every
-  flight number is identical either way.
-* every drag override (`overridecd` and its `overridesubcomponentscd` switch)
-  is removed: the drag is the one OpenRocket computes. Mass and balance
-  overrides stay (155 of 183 sound references weigh their kit parts); stage 5
-  compares the rocket with its natural twin and bounds what they do to the
-  whole rocket (mass 0.6 to 1.8 times, balance point within 1.5 calibres).
+  digest). 84 of the 197 reference designs write another version; an
+  earlier check of 72 of them found every flight number identical either way
+  (not re-run on 2026-11-19).
 * material densities follow OpenRocket's loader: a material is used only when
   its name is not empty, its density reads as a number and its type is missing
   or exactly its slot's type. A used material whose name the table knows gets
@@ -437,9 +478,6 @@ Before anything is checked or flown, `clean.py` makes a cleaned copy in which:
 The file writer (`ork.py`) writes every number as the value the stages read
 (`tree.java_number`): `0.5f` is written `0.5`, and a whole fin, instance or
 line count `3.0` is written `3` (OpenRocket reads counts as integers).
-
-Stage 4 still keeps its first bounds on single overrides (never negative; at
-most 20 kg and 3.66 m), as a guard before anything is flown.
 
 ## 6. Code layout
 
@@ -503,3 +541,61 @@ Conventions:
   `limits.py`. No other module contains a tuning number.
 * Reasons are written for a student to read: say what is wrong and by how much.
 * Files use LF line endings and UTF-8.
+
+## 7. Changes on 2026-11-19 after review
+
+A review of the reward found three weaknesses. Each was fixed and measured on
+the same day. "Before" is the package as it was before the three changes.
+
+**Targets.** Before: `t` was a weighted mean (apogee weight 3, every other
+target 1), so met targets hid a missed one, and the prompt's landing limit
+(plus 15% slack) was a stage 6 rule. A tenfold apogee miss cost only
+0.116-0.162 of the score, and on 14 references an apogee target ten times off
+still scored 0.838-0.899; a landing 1% over the prompt's limit stopped at
+stage 6 (0.647). Now: `t` is the product of the target credits with no
+weights; the prompt's landing number is only a stage 7 target (a `max`
+landing without a tolerance gets 15% slack); a wrong named motor earns 0.5,
+a motor class one letter away 0.75, further 0.5. After: the tenfold apogee
+miss costs 0.270 whatever else is stated (0.730 on the same 14 references);
+landing 1% over scores 0.9885, 100% over 0.7795. The model answer row-021,
+which misses apogee and flight time, went from 0.8568 to 0.7107.
+
+**Overrides.** Before: mass and balance overrides were kept and bounded, and
+a "natural twin" without them was built to compare. A bounded override still
+faked stability: V4-0238 with its fins halved stopped at stage 6 (0.537), and
+the same design with a stage `overridecg` of 0.1986 scored 1.0; V4-0201 with
+its parachutes at 0.6 times stopped at stage 6 (0.614) and scored 0.843 with
+an `overridemass`. Now: the cleaning removes every override setting before
+anything is judged; there is one simulator run per answer and no stage 4
+rule is excused by an override. After: each tagged design scores exactly as
+the same design without its tags (V4-0238 0.53677 at stage 6; V4-0201
+0.775528 at stage 7, where it now lands under 9 m/s), and all 176 recorded
+override tries on 15 unstable variants stop at stage 6.
+
+**Sizes.** Before: stage 5 measured how much of a part was uncovered, not how
+far away it was, so a thin part far away passed; pod parts were not judged;
+and stage 4 read a written 0 as "auto" and had no bound on many sizes. 46
+rows of the review's mutation run scored at least 0.70 with absurd values,
+for example V4-0205's 12.69 kg mass component placed 1.478 m ahead of the nose
+(1.0), a centering ring of V4-0067 at -470 m (1.0), a 25 m packed parachute
+(1.0) and rail button sizes of 1e308 (1.0). Now: stage 5 measures the
+distance outside the airframe for every inside part, lug and button (pods
+against their own shell) and needs an open tail (`tail_closed`); stage 4
+has the bounds listed under "Sizes, positions and counts". After: 36 of the
+46 rows score below 0.70 (35 at stage 4, 0.311-0.32; V4-0205's mass at stage
+5, 0.42). The other 10 only edit `overridemass` and now score exactly what
+their unedited design scores.
+
+**All three together.** Of the review's 2,508 mutations, 667 score at least
+0.70 (before 882); of a second set of 1,003, 172 (before 297). The 594
+reference rows, scored against their parsed prompts, now stop at: targets
+480, flight 57, limits 36, build 21 (before 498, 42, 24, 30); by design,
+targets 159, flight 19, limits 12, build 7 (before 165, 14, 8, 10). The
+designs that moved are the ones whose files lean on overrides (see
+REFERENCE_ROCKETS.md, "Sound only with their overrides") and three with
+paper-thin walls their overrides covered. The RL prompt file keeps 474 rows
+(before 482), each reference scoring exactly 1.0 on its own record. The named
+operators in `tools/mutate.py` grew from 46 to 66 (61 of them cheats or
+defects the reward must stop or score lower); of their 906 variants on 21
+designs, 886 were judged and none failed its promise. The full test suite has
+2,271 tests.

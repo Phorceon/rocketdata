@@ -44,9 +44,9 @@ def fit_part(reply: dict, index: int) -> dict:
     return next(c for c in reply["components"] if c["index"] == index)
 
 
-def fit_check(reply, natural=None, root=None):
+def fit_check(reply, root=None):
     """Run stage 5 with the matching two-mount design tree unless another is given."""
-    return fit.check_build(reply, natural, fit_root() if root is None else root)
+    return fit.check_build(reply, fit_root() if root is None else root)
 
 
 def fit_rules(check) -> set:
@@ -72,18 +72,12 @@ def test_sound_reply_passes_with_no_defect(name):
     assert check.info["motor_mounts_loaded"] == 2
     rules = ["shell_step", "fin_past_back", "fin_past_front", "rigid_inside_radius", "soft_inside_radius",
              "motor_diameter", "motor_overhang"]
-    # two_stage's motor tube and rings sit in the booster pod, which is not judged against the main airframe
-    rules += ["motor_tube_outside_airframe", "ring_outside_airframe"] if name == "single_stage" \
-        else ["fin_sets_angle_gap"]
+    # two_stage's motor tube and rings sit in the booster pod and are judged against the pod's own shell
+    rules += ["motor_tube_outside_airframe", "ring_outside_airframe", "part_outside_airframe"]
+    if name == "two_stage":
+        rules += ["fin_sets_angle_gap"]
     for rule in rules:
         assert rule in check.info["measures"], rule
-
-
-def test_sound_reply_with_its_natural_twin_passes():
-    reply = load_reply("single_stage")
-    check = fit_check(reply, load_reply("single_stage"))
-    assert check.passed and check.defects == []
-    assert check.info["override_mass_ratio"] == 1.0 and check.info["override_cg_shift_cal"] == 0.0
 
 
 # ------------------------------------------------------------------ OpenRocket could not build or fly it
@@ -97,20 +91,19 @@ def test_reply_not_ok_gets_credit_zero(kind, words):
 
 
 def test_unreadable_value_reason_says_where_to_look():
-    """OpenRocket's warning never names the value (model answer row-022 wrote
-    overridemass 'auto'), so the reason says what it usually is and lists the
-    other things OpenRocket skipped, at most three."""
+    """OpenRocket's warning never names the value, so the reason says what it
+    usually is and lists the other things OpenRocket skipped, at most three."""
     msg = "OpenRocket could not read some values in the file and would fly a different rocket: " \
           "Invalid parameter encountered, ignoring."
     others = [f"Unknown element separation{i}, ignoring." for i in range(5)]
     check = fit_check({"ok": False, "error_kind": "build", "message": msg,
                        "load_warnings": ["Invalid parameter encountered, ignoring."] + others})
     reason = check.reasons[0]
-    assert check.credit == 0.0 and "overridemass 'auto'" in reason and "write a number there" in reason
+    assert check.credit == 0.0 and "a word or NaN" in reason and "write a number there" in reason
     assert "it also skipped" in reason and "separation2" in reason and "separation3" not in reason
     assert "and 2 more" in reason
     plain = fit_check({"ok": False, "error_kind": "build", "message": "the file holds no rocket"})
-    assert "overridemass" not in plain.reasons[0]
+    assert "write a number there" not in plain.reasons[0]
 
 
 @pytest.mark.parametrize("reply", [None, [], "text", {}, {"ok": None}, {"ok": "true"},
@@ -326,10 +319,15 @@ def test_ring_out_of_the_airframe(outside, outcome):
     assert fit_outcome(check) == outcome
 
 
-def test_parts_in_a_pod_are_not_judged_against_the_main_airframe():
+def test_parts_in_a_pod_are_judged_against_the_pods_own_shell():
+    # Changed on purpose (2026-11-19): parts in a pod used to be skipped, so a
+    # booster part could sit anywhere. Now they are judged against the pod's shell.
     reply = load_reply("two_stage")
-    fit_part(reply, 11)["x0_m"] += 1.0   # the booster's motor tube, far behind the main airframe
     assert "motor_tube_outside_airframe" not in fit_rules(fit_check(reply))
+    fit_part(reply, 11)["x0_m"] += 1.0   # the booster's motor tube, 1 m behind its pod
+    check = fit_check(reply)
+    assert "motor_tube_outside_airframe" in fit_rules(check) and not check.passed
+    assert check.info["measures"]["motor_tube_outside_airframe"] == pytest.approx(1.0, abs=1e-6)
 
 
 # ------------------------------------------------------------------ motors
@@ -424,70 +422,6 @@ def test_rings_pushed_into_each_other(overlap, outcome):
     check = fit_check(reply)
     assert fit_outcome(check) == outcome
     assert check.info["measures"]["rings_overlap"] == pytest.approx(overlap, abs=1e-9)
-
-
-# ------------------------------------------------------------------ overrides on the whole rocket
-
-def fit_natural(mass_ratio: float = 1.0, shift_cal: float = 0.0) -> tuple[dict, dict]:
-    """single_stage and a "natural" twin: liftoff mass with overrides over without is `mass_ratio`, and the
-    overrides move the balance point `shift_cal` calibres towards the nose."""
-    reply = load_reply("single_stage")
-    natural = load_reply("single_stage")
-    rocket = reply["rocket"]
-    natural["rocket"]["mass_kg"] = rocket["mass_kg"] / mass_ratio
-    natural["rocket"]["cg_m"] = rocket["cg_m"] + shift_cal * rocket["reference_length_m"]
-    return reply, natural
-
-
-@pytest.mark.parametrize("ratio, outcome", [(1.79, "pass"), (1.9, "defect"), (3.0, "fail"),
-                                            (0.61, "pass"), (0.55, "defect"), (0.3, "fail")])
-def test_override_mass_ratio(ratio, outcome):
-    check = fit_check(*fit_natural(mass_ratio=ratio))
-    assert fit_outcome(check) == outcome
-    assert check.info["override_mass_ratio"] == pytest.approx(ratio)
-    if outcome != "pass":
-        assert "times as heavy" in (check.reasons + check.defects)[0]
-
-
-@pytest.mark.parametrize("shift, outcome", [(1.49, "pass"), (1.6, "defect"), (4.0, "fail"),
-                                            (-1.49, "pass"), (-1.6, "defect"), (-4.0, "fail")])
-def test_override_balance_point_shift(shift, outcome):
-    check = fit_check(*fit_natural(shift_cal=shift))
-    assert fit_outcome(check) == outcome
-    assert check.info["override_cg_shift_cal"] == pytest.approx(shift)
-    if outcome != "pass":
-        text = (check.reasons + check.defects)[0]
-        assert "calibres" in text and ("nose" in text if shift > 0 else "tail" in text)
-
-
-def test_no_natural_reply_skips_the_override_rule():
-    reply, natural = fit_natural(mass_ratio=5.0)
-    assert fit_check(reply, None).passed
-    assert not fit_check(reply, natural).passed
-
-
-@pytest.mark.parametrize("natural", [{"ok": True}, {"ok": True, "rocket": {"mass_kg": 0.0, "cg_m": 1.0}}])
-def test_natural_reply_that_cannot_be_judged_fails(natural):
-    check = fit_check(load_reply("single_stage"), natural)
-    assert not check.passed
-    assert check.credit == pytest.approx(ladder.credit_from_violations([ladder.MAX_VIOLATION]))
-
-
-@pytest.mark.parametrize("natural, words", [
-    ({"ok": False, "error_kind": "load", "message": "bad file"}, "could not read"),
-    ({"ok": False, "error_kind": "build", "message": "NaN mass"}, "could not build"),
-    ({"ok": False, "error_kind": "hang", "message": "timed out"}, "did not finish"),
-    ({"ok": False, "error_kind": "crash", "message": "boom"}, "crashed"),
-    ({"ok": True, "rocket": {}, "flights": [{"ok": False, "error_kind": "crash", "error": "x"}]}, "crashed"),
-    ("x", "no reply"), ({}, "could not build")])
-def test_natural_twin_that_fails_gets_the_build_floor(natural, words):
-    """Building the twin is part of stage 5: a twin that OpenRocket rejects,
-    hangs or crashes on scores exactly like the design itself would (credit 0,
-    DESIGN.md rule 4), and the reason says what happened."""
-    check = fit_check(load_reply("single_stage"), natural)
-    assert not check.passed and check.credit == 0.0
-    assert "without its mass and balance overrides" in check.reasons[0] and words in check.reasons[0]
-    assert check.info["natural_built"] is False
 
 
 # ------------------------------------------------------------------ frames with no room inside
@@ -585,41 +519,6 @@ def test_pod_with_an_open_front_fails():
     assert fit_check(load_reply("two_stage")).passed
 
 
-# ------------------------------------------------------------------ overrides on each stage
-
-def fit_stage_override(ratio):
-    """two_stage and its natural twin, where an override on the booster set stands for all
-    its parts and makes them weigh `ratio` times their own mass; the liftoff mass is unchanged."""
-    reply = load_reply("two_stage")
-    natural = load_reply("two_stage")
-    own = sum(c["mass_kg"] for c in natural["components"] if c["stage"] == 1)
-    for c in reply["components"]:
-        if c["stage"] == 1 and c["index"] != 4:
-            c["mass_overridden_by"] = 4
-    fit_part(reply, 4).update(mass_kg=own * ratio, mass_overridden=True, override_subcomponents=True)
-    return reply, natural
-
-
-@pytest.mark.parametrize("ratio, outcome", [(1.0, "pass"), (0.61, "pass"), (5.0, "pass"), (0.55, "defect"),
-                                            (0.23, "fail"), (0.0, "fail")])
-def test_override_mass_ratio_of_each_stage(ratio, outcome):
-    check = fit_check(*fit_stage_override(ratio))
-    assert check.info["override_mass_ratio"] == pytest.approx(1.0)     # the whole rocket hides it
-    assert fit_outcome(check) == outcome
-    assert check.info["override_stage_ratio_min"] == pytest.approx(min(ratio, 1.0))
-    if outcome != "pass":
-        text = (check.reasons + check.defects)[0]
-        assert "booster set" in text and "motors not counted" in text and f"{ratio:.2f} times" in text
-
-
-def test_stage_override_rule_skips_a_stage_with_unknown_masses():
-    reply, natural = fit_stage_override(0.1)
-    for c in natural["components"]:
-        if c["stage"] == 1:
-            c["mass_kg"] = None
-    assert "override_stage_mass_ratio" not in fit_rules(fit_check(reply, natural))
-
-
 # ------------------------------------------------------------------ missing, null and hostile fields
 
 def test_components_missing_is_a_failure():
@@ -677,7 +576,7 @@ def test_parent_links_in_a_loop_do_not_hang():
 
 def test_odd_design_tree_does_not_crash():
     for root in (None, {}, [], {"openrocket": 3}, make_node("openrocket")):
-        check = fit.check_build(load_reply("single_stage"), None, root)
+        check = fit.check_build(load_reply("single_stage"), root)
         assert check.stage == "build" and 0.0 <= check.credit <= 1.0
 
 
@@ -698,9 +597,6 @@ def fit_series(make, values):
 SERIES = {
     "shell_step": (lambda v: (fit_shell_step(v),), [0.0, 0.05, 0.1, 0.11, 0.13, 0.2, 0.5, 0.9, 1.0]),
     "between_stages": (lambda v: (fit_two_axial_stages(v),), [0.1, 0.15, 0.18, 0.22, 0.4, 0.8]),
-    "mass_ratio": (lambda v: fit_natural(mass_ratio=v), [1.0, 1.5, 1.8, 1.9, 2.5, 4.0, 20.0, 1e6]),
-    "mass_ratio_low": (lambda v: fit_natural(mass_ratio=v), [1.0, 0.7, 0.6, 0.55, 0.4, 0.1, 1e-6]),
-    "cg_shift": (lambda v: fit_natural(shift_cal=v), [0.0, 1.0, 1.5, 1.7, 2.2, 5.0, 50.0]),
 }
 
 
@@ -728,7 +624,6 @@ def fit_motor_width(ratio):
 SERIES.update({
     "motor_ahead": (fit_motor_ahead, [0.0, 0.1, 0.15, 0.16, 0.2, 0.3, 0.6, 1.2, 1.9]),
     "pod_width": (fit_pod_width, [0.5, 1.0, 1.1, 1.4, 2.0, 4.0, 10.0]),
-    "stage_mass_low": (fit_stage_override, [1.0, 0.7, 0.6, 0.55, 0.4, 0.1, 0.0]),
     "overhang": (fit_overhang, [0.0, 0.3, 0.5, 0.55, 0.7, 1.0]),
     "ring_overlap": (fit_ring_overlap, [0.0, 0.002, 0.0035, 0.004, 0.006, 0.0095]),
     "motor_width": (fit_motor_width, [1.0, 1.05, 1.1, 1.3, 1.6, 3.0, 100.0]),
@@ -768,6 +663,6 @@ def test_defect_boundary_is_the_ladder_number():
 
 
 def test_info_is_plain_numbers():
-    check = fit_check(*fit_natural(mass_ratio=1.2, shift_cal=0.5))
+    check = fit_check(load_reply("single_stage"))
     for k, v in check.info["measures"].items():
         assert isinstance(v, float) and math.isfinite(v), k

@@ -90,6 +90,11 @@ Meaning of the less obvious fields:
 * `mass_kg` is the mass OpenRocket uses (with any override); `computed_mass_kg`
   is the mass it would compute from the shape and material with no override.
   The same for `cg_x_m` and `computed_cg_x_m` (measured from the nose tip).
+  The helper reports what the file it is given holds. The reward's cleaning
+  removes every override before a design is flown (DESIGN.md section 5), so
+  in scoring these pairs are equal and `mass_overridden`, `cg_overridden`,
+  `cd_overridden` and `override_subcomponents` are false (the example above
+  shows a file that still had an override).
 * `fins` (fin sets only): `{"count", "root_chord_m", "tip_chord_m", "span_m",
   "sweep_m", "thickness_m", "cant_deg", "root_x0_m", "root_radius_m",
   "points": [[x, y], ...]}` where `root_radius_m` is the radius of the body at

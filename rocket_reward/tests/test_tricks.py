@@ -169,14 +169,18 @@ def test_a_model_written_digest_is_replaced_from_the_table(gold):
 
 # ------------------------------------------------------------------ overrides and materials
 
-@pytest.mark.parametrize("tag, value, words", [
-    ("overridemass", -50.0, "negative"), ("overridemass", 1e300, "20 kg"),
-    ("overridecg", -100.0, "negative"), ("overridecg", 50.0, "3.66 m"),
+@pytest.mark.parametrize("tag, value", [
+    ("overridemass", -50.0), ("overridemass", 1e300), ("overridemass", "auto"),
+    ("overridecg", -100.0), ("overridecg", 50.0),
 ])
-def test_override_values_are_bounded(gold, tag, value, words):
+def test_mass_and_balance_overrides_are_removed_before_anything_is_checked(gold, tag, value):
+    """A mass or balance override could fake stability or a soft landing
+    (review of 2026-11-19); the cleaning removes it, so it can neither help nor fail."""
     nose = find(gold, "nosecone")[0]
-    kids(nose).append({tag: {"value": value}})
-    fails(gold, "limits", tag, words)
+    kids(nose).extend([{tag: {"value": value}}, {"overridesubcomponents": {"value": True}}])
+    pre = preflight("<design>" + json.dumps(gold) + "</design>")
+    assert pre.passed, preflight_result(pre)
+    assert not find(pre.clean_root, tag) and not find(pre.clean_root, "overridesubcomponents")
 
 
 @pytest.mark.parametrize("value", [0.0, -5.0, 40.0, "3.799240749538965E-7"])
