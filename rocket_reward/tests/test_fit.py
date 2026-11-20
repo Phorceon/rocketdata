@@ -479,11 +479,47 @@ def test_motor_ahead_of_the_tail(gap, outcome):
         assert "fires into the rocket" in text and (f"{gap * 1000:.4g} mm" in text or f"{gap:.4g} m" in text)
 
 
-def test_motor_in_a_side_booster_is_not_judged_against_the_core_tail():
-    reply = load_reply("two_stage")
+BOOSTER_PARTS = range(4, 13)   # two_stage: the booster set (4) and everything in it
+
+
+def fit_shift_booster(reply: dict, dx: float) -> dict:
+    """Move the booster set and all its parts (and its motor and fin roots) dx metres along the axis."""
+    for i in BOOSTER_PARTS:
+        part = fit_part(reply, i)
+        part["x0_m"] += dx
+        if isinstance(part.get("motor"), dict):
+            part["motor"]["x0_m"] += dx
+        if isinstance(part.get("fins"), dict):
+            part["fins"]["root_x0_m"] += dx
+    return reply
+
+
+def test_motor_in_a_side_booster_is_judged_against_the_booster_tail():
+    """A booster's motor fires out of the booster's own shells, not out of the core's tail."""
+    # at its booster's tail, with the core's tail 0.3 m further back: fine
+    reply = fit_shift_booster(load_reply("two_stage"), -0.3)
+    core_tail = fit_part(reply, 3)["x0_m"] + fit_part(reply, 3)["length_m"]
     motor = fit_part(reply, 11)["motor"]
-    motor["x0_m"] -= 0.5
-    assert "motor_ahead_of_tail" not in fit_rules(fit_check(reply))
+    assert core_tail - (motor["x0_m"] + motor["length_m"]) > L.MOTOR_AHEAD_OF_TAIL_MAX_M
+    check = fit_check(reply)
+    assert check.passed and check.defects == []
+    assert "motor_ahead_of_tail" not in fit_rules(check)
+    assert check.info["measures"]["motor_ahead_of_tail"] < 0.0   # both motors end at or past their own tail
+    # far ahead of its booster's tail: caught, and the reason names the booster
+    reply = load_reply("two_stage")
+    fit_part(reply, 11)["motor"]["x0_m"] -= 0.5
+    check = fit_check(reply)
+    assert fit_outcome(check) == "fail" and fit_rules(check) == {"motor_ahead_of_tail"}
+    assert check.info["measures"]["motor_ahead_of_tail"] == pytest.approx(0.490475, abs=1e-6)
+    assert "the airframe of booster set 'Booster Set'" in check.reasons[0]
+    # the booster's last shell closed to 2 mm: tail_closed, although the core's tail is open
+    reply = load_reply("two_stage")
+    fit_part(reply, 6)["outer_radius_aft_m"] = 0.002
+    check = fit_check(reply)
+    assert fit_outcome(check) == "fail" and "tail_closed" in fit_rules(check)
+    ratio = 0.002 / (fit_part(reply, 11)["motor"]["diameter_m"] / 2)
+    assert check.info["measures"]["tail_radius_per_motor"] == pytest.approx(ratio, abs=1e-6)
+    assert any(f"{ratio:.2f} times" in r and "body tube 'Body Tube'" in r for r in check.reasons), check.reasons
 
 
 # ------------------------------------------------------------------ pods and side boosters

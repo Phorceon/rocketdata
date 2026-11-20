@@ -70,6 +70,16 @@ outside the airframe, and stage 4 bounds many more sizes ("sizes"):
     - overrides and targets: row-043 0.2310 -> 0.2453; without its overrides
       its shadow no longer opens the recovery at 89 m/s and reaches stage 7
       (0.86 with the product)
+  Checked again the same day after the second round of fixes (pods, parts of a
+  lower stage ahead of their stage, slenderness, late and low recovery
+  openings): re-made, the file is byte for byte the same; no answer moved
+  (part_ahead_of_stage judges only parts that lie ahead of their own stage,
+  never behind it).
+  Checked again the same day after the third round (pod_in_pod, the pod
+  overhang as a share of the pod's length, slenderness against the body's
+  width with the limit at 60, rings held by a coupler): re-scored, no answer
+  moved, so the file is unchanged (and tests/data/model_val_expected.json,
+  stages 1-4, too).
 """
 from __future__ import annotations
 

@@ -22,10 +22,21 @@
   "pod_part_far_away",
   "lug_behind_tail",
   "closed_tail",
+  "pod_weight_ahead_of_nose",
+  "booster_weight_in_upper_stage",
+  "motor_in_pod_inside_body",
+  "one_sided_motor_pod",
+  "pod_far_to_the_side",
+  "needle_rocket",
+  "motor_pods_inside_pods",
+  "booster_pod_beside_upper_stage",
+  "needle_rocket_with_tail_disk",
   "zero_ejection_delay",
   "chute_far_too_small",
   "fins_shrunk",
   "booster_without_recovery",
+  "parachute_opens_at_ground",
+  "main_opens_low_drogue_kept",
   "weaker_motor",
   "chute_too_small_for_prompt",
   "landing_just_under_hard_limit",
@@ -119,6 +130,10 @@
    "stage": "build",
    "score": 0.42
   },
+  "row-001-deb57c98|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
   "row-001-deb57c98|zero_ejection_delay": {
    "stage": "flight",
    "score": 0.5525
@@ -130,6 +145,14 @@
   "row-001-deb57c98|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
+  },
+  "row-001-deb57c98|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5182
+  },
+  "row-001-deb57c98|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5373
   },
   "row-001-deb57c98|weaker_motor": {
    "stage": "targets",
@@ -235,6 +258,26 @@
    "stage": "build",
    "score": 0.42
   },
+  "row-007-5e9884b6|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-007-5e9884b6|booster_weight_in_upper_stage": {
+   "stage": "build",
+   "score": 0.4268
+  },
+  "row-007-5e9884b6|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4183
+  },
+  "row-007-5e9884b6|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-007-5e9884b6|booster_pod_beside_upper_stage": {
+   "stage": "build",
+   "score": 0.4264
+  },
   "row-007-5e9884b6|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
@@ -242,6 +285,14 @@
   "row-007-5e9884b6|booster_without_recovery": {
    "stage": "flight",
    "score": 0.5917
+  },
+  "row-007-5e9884b6|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5139
+  },
+  "row-007-5e9884b6|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5339
   },
   "row-007-5e9884b6|weaker_motor": {
    "stage": "targets",
@@ -313,11 +364,31 @@
   },
   "row-016-5851080b|lug_behind_tail": {
    "stage": "build",
-   "score": 0.42
+   "score": 0.419
   },
   "row-016-5851080b|closed_tail": {
    "stage": "build",
    "score": 0.42
+  },
+  "row-016-5851080b|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.4169
+  },
+  "row-016-5851080b|needle_rocket": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-016-5851080b|needle_rocket_with_tail_disk": {
+   "stage": "build",
+   "score": 0.44
+  },
+  "row-016-5851080b|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5257
+  },
+  "row-016-5851080b|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5651
   },
   "row-016-5851080b|weaker_motor": {
    "stage": "targets",
@@ -423,6 +494,18 @@
    "stage": "build",
    "score": 0.42
   },
+  "row-028-da7ce3ba|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4182
+  },
+  "row-028-da7ce3ba|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
   "row-028-da7ce3ba|chute_far_too_small": {
    "stage": "flight",
    "score": 0.5647
@@ -430,6 +513,14 @@
   "row-028-da7ce3ba|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
+  },
+  "row-028-da7ce3ba|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5191
+  },
+  "row-028-da7ce3ba|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5348
   },
   "row-028-da7ce3ba|weaker_motor": {
    "stage": "flight",
@@ -527,6 +618,18 @@
    "stage": "build",
    "score": 0.4114
   },
+  "row-040-25c4d3f7|pod_weight_ahead_of_nose": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|motor_in_pod_inside_body": {
+   "stage": "build",
+   "score": 0.4191
+  },
+  "row-040-25c4d3f7|one_sided_motor_pod": {
+   "stage": "build",
+   "score": 0.44
+  },
   "row-040-25c4d3f7|zero_ejection_delay": {
    "stage": "flight",
    "score": 0.5538
@@ -538,6 +641,14 @@
   "row-040-25c4d3f7|fins_shrunk": {
    "stage": "flight",
    "score": 0.5106
+  },
+  "row-040-25c4d3f7|parachute_opens_at_ground": {
+   "stage": "flight",
+   "score": 0.5265
+  },
+  "row-040-25c4d3f7|main_opens_low_drogue_kept": {
+   "stage": "flight",
+   "score": 0.5577
   },
   "row-040-25c4d3f7|weaker_motor": {
    "stage": "targets",

@@ -282,12 +282,19 @@ positions OpenRocket computed, never on our own copy of its placement rules:
 | rigid inside part (ring, bulkhead, engine block, inner tube, coupler) over the airframe's inner radius | 1.08 times |
 | packed inside part (parachute, streamer, shock cord, mass) over the airframe's inner radius | 1.30 times |
 | how far a part lies outside its airframe along the axis, as a distance (not its own uncovered length; a part in a pod or side booster is judged against that pod's shell; a ring, bulkhead, engine block or coupler may also sit on the motor tube holding it): inner (motor) tube / ring, bulkhead, engine block or tube coupler / mass component, shock cord, parachute, streamer, launch lug or rail button | 50 mm / 20 mm / 50 mm |
-| aft radius of a stage's last shell over the radius of a motor firing out of it (pods and side boosters excepted) | at least 0.35 times |
+| `part_ahead_of_stage`: how far an inside part of a stage that is not the top stage lies ahead of the front of its own stage's shells (a ring, bulkhead or engine block counted from the front of the motor tube or tube coupler holding it when that reaches further forward; launch lugs and rail buttons not judged): inner (motor) tube or tube coupler / ring, bulkhead or engine block / mass component, shock cord, parachute or streamer | 0.20 m / 20 mm / 50 mm |
+| aft radius of the last shell a motor fires out of (its stage's, or for a motor in a pod or side booster, that pod's) over the motor's radius | at least 0.35 times |
 | motor diameter over its mount's inner diameter | 1.05 times |
 | motor hanging out behind its mount | half its length |
-| back end of a motor ahead of the back end of its stage's airframe (pods and side boosters excepted) | 0.15 m |
+| back end of a motor ahead of the back end of its stage's airframe (for a motor in a pod or side booster: that pod's own shells) | 0.15 m |
 | pod or side-booster shell over the main body's widest radius | 1.0 times |
 | a pod or side booster whose front shell is an open body tube (not a nose cone or transition) | yes/no |
+| `pod_outside_airframe`: share of a pod's or side booster's own shell span (front to back of its shells) that lies ahead of the front or behind the back of the main-body shells of the stage that holds it (the whole main body when that stage has no shells) | 0.33 of its length |
+| `pod_in_pod`: a pod set or booster set inside another pod set or booster set | yes/no |
+| `pod_inside_body`: share of a pod's radius that lies inside the body tube holding it (0 flush on the outside, 1 axis on the body's surface, more axis inside the body) | 0.5 |
+| `pod_detached`: clear gap between a pod or side booster and the body tube holding it | 0.10 m |
+| `pod_motor_one_sided`: a pod set or side-booster set with one copy that holds a motor | yes/no |
+| `slenderness`: rocket length over the body width, the largest diameter that at least 10% of the main body's length has (`limits.SLENDERNESS_WIDTH_SHARE`; each nose cone, body tube and transition counts with its larger end, pods do not count; with no usable shell, the rocket's largest diameter) | 60 times |
 | two fin sets on one part at the same angles (within 2 degrees) | not allowed |
 | two rings, bulkheads or engine blocks pushed into each other | 3.5 mm |
 | a motor of the flown configuration missing after loading | yes/no, per motor |
@@ -295,14 +302,62 @@ positions OpenRocket computed, never on our own copy of its placement rules:
 The cleaned design holds no override settings, so OpenRocket builds and flies
 it from its parts and materials alone, in one simulator run.
 
+Pods and side boosters (added 2026-11-19, second and third rounds, section 7)
+are judged where OpenRocket placed them. A pod's span is its shells' front to
+back, and it must lie alongside the main-body shells of the stage that holds
+it: `pod_outside_airframe` judges the length of the pod's span that lies ahead
+of the front or behind the back of those shells, as a share of the span's own
+length (`limits.POD_OVERHANG_MAX_FRACTION`, 0.33). A weighted pod held far
+ahead of the nose (nose weight on a stick) measures far more than 1, and so
+does a booster's pod placed beside the sustainer, which would drop away from
+the part it touches; a strap-on booster that ends a little below the core
+measures a small share and passes. A pod set or booster set inside another
+pod is a yes/no failure (`pod_in_pod`; no reference has one): its side
+position is measured from the rocket's centre line but its holder is the
+outer pod's small tube, so it could sit inside the main body and fire into
+the airframe. Its side position comes from the
+helper's `axis_offset_m` (java/PROTOCOL.md): the distance of the pod's axis
+from the rocket's centre line, the smallest over its copies. With the outer
+radius `r` of the pod's widest shell and `R`, the largest outer radius the
+main body has anywhere along the pod's own length (a nose cone or transition
+is read along a straight line between its two end radii; when the pod lies
+beside no part of the main body, the radius of the tube that holds it), the
+clearance is `axis - R`;
+`pod_inside_body` judges `(r - clearance) / r` and `pod_detached` judges
+`clearance - r`. Both are skipped when the axis offset is missing or the pod
+has no shell of some width. A motor in a pod is judged against the pod's own
+shells for `motor_ahead_of_tail` and `tail_closed`, so a pod must sit
+outside the body for that to mean anything; the yes/no `pod_motor_one_sided`
+fails a one-copy pod or booster that holds a motor, because the simulator
+flies a one-sided thrust straight.
+
+`part_ahead_of_stage` stops a part of a lower stage from sitting inside the
+stage above it (a booster's weight in the sustainer's nose steadies the rocket
+on the way up and then drops away with the booster). Motor tubes and couplers
+may reach `limits.STAGE_JOINT_REACH_MAX_M` (0.20 m) forward, for the joint
+between stages; every other inside part gets its outside-the-airframe limit.
+A ring, bulkhead or engine block is counted from the front of the motor tube
+or tube coupler that holds it (an enclosing inner tube or coupler) when that
+reaches further forward than the stage's shells, so a bulkhead inside a
+booster's coupler at the joint passes; the same bulkhead held by the
+booster's body tube and placed in the stage above still fails.
+Reaching back into the stage behind is judged against the whole airframe
+only: motor tubes, couplers, bulkheads, centering rings, an engine block and
+parachutes of the references do that (measured on 2026-11-19 on OpenRocket's
+placement of the 197 reference designs).
+
 Inside parts are judged against the inner radius of the nearest enclosing
 nose cone, body tube or transition. When that frame has no room inside
 (solid, or a wall as thick as its radius), the part is judged against the
 frame's outer radius instead (nose weight cast into a solid nose cone), never
-skipped. A violation smaller than 0.5
-(`ladder.FIT_DEFECT_BELOW`, about 1.41 times the limit) is a defect; larger
-ones fail the stage with the violation formula. On the references (the
-2026-11-19 calibration, overrides removed), 7 designs fail here and 3 pass it
+skipped. A fit rule that compares a number with a limit is a defect up to
+about 1.41 times its limit and fails beyond it (`ladder.FIT_DEFECT_BELOW` =
+0.5 on the log2 scale of the violation formula; for a "no less than" rule,
+down to the limit divided by about 1.41); a broken yes/no rule (size 1)
+always fails. Failures fail the stage with the violation formula. So
+`slenderness` (limit 60) is a defect up to about 85, and
+`pod_outside_airframe` (0.33) up to a share of about 0.47. On the references
+(the 2026-11-19 calibration, overrides removed), 7 designs fail here and 3 pass it
 with a fit defect: V4-0045, which passes the whole ladder, and V4-0162 and
 V4-0189, which stop at stage 6 (REFERENCE_ROCKETS.md lists them).
 
@@ -322,6 +377,15 @@ nothing at all is broken:
   0 cal limit the violation is the shortfall in calibres plus 0.1, at most 3)
 * every section with a recovery device opens it (yes/no), nothing opens while a
   motor burns (yes/no), and the fastest opening is at 60 m/s or slower
+* the last recovery opening of each section comes at least 3 s before that
+  section lands (`opens_late_<section>`; an unknown time counts as 3), and a
+  parachute or streamer set to open at a fixed altitude ("ALTITUDE" in the
+  settings OpenRocket read, the reply's `recovery`) is set to 50 m or higher
+  (judged once, not per flight; `info["low_opening_violations"]`, listed as
+  rule `opens_low` by `tools/calibrate.py`). OpenRocket fills a parachute the
+  instant it opens, so without these a parachute opened a few metres above
+  the ground would count as a soft landing (`limits.RECOVERY_OPEN_BEFORE_LANDING_MIN_S`,
+  `DEPLOY_ALTITUDE_MIN_M`)
 * every section lands (else 3); a section with a recovery device, and the main
   section always, lands at 9 m/s or slower (vertical); a section without
   recovery (a spent booster) at 25 m/s or slower. Stage 6 judges only safety
@@ -330,7 +394,8 @@ nothing at all is broken:
   section reported at 0 m/s or moving up is an odd reply and counts as
   unknown (3), never as a soft landing
 
-Credit = `1 / (1 + pad violation + the worst flight's violations)`. Any number
+Credit = `1 / (1 + pad violation + low-opening violations + the worst
+flight's violations)`. Any number
 a rule needs that the reply leaves out counts as 3, never as a pass.
 
 ### Stage 7: targets (`targets.py`)
@@ -597,5 +662,195 @@ paper-thin walls their overrides covered. The RL prompt file keeps 474 rows
 (before 482), each reference scoring exactly 1.0 on its own record. The named
 operators in `tools/mutate.py` grew from 46 to 66 (61 of them cheats or
 defects the reward must stop or score lower); of their 906 variants on 21
-designs, 886 were judged and none failed its promise. The full test suite has
-2,271 tests.
+designs, 886 were judged and none failed its promise. After this first round
+the full test suite had 2,271 tests (the counts after every round are at the
+end of this section).
+
+**What the override removal did to the prompt file.** The prompt numbers are
+written from each reference's own flight, so flying the references without
+their overrides changed them. 380 of the 474 kept rows come from designs that
+wrote overrides and are now flown without them; 375 of the 471 rows kept both
+before and after have new numbers in their prompt text and requirements (all
+from designs that write overrides; none without). Of those 375, the largest
+number moved by more than 1% in 337 rows, more than 5% in 117 and more than
+10% in 61. The largest change is V4-0140, whose apogee went from 19.4 to
+39.2 m (and flight time from 5.6 to 12.2 s).
+
+### Second round, after a fresh attack on the fixed version
+
+Three attackers then went at the fixed package (mass and stability; sizes and
+positions; targets and the ladder) and found five more real holes. Each is
+now closed by a stage 5 or stage 6 rule (section 2). "Before" here is the
+package after the first round. All 197 reference designs keep their stage
+(targets 159, flight 19, limits 12, build 7), and only two that already fail
+changed score: V4-0189 (flight, 0.598 to 0.536; it opens its parachute 0.1 s
+before landing) and V4-0227 (build, 0.418 to 0.410; its pods sit on the centre
+line). "After" re-runs the attackers' own scripts on the new code.
+
+**A pod held ahead of the nose.** Found: nothing checked where a pod sits
+along the axis. V4-0060 with its fins at 0.6 times stops at stage 6 (0.511);
+a 1.0812 kg weight in its nose cone still fails (0.529), but the same weight
+in a one-copy pod held 3 m ahead of the nose scored 1.0 (nose weight on a
+stick). V4-0112 with its pod set placed 4.95 m ahead of the nose tip, with
+no weight added, scored 0.973. Now:
+`pod_outside_airframe`. In the second round it let a pod's shells reach at
+most 0.05 m past the main body's ends; since the third pass (below) at most
+0.33 of the pod's own shell length may lie past the ends of the main-body
+shells of the stage that holds it. After (measured with the 0.05 m rule):
+V4-0060's case scores 0.42 (build), and 36 of 36 cheat rows of that attack
+score 0.41-0.45 (build). A weighted pod 1-3 m ahead of the nose still fails
+under the share rule (a share far above 1).
+
+**A booster's weight inside the sustainer's nose.** Found: a part of the
+booster could sit anywhere inside the whole rocket's airframe. V4-0051 with a
+1.2403 kg weight owned by the booster but placed inside the sustainer's nose
+scored 0.986 (the same weight honestly in the sustainer's nose 0.937), and
+V4-0050 0.974 (honest 0.900). A check found that the same weight at the top
+of the booster's own tube, which a builder can do, scores as well (V4-0051
+0.989), so the gain comes from dropping mass at staging; the placement itself
+is impossible. Now: `part_ahead_of_stage`. After: 10 of 10 cheat rows score
+0.42-0.43 (build).
+
+**A motor mount wrapped in a pod.** Found: motors in pods were not judged by
+`motor_ahead_of_tail` or `tail_closed`, so a motor tube wrapped in a one-copy
+pod on the centre line skipped both. V4-0228 with its motor firing into the
+airframe 0.96 m ahead of the tail scored 0.855 (0.422 without the pod), and a
+closed tail behind such a pod scored 0.844 (V4-0228) and 0.941 (V4-0099).
+Judging the pod's motor against the pod's own shells alone does not catch it
+(the motor sits at the pod's tail). Now: pod motors are judged against their
+pod's shells, `pod_inside_body` (from the new helper field `axis_offset_m`,
+helper version 4) fails a pod sunk more than half its radius into the body,
+and `pod_motor_one_sided` fails a one-copy pod or booster with a motor. After:
+26 of 26 cheat rows score 0.41-0.44 (build).
+
+**Pods standing far off the body.** Found: V4-0112, V4-0168 and V4-0107 with
+every pod 0.29 m off to the side still scored 1.0, 1.0 and 0.999 (no gain, but
+nothing holds such a pod). Now: `pod_detached`, a clear gap of at most 0.10 m
+(V4-0112's own pods stand 50.8 mm off). After: pods 0.2-0.29 m off, 6 of 6
+score 0.43-0.44 (build).
+
+**A parachute that opens just above the ground.** Found: OpenRocket fills a
+parachute the instant it opens. With every parachute and streamer set to open
+at 4 m, V4-0006 (23 kg, M2000R) opened at 34 m/s 0.4 s before touchdown and
+scored 1.0; with a flight-time limit that binds, V4-0022 went from 0.799
+(honest) and 0.815 (the best smaller parachute) to 1.0. Keeping the drogue
+and opening only the main at 15 m also scored 1.0. Now: `opens_late`, the
+last opening at least 3 s before landing in every flight, and `opens_low`, a
+fixed-altitude opening set to at least 50 m (V4-0022 with its main at 15 m
+opens 3.14 s before landing, so the time rule alone would pass it). The
+references that pass open at least 5.7 s before landing (V4-0073), and the
+lowest fixed-altitude setting is 100 m (V4-0173). After: openings at 4, 8 or
+15 m, drogue removed or kept, 19 of 19 score 0.51-0.57 (flight). One
+honest but poor design also falls: V4-0112 with 8 pods flies so low that its
+parachute opens 2.2 s before landing (0.803 to 0.6245, flight).
+
+**A very long thin rocket** (low severity, no gain): a 25 mm rocket 3.7 m
+long, 151 times its diameter, scored 0.778 (V4-0146 with a 3.6234 m tube).
+Now: `slenderness`. In the second round it was length at most 80 times the
+largest diameter, and this case was not re-run; since the third pass the
+limit is 60 times the body width (`fit._body_width`, the largest diameter
+that at least 10% of the main body's length has). The references reach 56.1
+(V4-0050).
+
+### Third pass, after an attack on the second round
+
+A fresh attack on the second round's pod, stage and shape rules found one
+real hole, two small ones and one unfair failure; an attack on the recovery
+timing rules found the hole kept as a known limit in README.md. "Before" here
+is the second round's package. All 197 reference designs keep their stage and
+score (targets 159, flight 19, limits 12, build 7). "After" re-runs the
+attackers' own scripts on the new code.
+
+**Pods nested inside pods** (the real hole). Found: a pod set inside another
+pod's body tube was judged by `pod_inside_body` against the outer pod's small
+tube, while its `axis_offset_m` is measured from the rocket's centre line. So
+two motor pods could sit inside the main body tube, and their motors, judged
+only against their own short shells, could sit far forward and fire into the
+airframe. V4-0099 with its fins at 0.6 times scored 0.7394 (targets) with the
+motors forward, against 0.594 (flight, 0.53 cal) for the same nested motors
+at the tail; unshrunk, V4-0099 scored 0.7611 and V4-0046 0.8201. Now:
+`pod_in_pod`, a yes/no failure for a pod set or booster set inside another.
+After: all of these score 0.44 (build).
+
+**A booster's pod beside the sustainer's nose** (small). Found:
+`pod_outside_airframe` looked only at the whole rocket's span, so a pod set
+held by the booster's tube but placed beside the sustainer's nose passed:
+V4-0050, V4-0051 and V4-0063 scored 0.972, 0.986 and 0.965. That is no gain
+over honest pods on the booster (0.9735, 0.9881, 0.9653), but the pod would
+drop away from the part it touches. Now: the pod is judged against the
+main-body shells of the stage that holds it. After: 0.42 (build) on all
+three.
+
+**Sound strap-on boosters failed** (unfair). Found: side boosters or pods
+whose back ends hung 80 mm behind the core's tail failed build, although
+they still overlapped the body along most of their length: V4-0107 went from
+0.9991 to 0.448 and V4-0112 from 1.0 to 0.445 (40 mm still passed). Now:
+`pod_outside_airframe` measures a share of the pod's own shell length, with
+the limit `limits.POD_OVERHANG_MAX_FRACTION` = 0.33 (it replaces the 0.05 m
+limit). After: V4-0107's boosters (0.1715 m long) moved 0.04 m aft score
+0.9989, 0.08 m aft 0.9837 (a defect), 0.15 m aft (87% of their length) 0.433
+(build); V4-0112's pods (76 mm long) 0.04 m aft 0.985, 0.08 m aft (88%) 0.433
+(build).
+
+**Slenderness was soft** (small). Found: with the limit at 80, a rocket
+between 80 and about 113 times its diameter was only a defect (the general
+defect band above): V4-0050 stretched to 100 times its width scored 0.8342.
+A 2 mm flared disk 2.5 times the body width at the tail made the measured
+ratio 40, so the largest diameter could be dodged (that version scored
+0.8158). Now: the width is `fit._body_width` (a diameter that at least
+`limits.SLENDERNESS_WIDTH_SHARE` = 10% of the main body's length has), and
+`limits.SLENDERNESS_MAX` is 60, so up to about 85 is a defect and more fails.
+After: V4-0050 at 100 times scores 0.4461 (build), and with the tail disk
+0.446 (build).
+
+**A bulkhead in a booster's coupler failed** (reported as unfair; the check
+of the report judged it not clearly unfair on V4-0063 itself, where a
+bulkhead at the top of that coupler would cut through the sustainer's motor
+tube; the case is honest only for a booster whose coupler is empty at the
+joint). Found: the 20 mm ring limit of `part_ahead_of_stage` was counted
+only from a motor tube, not from the tube coupler holding the bulkhead, so a
+bulkhead inside a booster's
+interstage coupler that reaches 0.10 m into the stage above failed: V4-0063
+went from 0.9868 to 0.4239 (build). Now: a ring, bulkhead or engine block
+counts from the front of the motor tube or tube coupler that holds it. After:
+the bulkhead inside the coupler scores 0.9883; the same bulkhead held by the
+booster's body tube and placed 0.10 m into the stage above still fails
+(0.4241, build).
+
+Found and not fixed (README.md, "Known limits and things not done"): a
+recovery device timed by a delay can open below the 50 m floor and still
+pass; a weight of the top stage placed far down in the booster is impossible
+but gained nothing; pods on a nose cone or transition were not tried.
+
+### Last check of the new code
+
+The code of the second round and the third pass was then read line by line
+against its notes and run on 492,245 damaged copies of 14 real simulator
+replies (every field in turn missing, of the wrong type, not a number or
+absurdly large; part links pointing at themselves, at each other or at
+nothing; pods inside pods). Neither `fit.check_build` nor
+`flight.check_flight` raised on any of them. Two things were found and
+fixed:
+
+* **A pod was judged against the tube that holds it, not the body beside
+  it.** A pod held by a narrow tube but lying alongside a wider part of the
+  same stage could sit wholly inside that wider part and pass
+  `pod_inside_body`. This was shown on an edited reply, not with an
+  OpenRocket run: V4-0107's boosters (axis 45.5 mm from the centre line,
+  16.8 mm in radius) beside an added tube 80 mm in radius passed every pod
+  rule. Now `R` is the largest radius the main body has along the pod's own
+  length, and the same reply fails `pod_inside_body`. No reference changed.
+* **A length so large that the slenderness ratio was not a finite number**
+  put that value into `info["findings"]` and into the reason text. It is now
+  the largest violation with a plain reason, and a finding never keeps a
+  value that is not a finite number.
+
+**Counts after every round.** The 594 reference rows stop where they did
+after the first round (targets 480, flight 57, limits 36, build 21), and the
+RL prompt file is the same 474 rows, byte for byte. `tools/mutate.py` has 77
+named operators (72 cheats or defects the reward must stop or score lower, 3
+honest edits, 2 repairs); of their 981 variants on 21 designs, 959 were
+judged and none failed its promise. The full test suite has 2,374 tests.
+
+Holes the attackers found that are not fixed are in README.md, "Known limits
+and things not done".

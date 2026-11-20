@@ -191,11 +191,11 @@ From the repository root:
 python -m pytest rocket_reward/tests -q -p no:cacheprovider
 ```
 
-Without Java the 95 tests marked `needs_java` are skipped, and the other
-2,176 run in about a minute and a half. With `ROCKET_REWARD_JAVA_HOME` and
-`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) all 2,271 run, in
+Without Java the 97 tests marked `needs_java` are skipped, and the other
+2,277 run in a little over a minute. With `ROCKET_REWARD_JAVA_HOME` and
+`ROCKET_REWARD_JAR` set (or the jar in `rocket_reward/lib/`) all 2,374 run, in
 about three minutes (times measured on 2026-11-19 on a PC shared with other
-jobs). Two tests of the prompt data also need
+jobs). Four tests of the prompt data and the reference designs also need
 `ROCKET_REWARD_PROMPT_META` set to the reference meta file
 (`sft_v5_meta_c94ffa5.jsonl`); they are skipped without it.
 
@@ -209,7 +209,10 @@ jobs). Two tests of the prompt data also need
    design tree), `fit.py` (stage 5, the positions OpenRocket reports), `flight.py`
    (stage 6) or `targets.py` (stage 7). Use the violation helpers already there
    (`over_limit` / `under_limit` in `ladder.py`), and write a reason that says
-   what is wrong, by how much, and what to change.
+   what is wrong, by how much, and what to change. If the rule needs a number
+   OpenRocket does not report yet, add the field in `java/RocketSim.java`,
+   raise its `HELPER_VERSION` and describe the field in `java/PROTOCOL.md`
+   (the pod rules added `axis_offset_m` this way, helper version 4).
 3. Copy a test next to a similar rule: in `tests/test_limits.py` (for example
    `test_launch_lug_and_rail_button_counts` and `test_more_lugs_never_score_better`),
    `tests/test_fit.py` (`test_tube_fins_past_the_back_of_their_part`) or
@@ -293,6 +296,75 @@ Every tool prints its arguments with `--help`.
   however far it misses the targets: on the 400 designs of the review's
   attack search, the
   57 that miss the apogee by more than 50% score 0.702-0.806.
+* A pod or side booster may stand up to 100 mm clear of the body beside it
+  (`limits.POD_GAP_MAX_M`; V4-0112's pods stand 50.8 mm off), and up to about
+  1.41 times that with only a defect. Nothing checks that a strut joins it to
+  the body.
+* A pod or side booster may reach past the ends of the main body of its stage
+  by up to a third of its own length (`limits.POD_OVERHANG_MAX_FRACTION`), and
+  with only a defect up to a share of about 0.47, so strap-on boosters that
+  end a little below the core pass: V4-0107's boosters (0.1715 m long) moved
+  0.08 m aft score 0.9837 with a defect.
+* The 50 m floor for an opening reads only the altitude a device is set to,
+  not where it really opens. A device timed by a delay (an ALTITUDE setting of
+  183-457 m plus a deploy delay, or APOGEE plus a delay) can really open 20-40 m
+  up while falling at 25-46 m/s and still pass, as long as it opens 3 s
+  before landing. V4-0086 (25.9 kg) with its main at ALTITUDE 213 m plus a
+  7.31 s delay opens at 24.9 m/s, 3.35 s before landing, about 30-40 m up, and
+  scores 1.0; it ties the honest version with the main set to 50 m (1.0) and
+  never beats it. 28 reference designs can do this (measured on the second
+  round's code; the third round changed no stage 6 rule). Closing it needs the
+  helper to report the height of every opening (a new field and a new helper
+  version), so that the floor can be applied to the real height of each
+  section's last opening.
+* A weight of the top stage placed far down in the booster is impossible (it
+  sits inside the booster's airframe but stays with the top stage at
+  separation) but is not caught,
+  because reaching back into the stage behind is judged only against the
+  whole airframe. It gains nothing: V4-0139 scores 0.9998 against 0.9991 for
+  the honest weight in the nose, and on four other designs it fails flight.
+* Pods beside a nose cone or transition were not tried in the attacks. By
+  reading the code only: `pod_inside_body` and `pod_detached` use the largest
+  radius the main body has along the pod's own length, and read a nose cone
+  or transition along a straight line between its two end radii, so beside a
+  curved nose the gap is judged a little generously.
+
+Holes found by the 2026-11-19 attacks on the fixed version and left open
+(DESIGN.md section 7 has the ones that were closed; the numbers below were
+measured before the second round's rules were added):
+
+* A nose cone or transition shoulder wider than the rocket is not checked.
+  It is a solid disk outside the airframe with no drag: V4-0049 (0.594,
+  flight) scores 1.0 with a solid nose shoulder 1.5 times the body radius, and
+  a transition shoulder does the same (V4-0057 0.971 to 1.0). Left because it
+  gains nothing over honest nose ballast of the same mass (V4-0049 with a
+  3-times shoulder 0.8825, with the same mass as a point weight in the nose
+  0.8835), and because a rule would fail three references whose 76 mm
+  shoulders sit on 25 mm noses (V4-0086, V4-0087, V4-0109).
+* Adding one massless part of no size can change the simulated flight on a
+  few designs: V4-0050's apogee goes from 5,832 to 5,547 m and its score from
+  0.9747 to 1.0 with one such mass component (five of them give 0.9746). Apogee
+  moved by more than 1% on 3 of 80 designs and on none of the next 40;
+  re-scoring the unchanged designs gave no difference. This is the
+  simulator's own behaviour: its result depends on the number of parts (it
+  may come from the random part ids OpenRocket gives on load, which the
+  helper seeds; not proven). A policy could gain about 0.025 by trying such
+  parts.
+* An unreadable wall value such as `"auto 0.00001"` is not judged by stage 4,
+  so a design that fails limits can fail build instead and score more:
+  V4-0062 goes from 0.3204 (limits) to 0.40 (build). Left because it only moves
+  a failing design up one failing band, far below 0.70.
+* The `motors` target gives full credit when the one named motor is flown
+  twice in a cluster. With the apogee target set to what the doubled rocket
+  reaches, it beats the single motor: V4-0006 (M2000R) 0.8318 against 0.797.
+  Left because twice the impulse really flies (real physics); whether naming
+  one motor means flying exactly one is a question for the prompts.
+* A fin fillet may be up to 50 mm in radius whatever the fin height
+  (`limits.FILLET_RADIUS_MAX_M`). A 50 mm fillet on every fin set lifted 11 of
+  30 designs (V4-0066 0.9153 to 1.0) by adding real tail mass, which a builder
+  could do; the one case where the fillet is taller than the fin (V4-0016,
+  30 mm fins) failed anyway (0.559), so no absurd fillet design was found
+  scoring 0.70 or more.
 
 ## Files
 

@@ -106,7 +106,7 @@ import java.util.prefs.PreferencesFactory;
  */
 public class RocketSim {
 
-    static final int HELPER_VERSION = 3;
+    static final int HELPER_VERSION = 4;
     static final String OPENROCKET_VERSION = "24.12";
     /** Start of the load warning OpenRocket gives when it skips a value it cannot read (Warning.FILE_INVALID_PARAMETER). */
     static final String INVALID_PARAMETER_WARNING = "Invalid parameter encountered";
@@ -843,6 +843,20 @@ public class RocketSim {
         return x;
     }
 
+    /**
+     * How far the part's own axis lies from the rocket's centre line: the smallest distance over
+     * its copies (0 for a part on the centre line; a pod or side booster and everything in it
+     * report the pod's distance).
+     */
+    static double axisOffset(RocketComponent c) {
+        double r = Double.NaN;
+        for (Coordinate k : c.getComponentLocations()) {
+            double d = Math.hypot(k.y, k.z);
+            r = Double.isNaN(r) ? d : Math.min(r, d);
+        }
+        return r;
+    }
+
     /** Mean x of all copies of the part. */
     static double xMean(RocketComponent c) {
         Coordinate[] locs = c.getComponentLocations();
@@ -878,6 +892,7 @@ public class RocketSim {
             m.put("active", cfg.isComponentActive(c));
             m.put("stage", c.getStageNumber());
             m.put("instances", c.getComponentLocations().length);
+            m.put("axis_offset_m", num(axisOffset(c)));
             double x0 = xFront(c);
             m.put("x0_m", num(x0));
             m.put("length_m", num(c.getLength()));

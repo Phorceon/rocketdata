@@ -31,8 +31,11 @@ they size a part from the prompt's own landing number. They apply only to
 designs whose requirements state one.
 
 The cheats and defects come from the two attack reviews of the reward (stages
-1-4, then stages 5-7), the 2026-11-19 review of targets, overrides and sizes,
-and the earlier rewards' notes; the repairs start
+1-4, then stages 5-7), the 2026-11-19 review of targets, overrides and sizes
+and its second round (pods, weights in another stage, slender rockets and
+parachutes that open at the ground) and third round (pods nested in pods, a
+booster's pods beside the stage above, a thin flared disk that hid a needle
+rocket), and the earlier rewards' notes; the repairs start
 from real model answers that fail for one clear reason.
 
 Usage (from the repo root; Java and the OpenRocket jar must be set up unless
@@ -118,6 +121,28 @@ SWAP_LENGTH_MAX_RATIO = 1.1
 FAR_AHEAD_M = 1.5
 FAR_BEHIND_M = 1.0
 THIN_PART_MAX_M = 0.006         # far_away_thin_part moves a ring, bulkhead or engine block at most 6 mm long
+# Round 2 of the 2026-11-19 review (each as in the attackers' own edits):
+POD_STICK_AHEAD_M = 2.0         # pod_weight_ahead_of_nose: the pod's front this far ahead of the first body tube's front ...
+POD_STICK_RADIUS_M = 0.01       # ... a pod 10 mm in radius (at most half the body's) ...
+POD_STICK_WEIGHT_SHARE = 0.1    # ... holding a tenth of the liftoff guess ...
+POD_STICK_FIN_FACTOR = 0.6      # ... with the fins at 0.6 times their size (unstable without the weight)
+BOOSTER_WEIGHT_SHARE = 0.15     # booster_weight_in_upper_stage: 0.15 times the liftoff guess ...
+BOOSTER_WEIGHT_AT_NOSE = 0.6    # ... placed 0.6 nose lengths behind the tip
+POD_WRAP_RADIUS_FACTOR = 1.04   # motor tube wrapped in a pod: the pod tube 1.04 times the motor tube's radius ...
+POD_WRAP_RADIUS_EXTRA_M = 0.0008  # ... plus 0.8 mm
+POD_SIDE_OFFSET_M = 0.25        # pod_far_to_the_side: pods 0.25 m out from their body tube
+NEEDLE_SLENDERNESS = 120.0      # needle_rocket: length at least 120 times the widest diameter (the limit is 60, limits.SLENDERNESS_MAX)
+GROUND_OPEN_ALTITUDE_M = 4.0    # parachute_opens_at_ground
+LOW_MAIN_ALTITUDE_M = 15.0      # main_opens_low_drogue_kept
+# Round 3 of the 2026-11-19 review (each as in the attackers' own edits):
+NESTED_OUTER_RADIUS_SHARE = 0.3  # motor_pods_inside_pods: two outer pods 0.3 times the body tube's radius ...
+NESTED_SUNK_SHARE = 0.6         # ... each holding a motor pod whose axis lies 0.6 inner-pod radii outside the outer pod's
+NESTED_FIN_FACTOR = 0.6         # ... with the fins at 0.6 times their size (the attackers' best case)
+SIDE_POD_RADIUS_SHARE = 0.3     # booster_pod_beside_upper_stage: two pods 0.3 times the widest radius ...
+SIDE_POD_AT_NOSE = 0.5          # ... their front 0.5 nose lengths behind the tip ...
+SIDE_POD_WEIGHT_SHARE = 0.15    # ... holding 0.15 times the liftoff guess between them
+TAIL_DISK_LENGTH_M = 0.002      # needle_rocket_with_tail_disk: a 2 mm flared transition ...
+TAIL_DISK_RADIUS_FACTOR = 2.5   # ... opening to 2.5 times the radius of the shell in front of it
 
 
 @dataclass(frozen=True)
@@ -1044,6 +1069,290 @@ def op_motor_too_wide(design: dict, table: Any) -> Optional[Mutant]:
     return design if done else None
 
 
+# The cheats of the second 2026-11-19 review (round 2), rebuilt from the
+# attackers' own edits. Each must stop at stage 5 (build), or at stage 6 for
+# the two late-opening ones further down.
+CARDBOARD = {"material": {"attrs": {"type": "bulk", "density": 680.0}, "value": "Cardboard"}}
+
+
+def _mu_liftoff_guess(design: dict, table: Any) -> float:
+    """A guess of the liftoff mass without a simulator: four times the flown
+    motors' loaded mass (0 when no flown motor is known)."""
+    motor_kg = 0.0
+    for m in _mu_flown(design):
+        key = _mu_key(table, m)
+        kg = table.get(key).get("launch_mass_kg") if key else None
+        if isinstance(kg, (int, float)) and kg > 0:
+            motor_kg += float(kg)
+    return LIFTOFF_PER_MOTOR_MASS * motor_kg
+
+
+def _mu_weight(mass: float, method: str, at: float, length: float = 0.0, radius: float = 0.0) -> Node:
+    """A mass component of `mass` kg placed `at` metres by `method`."""
+    return {"masscomponent": {"children": [
+        {"mass": {"value": mass}}, {"packedlength": {"value": length}}, {"packedradius": {"value": radius}},
+        {"axialoffset": {"attrs": {"method": method}, "value": at}}]}}
+
+
+def _mu_pod(children: list, radius_method: str, radius_offset: float, axial_method: str, axial: float,
+            copies: int = 1) -> Node:
+    """A pod set holding `children`, placed by the given radius and axial offsets."""
+    return {"podset": {"children": [
+        {"instancecount": {"value": copies}},
+        {"radiusoffset": {"attrs": {"method": radius_method}, "value": radius_offset}},
+        {"angleoffset": {"attrs": {"method": "relative"}, "value": 0.0}},
+        {"axialoffset": {"attrs": {"method": axial_method}, "value": axial}},
+        {"subcomponents": {"children": children}}]}}
+
+
+def op_pod_weight_ahead_of_nose(design: dict, table: Any) -> Optional[Mutant]:
+    """The review's "nose weight on a stick": fins at 0.6 times their size
+    (unstable), and a one-copy pod (a 5 cm nose cone and a 10 cm tube, 10 mm
+    in radius, or half the body's radius when that is less) on the first body
+    tube, its front 2 m ahead of that tube's front, holding a weight of a
+    tenth of the liftoff guess. The weight steadies the rocket from far ahead
+    of the nose: stage 5 (pod_outside_airframe). On the attackers' V4-0060 it
+    went 0.511 -> 1.0 before the rule; now 0.42 (build)."""
+    tubes = _mu_parts(design, "bodytube")
+    weight = round(POD_STICK_WEIGHT_SHARE * _mu_liftoff_guess(design, table), 4)
+    if not tubes or weight <= 0:
+        return None
+    _mu_scale_fins(design, POD_STICK_FIN_FACTOR)
+    r = round(min(POD_STICK_RADIUS_M, 0.5 * _mu_widest_radius(design)), 5)
+    tube_kids = [dict(CARDBOARD), {"length": {"value": 0.1}}, {"thickness": {"value": 0.0005}},
+                 {"radius": {"value": r}}, {"subcomponents": {"children": [_mu_weight(weight, "top", 0.01)]}}]
+    nose = {"nosecone": {"children": [dict(CARDBOARD), {"length": {"value": 0.05}}, {"thickness": {"value": 0.0005}},
+                                      {"shape": {"value": "ogive"}}, {"aftradius": {"value": r}}]}}
+    _mu_holder(tubes[0]).append(_mu_pod([nose, {"bodytube": {"children": tube_kids}}],
+                                        "relative", 0.0, "top", -POD_STICK_AHEAD_M))
+    return design
+
+
+def op_booster_weight_in_upper_stage(design: dict, table: Any) -> Optional[Mutant]:
+    """On a multi-stage rocket, a weight of 0.15 times the liftoff guess
+    (3 cm long, 8 mm in radius; at most half the density bound) owned by the
+    bottom stage's first body tube but placed inside the top stage's nose
+    cone (0.6 nose lengths behind the tip, an absolute position). It steadies
+    the rocket on the way up and drops away with the booster: stage 5
+    (part_ahead_of_stage). The attackers' V4-0051 scored 0.986 with it; now
+    0.42 (build)."""
+    stages = stages_of(_mu_view(design))
+    if len(stages) < 2:
+        return None
+    nose = next((p for p in iter_components(stages[0]) if tag_of(p) == "nosecone"), None)
+    tube = next((p for p in iter_components(stages[-1]) if tag_of(p) == "bodytube"), None)
+    nose_len = _mu_num(nose, "length") if nose is not None else None
+    if tube is None or nose_len is None or nose_len <= 0:
+        return None
+    length, radius = 0.03, 0.008
+    cap = 0.5 * L.MASS_COMPONENT_DENSITY_MAX_KG_M3 * 3.141592653589793 * radius ** 2 * length
+    weight = round(min(cap, BOOSTER_WEIGHT_SHARE * _mu_liftoff_guess(design, table)), 4)
+    if weight <= 0:
+        return None
+    _mu_holder(tube).append(_mu_weight(weight, "absolute", round(BOOSTER_WEIGHT_AT_NOSE * nose_len, 4),
+                                       length, radius))
+    return design
+
+
+def _mu_wrap_motor_in_pod(design: dict, outside: bool) -> Optional[Mutant]:
+    """Every inner tube that holds a motor mount, in a body tube, wrapped in a
+    one-copy pod (a 1 cm nose cone and a tube 1.04 times the inner tube's
+    radius plus 0.8 mm, as long as the inner tube) at the back of that body
+    tube, the motor tube at the front of the pod's tube. outside=False: the
+    pod's axis on the rocket's centre line ("free" radius offset 0), so the
+    motor still sits inside the body; outside=True: the pod flush on the
+    outside of the body tube (its axis the body's radius plus the pod's
+    radius from the centre line). Only where the pod is narrower than 0.98
+    times the body tube."""
+    done = 0
+    for st in stages_of(_mu_view(design)):
+        for parent in list(iter_components(st)):
+            if tag_of(parent) != "bodytube":
+                continue
+            kids = _mu_holder(parent)
+            for i, it in enumerate(list(kids)):
+                if tag_of(it) != "innertube" or child(it, "motormount") is None:
+                    continue
+                r, length, big = _mu_num(it, "outerradius"), _mu_num(it, "length"), _mu_num(parent, "radius")
+                if not r or not length or r <= 0 or length <= 0 or big is None or big <= 0:
+                    continue
+                pr = round(r * POD_WRAP_RADIUS_FACTOR + POD_WRAP_RADIUS_EXTRA_M, 6)
+                if pr >= 0.98 * big:
+                    continue
+                inner = copy_tree(it)
+                _mu_place(inner, "top", 0.0)
+                shell = {"bodytube": {"children": [dict(CARDBOARD), {"length": {"value": length}},
+                                                   {"thickness": {"value": 0.0005}}, {"radius": {"value": pr}},
+                                                   {"subcomponents": {"children": [inner]}}]}}
+                nose = {"nosecone": {"children": [dict(CARDBOARD), {"length": {"value": 0.01}},
+                                                  {"thickness": {"value": 0.0005}}, {"shape": {"value": "conical"}},
+                                                  {"aftradius": {"value": "auto"}}]}}
+                offset = round(big + pr, 6) if outside else 0.0
+                kids[i] = _mu_pod([nose, shell], "free", offset, "bottom", 0.0)
+                done += 1
+    return design if done else None
+
+
+def op_motor_in_pod_inside_body(design: dict, table: Any) -> Optional[Mutant]:
+    """The review's pod-wrapped motor: every motor tube wrapped in a one-copy
+    pod whose axis is the rocket's centre line, inside the body tube. Before
+    round 2, motors in pods skipped the motor-position rules, so the motor
+    could fire into the airframe: stage 5 (pod_inside_body, and
+    pod_motor_one_sided). The attackers' 26 such cases now build 0.41-0.44."""
+    return _mu_wrap_motor_in_pod(design, outside=False)
+
+
+def op_one_sided_motor_pod(design: dict, table: Any) -> Optional[Mutant]:
+    """The same wrap, but the one-copy pod sits flush on the outside of the
+    body tube: the motor pushes on one side of the rocket, which the
+    simulator flies straight: stage 5 (pod_motor_one_sided)."""
+    return _mu_wrap_motor_in_pod(design, outside=True)
+
+
+def op_pod_far_to_the_side(design: dict, table: Any) -> Optional[Mutant]:
+    """Every pod and side booster moved 0.25 m out from the body tube that
+    holds it ("relative" radius offset), where nothing holds it: stage 5
+    (pod_detached). Only designs with pods: one of the 16 val designs
+    (row-025, which already stops at build: its pods sit on the centre
+    line)."""
+    pods = _mu_parts(design, *POD_TAGS)
+    for p in pods:
+        _mu_set(p, "radiusoffset", POD_SIDE_OFFSET_M, {"method": "relative"})
+    return design if pods else None
+
+
+def op_needle_rocket(design: dict, table: Any) -> Optional[Mutant]:
+    """The first body tube lengthened until the rocket is at least 120 times
+    as long as its widest written diameter, a tube that would buckle (the
+    simulator does not model bending): stage 5 (slenderness). Only where the
+    longer tube stays within limits.TUBE_LENGTH_MAX_M, so stage 4 lets it
+    through: on the 16 val designs, row-016 and row-019 (the thinnest)."""
+    tubes = _mu_parts(design, "bodytube")
+    tube_len = _mu_num(tubes[0], "length") if tubes else None
+    if tube_len is None or tube_len <= 0:
+        return None
+    need = NEEDLE_SLENDERNESS * 2.0 * _mu_widest_radius(design) - _mu_rocket_length(design)
+    new = round(tube_len + need + 0.001, 4)
+    if need <= 0 or new > L.TUBE_LENGTH_MAX_M:
+        return None
+    _mu_set(tubes[0], "length", new)
+    return design
+
+
+# The cheats of the third 2026-11-19 review (round 3), rebuilt from the
+# attackers' own edits; each must stop at stage 5 (build).
+
+def _mu_nose(radius: Any, length: float, shape: str = "ogive") -> Node:
+    return {"nosecone": {"children": [dict(CARDBOARD), {"length": {"value": length}}, {"thickness": {"value": 0.001}},
+                                      {"shape": {"value": shape}}, {"aftradius": {"value": radius}}]}}
+
+
+def _mu_tube(radius: float, length: float, kids: Optional[list] = None) -> Node:
+    body = [dict(CARDBOARD), {"length": {"value": length}}, {"thickness": {"value": 0.001}},
+            {"radius": {"value": radius}}]
+    if kids:
+        body.append({"subcomponents": {"children": kids}})
+    return {"bodytube": {"children": body}}
+
+
+def op_motor_pods_inside_pods(design: dict, table: Any) -> Optional[Mutant]:
+    """The attackers' nested pods: on the first body tube that holds a motor
+    tube, two outer pods (0.3 times the body's radius, flush on its surface,
+    at its back) each hold a one-copy pod whose motor tube is the design's
+    own (moved there), its axis 0.6 inner-pod radii outside the outer pod's
+    surface measured towards the rocket's axis: so the motor pods sit inside
+    the main body and fire into it, while round 2 judged them against the
+    outer pod's small radius only. Fins at 0.6 times their size. Only where
+    the inner pod stays inside 0.98 times the body's radius. Stage 5
+    (pod_in_pod, round 3): V4-0099 with fins x0.6 scored 0.7394 in round 2
+    against 0.594 for the honest version; now 0.44 (build)."""
+    for st in stages_of(_mu_view(design)):
+        for parent in iter_components(st):
+            if tag_of(parent) != "bodytube":
+                continue
+            kids = _mu_holder(parent)
+            for i, it in enumerate(kids):
+                if tag_of(it) != "innertube" or child(it, "motormount") is None:
+                    continue
+                big, length = _mu_num(parent, "radius"), _mu_num(parent, "length")
+                rm, lt = _mu_num(it, "outerradius"), _mu_num(it, "length")
+                if not all(x is not None and x > 0 for x in (big, length, rm, lt)):
+                    return None
+                ro = round(NESTED_OUTER_RADIUS_SHARE * big, 6)
+                ri = round(rm + 0.001, 6)
+                axis = ro + NESTED_SUNK_SHARE * ri    # the inner pod's axis from the rocket's centre line
+                if axis + ri > 0.98 * big:
+                    return None
+                outer_len = round(min(0.4 * length, max(lt + 0.05, 0.2)), 6)
+                inner_tube = copy_tree(it)
+                _mu_place(inner_tube, "top", 0.0)
+                inner = _mu_pod([_mu_nose(ri, 0.01), _mu_tube(ri, lt, [inner_tube])],
+                                "free", round(big + ro - axis, 6), "bottom", 0.0)
+                _mu_set(inner, "angleoffset", 180.0, {"method": "relative"})
+                outer = _mu_pod([_mu_nose(ro, 0.05), _mu_tube(ro, outer_len, [inner])], "surface", 0.0,
+                                "bottom", 0.0, copies=2)
+                kids.pop(i)
+                kids.append(outer)
+                _mu_scale_fins(design, NESTED_FIN_FACTOR)
+                return design
+    return None
+
+
+def op_booster_pod_beside_upper_stage(design: dict, table: Any) -> Optional[Mutant]:
+    """On a multi-stage rocket, two pods (a 4 cm nose cone and a 12 cm tube,
+    0.3 times the widest radius) held by the bottom stage's first body tube
+    but placed beside the top stage's nose (their front 0.5 nose lengths
+    behind the tip, an absolute position), each holding half of 0.15 times
+    the liftoff guess (at most half the density bound). They lie inside the
+    whole rocket's span, but would drop away from the stage they touch:
+    stage 5 (pod_outside_airframe, judged since round 3 against the shells
+    of the stage that holds the pod). The attackers' V4-0050, V4-0051 and
+    V4-0063 scored 0.972, 0.986 and 0.965 in round 2; now 0.42 (build)."""
+    stages = stages_of(_mu_view(design))
+    if len(stages) < 2:
+        return None
+    nose = next((p for p in iter_components(stages[0]) if tag_of(p) == "nosecone"), None)
+    tube = next((p for p in iter_components(stages[-1]) if tag_of(p) == "bodytube"), None)
+    nose_len = _mu_num(nose, "length") if nose is not None else None
+    if tube is None or nose_len is None or nose_len <= 0:
+        return None
+    r = round(SIDE_POD_RADIUS_SHARE * _mu_widest_radius(design), 5)
+    wl, wr = 0.03, round(0.8 * r, 6)
+    cap = 0.5 * L.MASS_COMPONENT_DENSITY_MAX_KG_M3 * 3.141592653589793 * wr ** 2 * wl
+    weight = round(min(cap, 0.5 * SIDE_POD_WEIGHT_SHARE * _mu_liftoff_guess(design, table)), 4)
+    if weight <= 0:
+        return None
+    pod = _mu_pod([_mu_nose(r, 0.04), _mu_tube(r, 0.12, [_mu_weight(weight, "top", 0.0, wl, wr)])],
+                  "surface", 0.0, "absolute", round(SIDE_POD_AT_NOSE * nose_len, 4), copies=2)
+    _mu_holder(tube).append(pod)
+    return design
+
+
+def op_needle_rocket_with_tail_disk(design: dict, table: Any) -> Optional[Mutant]:
+    """The needle_rocket edit, plus a flared transition 2 mm long behind the
+    bottom stage's last shell, opening from that shell's radius to 2.5 times
+    it: in round 2 the widest diameter counted, so the disk cut the measured
+    ratio of a 100:1 rocket to 40. Since round 3 the width is the largest
+    diameter that at least limits.SLENDERNESS_WIDTH_SHARE of the main body's
+    length has, so the disk does not count: stage 5 (slenderness). The
+    attackers' V4-0050 at 100 times with the disk scored 0.8158 in round 2;
+    now 0.446 (build)."""
+    width = _mu_widest_radius(design)
+    if op_needle_rocket(design, table) is None:
+        return None
+    bottom = _mu_bottom_stage(design)
+    shells = [p for p in _mu_holder_parts(bottom) if tag_of(p) in SHELL_TAGS] if bottom is not None else []
+    if not shells:
+        return None
+    last = shells[-1]
+    r = next((v for v in (_mu_num(last, "radius"), _mu_num(last, "aftradius")) if v is not None and v > 0), width)
+    _mu_holder(bottom).append({"transition": {"children": [
+        dict(CARDBOARD), {"length": {"value": TAIL_DISK_LENGTH_M}}, {"thickness": {"value": 0.001}},
+        {"shape": {"value": "conical"}}, {"foreradius": {"value": r}},
+        {"aftradius": {"value": round(TAIL_DISK_RADIUS_FACTOR * r, 6)}}]}})
+    return design
+
+
 # --------------------------------------------------------------------------- stage 6: flight
 
 def _mu_largest_impulse(design: dict, table: Any) -> float:
@@ -1203,6 +1512,32 @@ def op_booster_without_recovery(design: dict, table: Any) -> Optional[Mutant]:
         {"axialoffset": {"attrs": {"method": "top"}, "value": 0.0}}, {"mass": {"value": 0.5}},
         {"packedlength": {"value": 0.02}}, {"packedradius": {"value": 0.005}}]}})
     return design
+
+
+def _mu_open_at(devices: list, altitude: float) -> bool:
+    """Set every device to open at `altitude` metres on the way down, with no delay; False for no device."""
+    for d in devices:
+        _mu_set(d, "deployevent", "altitude")
+        _mu_set(d, "deployaltitude", altitude)
+        _mu_set(d, "deploydelay", 0.0)
+    return bool(devices)
+
+
+def op_parachute_opens_at_ground(design: dict, table: Any) -> Optional[Mutant]:
+    """Every parachute and streamer set to open 4 m above the ground (as in
+    the review, any drogue goes too). OpenRocket fills a parachute the
+    instant it opens, so before round 2 a 23 kg rocket falling at 34 m/s
+    "landed softly" and scored 1.0: stage 6 (the device is set below
+    limits.DEPLOY_ALTITUDE_MIN_M, and it opens less than
+    limits.RECOVERY_OPEN_BEFORE_LANDING_MIN_S before landing)."""
+    return design if _mu_open_at(_mu_parts(design, *RECOVERY_TAGS), GROUND_OPEN_ALTITUDE_M) else None
+
+
+def op_main_opens_low_drogue_kept(design: dict, table: Any) -> Optional[Mutant]:
+    """Every parachute set to open 15 m above the ground; streamers keep their
+    settings (a drogue streamer still opens where it did): stage 6 (the
+    parachute is set below limits.DEPLOY_ALTITUDE_MIN_M)."""
+    return design if _mu_open_at(_mu_parts(design, "parachute"), LOW_MAIN_ALTITUDE_M) else None
 
 
 # --------------------------------------------------------------------------- worse but honest
@@ -1522,6 +1857,29 @@ OPERATORS: tuple[Operator, ...] = (
     Operator("lug_behind_tail", "build", "every launch lug and rail button placed 1 m behind the tail",
              op_lug_behind_tail),
     Operator("closed_tail", "build", "the tail closed to a 0.01 mm point around the motor", op_closed_tail),
+    Operator("pod_weight_ahead_of_nose", "build",
+             "fins at 0.6 times, and a weighted one-copy pod held 2 m ahead of the first body tube",
+             op_pod_weight_ahead_of_nose),
+    Operator("booster_weight_in_upper_stage", "build",
+             "a weight owned by the booster placed inside the top stage's nose cone", op_booster_weight_in_upper_stage),
+    Operator("motor_in_pod_inside_body", "build",
+             "every motor tube wrapped in a one-copy pod on the centre line, inside the body",
+             op_motor_in_pod_inside_body),
+    Operator("one_sided_motor_pod", "build",
+             "every motor tube wrapped in a one-copy pod flush on the outside of the body", op_one_sided_motor_pod),
+    Operator("pod_far_to_the_side", "build", "every pod and side booster 0.25 m out from its body tube",
+             op_pod_far_to_the_side),
+    Operator("needle_rocket", "build", "the first body tube lengthened to 120 times the widest diameter",
+             op_needle_rocket),
+    Operator("motor_pods_inside_pods", "build",
+             "the motor tube moved into pods nested in two outer pods, so it sits inside the body; fins at 0.6 times",
+             op_motor_pods_inside_pods),
+    Operator("booster_pod_beside_upper_stage", "build",
+             "two weighted pods held by the booster but placed beside the top stage's nose",
+             op_booster_pod_beside_upper_stage),
+    Operator("needle_rocket_with_tail_disk", "build",
+             "the needle_rocket edit plus a 2 mm flared disk 2.5 times the body's width at the tail",
+             op_needle_rocket_with_tail_disk),
     Operator("zero_ejection_delay", "flight", "on an H-or-bigger rocket, recovery opens at burnout (0 s delay)",
              op_zero_ejection_delay),
     Operator("chute_far_too_small", "flight", "every parachute a fifth of its size (it lands past 9 m/s)",
@@ -1530,6 +1888,10 @@ OPERATORS: tuple[Operator, ...] = (
     Operator("booster_without_recovery", "flight",
              "the booster of a multi-stage rocket loses its recovery and carries 0.5 kg more",
              op_booster_without_recovery),
+    Operator("parachute_opens_at_ground", "flight", "every parachute and streamer opens 4 m above the ground",
+             op_parachute_opens_at_ground),
+    Operator("main_opens_low_drogue_kept", "flight", "every parachute opens 15 m above the ground, streamers kept",
+             op_main_opens_low_drogue_kept),
     Operator("weaker_motor", EXPECT_LOWER, "every motor replaced by a real one a class lower, same diameter",
              op_weaker_motor),
     Operator("chute_too_small_for_prompt", EXPECT_LOWER_IN_TARGETS,

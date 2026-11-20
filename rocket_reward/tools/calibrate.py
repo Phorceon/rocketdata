@@ -116,6 +116,7 @@ def _findings(result: Result) -> list[dict[str, Any]]:
         if info.get("static_violation"):
             out.append({"rule": "pad_stability", "size": info.get("static_violation"),
                         "value": info.get("static_stability_cal")})
+        out += [{"rule": "opens_low", "size": s} for s in info.get("low_opening_violations") or []]
         return out
     return []
 

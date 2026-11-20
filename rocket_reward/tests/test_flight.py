@@ -207,8 +207,11 @@ def test_prompt_limit_does_not_apply_to_a_booster():
 
 
 def test_booster_given_a_recovery_device_must_land_softly():
+    # the stored booster has no recovery device; give it one that opens at 5 s (it lands at 33.8 s),
+    # so the opening comes long enough before the landing (rule opens_late)
     reply = each_branch(load_reply("two_stage"), 1, has_recovery=True, deployed=True, deploy_speed_ms=5.0,
-                        deploy_during_burn=False)
+                        deploy_during_burn=False, deploy_time_s=5.0,
+                        deployments=[{"device": "Streamer", "during_burn": False, "speed_ms": 5.0, "time_s": 5.0}])
     check = flight.check_flight(reply, NO_LIMIT)
     assert rule_sizes(check) == {"landing_hard_1": pytest.approx(math.log2(11.81331146119454 / 9.0), abs=1e-6)}
 

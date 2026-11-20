@@ -88,3 +88,5 @@ def test_snapshot_file_is_consistent():
 #            'Paper, spiral kraft glassine, PK IIIa, bulk' gives four parts their mass, so it counts.
 #   The targets change works only in stage 7, and the new stage 4 size bounds change no stage or
 #   score here (the sizes change moves answers only through stage 5, in test_model_scores.py).
+#   Checked again after the second round of fixes the same day (stages 5 and 6 only): no stage or
+#   score moved, so the file is unchanged.

@@ -12,6 +12,16 @@ files write such overrides, so their numbers moved, and some designs that
 passed with their overrides no longer do (see "Sound only with their
 overrides" below).
 
+The second round of rules on 2026-11-19 (pods, parts of a lower stage, the
+rocket's slenderness, late and low parachute openings; DESIGN.md section 7)
+was checked by scoring the 197 designs again (one row each, the design's
+first prompt): every design stops at the same stage as below, and only two
+scores changed, V4-0189 and V4-0227, both already failing; their rows below
+give the new values. The row counts were not re-run. The third pass (nested
+pods, pod overhang as a share, the slenderness width, rings counted from the
+coupler that holds them) was checked the same way: every design keeps the
+stage and score it had after the second round.
+
 | | rows | designs |
 |---|---|---|
 | reach the targets stage (stage 7) | 480 | 159 |
@@ -70,7 +80,7 @@ saw them.
 | V4-0210 | rocket_3_1.ork | build (0.442) | engine block lies 38 mm behind the back of the airframe (at most 20 mm) | The engine block sits entirely outside the body tube. |
 | V4-0213 | rocket_5.ork | build (0.440) | fin root 1.0 chord past the back of its tube (at most 0.5) | The fins start where the body tube ends, so they hang off the back. |
 | V4-0215 | rocket_6.ork | build (0.440) | fin root 1.0 chord past the back of its tube (at most 0.5) | The same fault as V4-0213. |
-| V4-0227 | siriusrocketry_eradicator_s-0017.ork | build (0.418) | outer radius step 26% (at most 10%); two pods start with an open body tube | The body steps down in width with no transition, and the pods have no nose cones. |
+| V4-0227 | siriusrocketry_eradicator_s-0017.ork | build (0.410) | outer radius step 26% (at most 10%); both pods' axes 0 mm from the centre line, so 100% of each pod's 38.1 mm radius lies inside the 28.5 mm body that holds it (at most 50%); two pods start with an open body tube | The body steps down in width with no transition, and the pods sit on the centre line inside the body and have no nose cones. |
 | V4-0230 | starfire73_talon.ork | build (0.431) | two centering rings pushed 10.49 mm into each other (at most 3.5 mm) | Two centering rings occupy the same place. |
 
 ## Unsafe to fly (stage 6)
@@ -121,7 +131,7 @@ real wall thicknesses) instead of an override.
 | V4-0027 | APEXJTentative.ork | flight (0.646) | recovery opens at 70.4 m/s (at most 60) | targets; recovery opened at 58.5 m/s |
 | V4-0162 | estes_alpha_vi_1958.ork | flight (0.588) | stability on the pad 0.52 cal (at least 1.0) | targets with one defect; 1.31 cal on the pad |
 | V4-0166 | estes_blu-97b_cluster_bomb_2055-1246.ork | flight (0.639) | stability on the pad 0.82 cal (at least 1.0) | targets; 1.29 cal on the pad |
-| V4-0189 | quest_seeker.ork | flight (0.598) | the recovered section lands at 15.1 m/s in 3 m/s wind (at most 9) | targets with one defect; liftoff mass 0.088 kg instead of 0.115 kg on its parts |
+| V4-0189 | quest_seeker.ork | flight (0.536) | in 3 m/s wind its last recovery device opens only 0.1 s before the section lands (at least 3 s), and it lands at 15.1 m/s (at most 9) | targets with one defect; liftoff mass 0.088 kg instead of 0.115 kg on its parts |
 | V4-0225 | semroc_starfire_kv-20.ork | limits (0.311) | transition wall 0.000254 mm (at least 0.13 mm); wall areal density 0.0002848 kg/m2 (at least 0.045) | targets (1.0); the mass override stood in for the transition's weight |
 
 V4-0162 and V4-0189 also still carry their fit defect (a centering ring 15%

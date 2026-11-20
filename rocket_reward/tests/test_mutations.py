@@ -55,6 +55,50 @@ Changes from the snapshot before them (2 cases dropped, 42 added):
     targets 0.9910 -> 0.9395: its 2.34 kg against the asked 2.20 kg (credit
     0.80) now counts in full (targets), and without overrides it weighs
     2.34 kg, not 2.38 kg (overrides)
+Re-made again the same day after the second round of fixes ("round 2": pods
+held alongside and outside the body, motors in pods judged against the pod,
+parts of a lower stage kept out of the stage above, slenderness, and recovery
+that opens too late or too low). Same 10 designs; 131 cases -> 154. No case
+or original that was there before changed its stage or score (none of these
+designs has a pod).
+8 operators added, 23 cases:
+  * pod_weight_ahead_of_nose (5 cases, build 0.419-0.42: pod_outside_airframe),
+    booster_weight_in_upper_stage (row-007 only, build 0.4268:
+    part_ahead_of_stage; row-040's bottom stage has no body tube),
+    motor_in_pod_inside_body (row-007, -028, -040, build 0.4182-0.4191:
+    pod_inside_body and pod_motor_one_sided), one_sided_motor_pod (the same
+    three, build 0.44: pod_motor_one_sided only) and needle_rocket (row-016
+    only, build 0.4505: slenderness 120); pod_far_to_the_side has no case
+    here: none of these designs has a pod
+  * parachute_opens_at_ground (5 cases, flight 0.5139-0.5265) and
+    main_opens_low_drogue_kept (5 cases, flight 0.5339-0.5651): devices set
+    to open below 50 m (on some also opens_late: under 3 s before landing)
+Re-made a third time the same day after the third round of fixes ("round 3":
+pod_in_pod; pod_outside_airframe as a share of the pod's own length, judged
+against the stage that holds the pod; slenderness against the body's width,
+limit 80 -> 60; rings held by a coupler in part_ahead_of_stage). Same 10
+designs; 154 cases -> 156. No original and no repair moved; the round 2 cases
+above kept their stage and score except the two named below.
+3 operators added, 2 cases:
+  * booster_pod_beside_upper_stage (row-007 only, build 0.4264:
+    pod_outside_airframe, 135% of the pod's length ahead of the bottom stage;
+    row-040's bottom stage has no body tube) and needle_rocket_with_tail_disk
+    (row-016 only, build 0.44: slenderness 120, the disk not counted);
+    motor_pods_inside_pods has no case here: it applies to none of the 16 val
+    designs (REFERENCE_DESIGNS_ONLY below)
+3 cases moved, all on row-016 (the thinnest design, 24.79 mm across) and all
+from the slenderness limit going from 80 to 60 (the width is the same 24.79 mm
+by either rule):
+  * lug_behind_tail 0.42 -> 0.419: the lug 1 m behind the tail makes the
+    rocket 1.637 m long, 66 times its width: under 80 before, now a defect
+    (size 0.1386) on top of the same part_outside_airframe failure
+  * pod_weight_ahead_of_nose 0.419 -> 0.4169: the pod 1.88 m ahead makes the
+    rocket 2.457 m long, 99 times its width: a defect over 80 before (size
+    0.3092), now a failure over 60 (size 0.7242) added to pod_outside_airframe
+    (now 12.53 times the pod's length, size 3.0 either way): credit
+    1 / (1 + 3.0 + 0.7242)
+  * needle_rocket 0.4505 -> 0.44: slenderness 120 was log2(120 / 80) = 0.585
+    over the limit, now log2(120 / 60) = 1.0
 
 Known findings (KNOWN_FINDINGS below) are cases where the reward does not yet
 do what the operator says it must. They are left for the owner to decide; the
@@ -135,8 +179,23 @@ def test_operator_list_is_well_formed():
               "endless_delay": "limits", "coin_weight": "limits", "absurd_angle_or_offset": "limits",
               "chute_far_too_small": "flight", "chute_too_small_for_prompt": M.EXPECT_LOWER_IN_TARGETS,
               "swap_to_unnamed_motor": M.EXPECT_LOWER_IN_TARGETS,
-              "landing_just_under_hard_limit": M.EXPECT_LOWER_IN_TARGETS}
+              "landing_just_under_hard_limit": M.EXPECT_LOWER_IN_TARGETS,
+              # round 2 of the 2026-11-19 review
+              "pod_weight_ahead_of_nose": "build", "booster_weight_in_upper_stage": "build",
+              "motor_in_pod_inside_body": "build", "one_sided_motor_pod": "build", "pod_far_to_the_side": "build",
+              "needle_rocket": "build", "parachute_opens_at_ground": "flight",
+              "main_opens_low_drogue_kept": "flight",
+              # round 3 of the 2026-11-19 review
+              "motor_pods_inside_pods": "build", "booster_pod_beside_upper_stage": "build",
+              "needle_rocket_with_tail_disk": "build"}
     assert {n: M.operator_named(n).expect for n in wanted} == wanted
+
+
+# Operators that apply to none of the 48 val answers, only to some of the 197
+# reference designs (tests/test_fix_round2.py checks that with the prompt meta file):
+# motor_pods_inside_pods needs a motor tube at most about 0.42 times its body
+# tube's radius, and the val designs' motor tubes are 0.58 times or more.
+REFERENCE_DESIGNS_ONLY = {"motor_pods_inside_pods"}
 
 
 def test_every_reference_operator_applies_to_some_val_design(mutation_gold_cases):
@@ -144,6 +203,9 @@ def test_every_reference_operator_applies_to_some_val_design(mutation_gold_cases
     for op in REFERENCE_OPS:
         applied = sum(M.apply_operator(op, c.design, table, c.requirements) is not None
                       for c in mutation_gold_cases)
+        if op.name in REFERENCE_DESIGNS_ONLY:
+            assert applied == 0, f"{op.name} now applies to {applied} val answers: drop it from the list"
+            continue
         assert applied >= 3, f"{op.name} applies to {applied} of 48 reference answers"
 
 
