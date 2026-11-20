@@ -1,0 +1,1007 @@
+{
+ "row-001-deb57c98": {
+  "id": "V4-0006:original",
+  "apogee_m": {
+   "value": 3320.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 190.2,
+   "kind": "max"
+  },
+  "wind_ms": 0.1
+ },
+ "row-002-be731fc9": {
+  "id": "V4-0006-casual:casual",
+  "apogee_m": {
+   "value": 3322.32,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 200.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.17,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-003-fca5ed76": {
+  "id": "V4-0006-engineering:engineering",
+  "apogee_m": {
+   "value": 3320.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 5.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 200.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.17,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 23.4,
+   "kind": "max"
+  },
+  "motors": [
+   "M2000R"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-004-85b80de9": {
+  "id": "V4-0027:original",
+  "apogee_m": {
+   "value": 3740.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.1,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 151.1,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-005-87286add": {
+  "id": "V4-0027-casual:casual",
+  "apogee_m": {
+   "value": 3749.04,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.5,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.05,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-006-ff300a35": {
+  "id": "V4-0027-engineering:engineering",
+  "apogee_m": {
+   "value": 3740.0,
+   "kind": "about"
+  },
+  "flight_time_s": {
+   "value": 156.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.048,
+   "kind": "max"
+  },
+  "motors": [
+   "J530"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-007-5e9884b6": {
+  "id": "V4-0035:original",
+  "apogee_m": {
+   "value": 451.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.8,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 120.0,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-008-b132baa7": {
+  "id": "V4-0035-casual:casual",
+  "apogee_m": {
+   "value": 451.104,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.2,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.065,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.44,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-009-1afe6677": {
+  "id": "V4-0035-engineering:engineering",
+  "apogee_m": {
+   "value": 451.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 120.0,
+   "kind": "about"
+  },
+  "motors": [
+   "F50T"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-010-343e826c": {
+  "id": "V4-0085:original",
+  "apogee_m": {
+   "value": 671.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 67.8,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-011-54ff7228": {
+  "id": "V4-0085-casual:casual",
+  "apogee_m": {
+   "value": 670.56,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.5,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 75.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.11,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 3.7,
+   "kind": "about"
+  },
+  "wind_ms": 2.0
+ },
+ "row-012-d61d86fa": {
+  "id": "V4-0085-engineering:engineering",
+  "apogee_m": {
+   "value": 670.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 7.5,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 75.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.11,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 3.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-013-7608fb06": {
+  "id": "V4-0109:original",
+  "apogee_m": {
+   "value": 1610.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 130.6,
+   "kind": "max"
+  },
+  "wind_ms": 4.47
+ },
+ "row-014-7a8e1628": {
+  "id": "V4-0109-casual:casual",
+  "apogee_m": {
+   "value": 1610.868,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.17,
+   "kind": "max"
+  },
+  "wind_ms": 4.5
+ },
+ "row-015-3aa92684": {
+  "id": "V4-0109-engineering:engineering",
+  "apogee_m": {
+   "value": 1610.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 7.5,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 138.0,
+   "kind": "max"
+  },
+  "motors": [
+   "L875DM"
+  ],
+  "wind_ms": 4.5
+ },
+ "row-016-5851080b": {
+  "id": "V4-0146:original",
+  "apogee_m": {
+   "value": 282.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.5,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 75.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-017-df7ff989": {
+  "id": "V4-0146-casual:casual",
+  "apogee_m": {
+   "value": 281.94,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.8,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.028,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.095,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-018-fe08cd1c": {
+  "id": "V4-0146-engineering:engineering",
+  "apogee_m": {
+   "value": 282.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 80.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.026,
+   "kind": "max"
+  },
+  "motors": [
+   "D12"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-019-02134834": {
+  "id": "V4-0206:original",
+  "apogee_m": {
+   "value": 317.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 83.8,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-020-5f4105e0": {
+  "id": "V4-0206-casual:casual",
+  "apogee_m": {
+   "value": 316.992,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.2,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.03,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.08,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-021-1e75140c": {
+  "id": "V4-0206-engineering:engineering",
+  "apogee_m": {
+   "value": 317.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 5.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 88.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.028,
+   "kind": "about"
+  },
+  "motors": [
+   "C6"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-022-02cbb911": {
+  "id": "V4-0224:original",
+  "apogee_m": {
+   "value": 82.6,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 3.7,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 30.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-023-ddd51955": {
+  "id": "V4-0224-casual:casual",
+  "apogee_m": {
+   "value": 82.296,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 4.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 33.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.04,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.09,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-024-a959187e": {
+  "id": "V4-0224-engineering:engineering",
+  "apogee_m": {
+   "value": 83.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 4.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 33.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.04,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.09,
+   "kind": "max"
+  },
+  "motors": [
+   "C6"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-025-0c84ade8": {
+  "id": "V4-0227:original",
+  "apogee_m": {
+   "value": 473.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 99.7,
+   "kind": "max"
+  },
+  "wind_ms": 3.58
+ },
+ "row-026-d213889e": {
+  "id": "V4-0227-casual:casual",
+  "apogee_m": {
+   "value": 472.44,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 105.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.08128,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 0.7,
+   "kind": "about"
+  },
+  "wind_ms": 3.57632
+ },
+ "row-027-51a351c4": {
+  "id": "V4-0227-engineering:engineering",
+  "apogee_m": {
+   "value": 473.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 105.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.08128,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 0.7,
+   "kind": "about"
+  },
+  "motors": [
+   "G80T"
+  ],
+  "wind_ms": 3.57632
+ },
+ "row-028-da7ce3ba": {
+  "id": "V4-0260:original",
+  "apogee_m": {
+   "value": 397.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 60.9,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-029-03872d3b": {
+  "id": "V4-0260-casual:casual",
+  "apogee_m": {
+   "value": 396.24,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 65.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.0635,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 0.9,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-030-0545a03c": {
+  "id": "V4-0260-engineering:engineering",
+  "apogee_m": {
+   "value": 397.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 65.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.0635,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 0.9,
+   "kind": "max"
+  },
+  "motors": [
+   "G77R"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-031-e75ff0bf": {
+  "id": "V4-0285:original",
+  "apogee_m": {
+   "value": 952.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.9,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 137.5,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-032-89d5f271": {
+  "id": "V4-0285-casual:casual",
+  "apogee_m": {
+   "value": 952.5,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.8,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 150.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.0762,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 2.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-033-adcf6c6e": {
+  "id": "V4-0285-engineering:engineering",
+  "apogee_m": {
+   "value": 952.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 7.8,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 150.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.0762,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 2.7,
+   "kind": "max"
+  },
+  "motors": [
+   "G71R",
+   "H225BL"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-034-2dd6e630": {
+  "id": "V4-0294:original",
+  "apogee_m": {
+   "value": 697.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.5,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 108.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-035-ca68c1e1": {
+  "id": "V4-0294-casual:casual",
+  "apogee_m": {
+   "value": 697.992,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 115.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.06096,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 1.4,
+   "kind": "about"
+  },
+  "wind_ms": 2.0
+ },
+ "row-036-016d1e96": {
+  "id": "V4-0294-engineering:engineering",
+  "apogee_m": {
+   "value": 697.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 8.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 115.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.06096,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 1.4,
+   "kind": "about"
+  },
+  "motors": [
+   "H73J"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-037-365db497": {
+  "id": "V4-0299:original",
+  "apogee_m": {
+   "value": 1690.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 290.4,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-038-c24331d9": {
+  "id": "V4-0299-casual:casual",
+  "apogee_m": {
+   "value": 1691.64,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 300.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.0889,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 4.0,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-039-b6bbcf30": {
+  "id": "V4-0299-engineering:engineering",
+  "apogee_m": {
+   "value": 1690.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 7.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 300.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.0889,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 4.0,
+   "kind": "max"
+  },
+  "motors": [
+   "I150"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-040-25c4d3f7": {
+  "id": "V4-0300:original",
+  "apogee_m": {
+   "value": 1530.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 267.1,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-041-bbcf4448": {
+  "id": "V4-0300-casual:casual",
+  "apogee_m": {
+   "value": 1534.668,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.2,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.095,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 2.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-042-157c980d": {
+  "id": "V4-0300-engineering:engineering",
+  "apogee_m": {
+   "value": 1530.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 6.8,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 288.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.09,
+   "kind": "max"
+  },
+  "motors": [
+   "J615ST-20A"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-043-3455b127": {
+  "id": "V4-0301:original",
+  "apogee_m": {
+   "value": 1080.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 192.6,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-044-fb97f9c9": {
+  "id": "V4-0301-casual:casual",
+  "apogee_m": {
+   "value": 1082.04,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.1,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 198.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.09,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 2.6,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-045-1f6c5f5e": {
+  "id": "V4-0301-engineering:engineering",
+  "apogee_m": {
+   "value": 1082.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.8,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 195.0,
+   "kind": "about"
+  },
+  "mass_kg": {
+   "value": 2.5,
+   "kind": "max"
+  },
+  "motors": [
+   "502I120-15A"
+  ],
+  "wind_ms": 2.0
+ },
+ "row-046-5517e018": {
+  "id": "V4-0315:original",
+  "apogee_m": {
+   "value": 980.0,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 6.3,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 174.7,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-047-31720ddd": {
+  "id": "V4-0315-casual:casual",
+  "apogee_m": {
+   "value": 979.932,
+   "kind": "about"
+  },
+  "landing_ms": {
+   "value": 7.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 180.0,
+   "kind": "about"
+  },
+  "body_diameter_m": {
+   "value": 0.1143,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 2.2,
+   "kind": "max"
+  },
+  "wind_ms": 2.0
+ },
+ "row-048-e02c5b85": {
+  "id": "V4-0315-engineering:engineering",
+  "apogee_m": {
+   "value": 980.0,
+   "kind": "about",
+   "tol": 0.05
+  },
+  "landing_ms": {
+   "value": 7.0,
+   "kind": "max"
+  },
+  "flight_time_s": {
+   "value": 180.0,
+   "kind": "max"
+  },
+  "body_diameter_m": {
+   "value": 0.1143,
+   "kind": "max"
+  },
+  "mass_kg": {
+   "value": 2.2,
+   "kind": "max"
+  },
+  "motors": [
+   "I377-CT"
+  ],
+  "wind_ms": 2.0
+ }
+}

@@ -1,0 +1,446 @@
+{
+ "designs": [
+  "row-001-deb57c98",
+  "row-007-5e9884b6",
+  "row-016-5851080b",
+  "row-028-da7ce3ba",
+  "row-040-25c4d3f7",
+  "model:row-003-fca5ed76",
+  "model:row-013-7608fb06",
+  "model:row-033-adcf6c6e",
+  "model:row-041-bbcf4448",
+  "model:row-048-e02c5b85"
+ ],
+ "operators": [
+  "ballast_overrides",
+  "ballast_cg_override",
+  "lighten_rocket_override",
+  "lighten_one_stage_override",
+  "floating_fins",
+  "duplicated_fin_sets",
+  "motor_far_forward",
+  "motor_too_wide",
+  "zero_ejection_delay",
+  "chute_far_too_small",
+  "fins_shrunk",
+  "booster_without_recovery",
+  "weaker_motor",
+  "drag_override",
+  "delayed_ignition",
+  "model_digest",
+  "extra_top_level_key",
+  "honest_second_holder",
+  "numbers_as_text",
+  "slipped_density",
+  "repair_motor_spelling",
+  "repair_stray_parts"
+ ],
+ "originals": {
+  "row-001-deb57c98": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "model:row-003-fca5ed76": {
+   "stage": "parts",
+   "score": 0.13
+  },
+  "model:row-013-7608fb06": {
+   "stage": "motor",
+   "score": 0.2471
+  },
+  "model:row-033-adcf6c6e": {
+   "stage": "motor",
+   "score": 0.246
+  },
+  "model:row-041-bbcf4448": {
+   "stage": "parts",
+   "score": 0.15
+  },
+  "model:row-048-e02c5b85": {
+   "stage": "motor",
+   "score": 0.274
+  }
+ },
+ "cases": {
+  "row-001-deb57c98|ballast_overrides": {
+   "stage": "build",
+   "score": 0.4248
+  },
+  "row-001-deb57c98|ballast_cg_override": {
+   "stage": "build",
+   "score": 0.424
+  },
+  "row-001-deb57c98|lighten_rocket_override": {
+   "stage": "build",
+   "score": 0.4125
+  },
+  "row-001-deb57c98|floating_fins": {
+   "stage": "build",
+   "score": 0.4309
+  },
+  "row-001-deb57c98|duplicated_fin_sets": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-001-deb57c98|motor_far_forward": {
+   "stage": "build",
+   "score": 0.4265
+  },
+  "row-001-deb57c98|motor_too_wide": {
+   "stage": "build",
+   "score": 0.444
+  },
+  "row-001-deb57c98|zero_ejection_delay": {
+   "stage": "flight",
+   "score": 0.5525
+  },
+  "row-001-deb57c98|chute_far_too_small": {
+   "stage": "flight",
+   "score": 0.531
+  },
+  "row-001-deb57c98|fins_shrunk": {
+   "stage": "flight",
+   "score": 0.5106
+  },
+  "row-001-deb57c98|weaker_motor": {
+   "stage": "targets",
+   "score": 0.8712
+  },
+  "row-001-deb57c98|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|delayed_ignition": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|model_digest": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|extra_top_level_key": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|honest_second_holder": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|numbers_as_text": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-001-deb57c98|slipped_density": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|ballast_overrides": {
+   "stage": "build",
+   "score": 0.4142
+  },
+  "row-007-5e9884b6|ballast_cg_override": {
+   "stage": "build",
+   "score": 0.4306
+  },
+  "row-007-5e9884b6|lighten_rocket_override": {
+   "stage": "build",
+   "score": 0.4077
+  },
+  "row-007-5e9884b6|lighten_one_stage_override": {
+   "stage": "build",
+   "score": 0.4145
+  },
+  "row-007-5e9884b6|floating_fins": {
+   "stage": "build",
+   "score": 0.4139
+  },
+  "row-007-5e9884b6|duplicated_fin_sets": {
+   "stage": "build",
+   "score": 0.408
+  },
+  "row-007-5e9884b6|motor_far_forward": {
+   "stage": "build",
+   "score": 0.4283
+  },
+  "row-007-5e9884b6|motor_too_wide": {
+   "stage": "build",
+   "score": 0.4424
+  },
+  "row-007-5e9884b6|chute_far_too_small": {
+   "stage": "flight",
+   "score": 0.5871
+  },
+  "row-007-5e9884b6|fins_shrunk": {
+   "stage": "flight",
+   "score": 0.5106
+  },
+  "row-007-5e9884b6|booster_without_recovery": {
+   "stage": "flight",
+   "score": 0.5919
+  },
+  "row-007-5e9884b6|weaker_motor": {
+   "stage": "targets",
+   "score": 0.8678
+  },
+  "row-007-5e9884b6|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|delayed_ignition": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|model_digest": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|extra_top_level_key": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|honest_second_holder": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|numbers_as_text": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-007-5e9884b6|slipped_density": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|ballast_overrides": {
+   "stage": "build",
+   "score": 0.412
+  },
+  "row-016-5851080b|ballast_cg_override": {
+   "stage": "build",
+   "score": 0.4268
+  },
+  "row-016-5851080b|lighten_rocket_override": {
+   "stage": "build",
+   "score": 0.4144
+  },
+  "row-016-5851080b|floating_fins": {
+   "stage": "build",
+   "score": 0.4309
+  },
+  "row-016-5851080b|duplicated_fin_sets": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-016-5851080b|chute_far_too_small": {
+   "stage": "flight",
+   "score": 0.6129
+  },
+  "row-016-5851080b|weaker_motor": {
+   "stage": "targets",
+   "score": 0.8852
+  },
+  "row-016-5851080b|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|delayed_ignition": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|model_digest": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|extra_top_level_key": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|honest_second_holder": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|numbers_as_text": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-016-5851080b|slipped_density": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|ballast_overrides": {
+   "stage": "build",
+   "score": 0.4136
+  },
+  "row-028-da7ce3ba|ballast_cg_override": {
+   "stage": "build",
+   "score": 0.4216
+  },
+  "row-028-da7ce3ba|lighten_rocket_override": {
+   "stage": "build",
+   "score": 0.4105
+  },
+  "row-028-da7ce3ba|floating_fins": {
+   "stage": "build",
+   "score": 0.4309
+  },
+  "row-028-da7ce3ba|duplicated_fin_sets": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-028-da7ce3ba|motor_far_forward": {
+   "stage": "build",
+   "score": 0.4249
+  },
+  "row-028-da7ce3ba|motor_too_wide": {
+   "stage": "build",
+   "score": 0.4424
+  },
+  "row-028-da7ce3ba|chute_far_too_small": {
+   "stage": "flight",
+   "score": 0.5391
+  },
+  "row-028-da7ce3ba|fins_shrunk": {
+   "stage": "flight",
+   "score": 0.5106
+  },
+  "row-028-da7ce3ba|weaker_motor": {
+   "stage": "flight",
+   "score": 0.6723
+  },
+  "row-028-da7ce3ba|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|delayed_ignition": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|model_digest": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|extra_top_level_key": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|honest_second_holder": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|numbers_as_text": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-028-da7ce3ba|slipped_density": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|ballast_overrides": {
+   "stage": "build",
+   "score": 0.4148
+  },
+  "row-040-25c4d3f7|ballast_cg_override": {
+   "stage": "build",
+   "score": 0.4274
+  },
+  "row-040-25c4d3f7|lighten_rocket_override": {
+   "stage": "build",
+   "score": 0.4133
+  },
+  "row-040-25c4d3f7|lighten_one_stage_override": {
+   "stage": "build",
+   "score": 0.4133
+  },
+  "row-040-25c4d3f7|floating_fins": {
+   "stage": "build",
+   "score": 0.4309
+  },
+  "row-040-25c4d3f7|duplicated_fin_sets": {
+   "stage": "build",
+   "score": 0.42
+  },
+  "row-040-25c4d3f7|motor_far_forward": {
+   "stage": "build",
+   "score": 0.4283
+  },
+  "row-040-25c4d3f7|motor_too_wide": {
+   "stage": "build",
+   "score": 0.4434
+  },
+  "row-040-25c4d3f7|zero_ejection_delay": {
+   "stage": "flight",
+   "score": 0.5536
+  },
+  "row-040-25c4d3f7|chute_far_too_small": {
+   "stage": "flight",
+   "score": 0.5379
+  },
+  "row-040-25c4d3f7|fins_shrunk": {
+   "stage": "flight",
+   "score": 0.5106
+  },
+  "row-040-25c4d3f7|weaker_motor": {
+   "stage": "targets",
+   "score": 0.8817
+  },
+  "row-040-25c4d3f7|drag_override": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|model_digest": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|extra_top_level_key": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|honest_second_holder": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|numbers_as_text": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "row-040-25c4d3f7|slipped_density": {
+   "stage": "targets",
+   "score": 1.0
+  },
+  "model:row-003-fca5ed76|repair_stray_parts": {
+   "stage": "build",
+   "score": 0.4174
+  },
+  "model:row-013-7608fb06|repair_motor_spelling": {
+   "stage": "build",
+   "score": 0.4243
+  },
+  "model:row-033-adcf6c6e|repair_motor_spelling": {
+   "stage": "build",
+   "score": 0.4057
+  },
+  "model:row-041-bbcf4448|repair_stray_parts": {
+   "stage": "motor",
+   "score": 0.2271
+  },
+  "model:row-048-e02c5b85|repair_motor_spelling": {
+   "stage": "targets",
+   "score": 0.991
+  }
+ }
+}
