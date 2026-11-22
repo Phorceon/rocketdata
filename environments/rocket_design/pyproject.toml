@@ -7,7 +7,7 @@ requires-python = ">=3.10"
 # rocket_reward uses only the Python standard library plus a JDK 17+ and OpenRocket-24.12.jar
 # (see rocket_reward/README.md).
 dependencies = [
-    "verifiers>=0.4",  # the v1 API: Taskset / Task / @vf.reward
+    "verifiers>=0.4.1,<0.5",  # the v1 API: Taskset / Task / @vf.reward
 ]
 
 [build-system]
