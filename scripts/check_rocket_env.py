@@ -244,7 +244,10 @@ def main() -> None:
     mismatch: list[str] = []
     stage_counts: collections.Counter[str] = collections.Counter()
     for r, tr, direct in zip(answers, traces, direct_results):
-        res = tr.info[rd.RESULT_INFO_KEY]
+        res = tr.info.get(rd.RESULT_INFO_KEY) or {
+            "stage": "dropped",
+            "stages_passed": direct.stages_passed,
+        }
         env_score = tr.rewards.get("rocket_reward")
         same_score = (
             (direct.score is None and env_score is None and tr.dropped is not None)

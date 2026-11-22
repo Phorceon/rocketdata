@@ -121,6 +121,7 @@ def load_clean_motors(path: Path) -> dict[str, list[dict[str, Any]]]:
         by_class[cls].append({
             "motor_id": mid,
             "designation": desig,
+            "common_name": str(rec.get("openrocket_common_name") or desig).upper(),
             "manufacturer": mfr,
             "motor_type": MOTOR_TYPE_MAP.get(rec.get("motor_type", ""), "single"),
             "impulse_ns": float(imp),
@@ -139,21 +140,35 @@ def split_motors_ood(
     holdout_frac: float = 0.10,
     seed: int = 42,
 ) -> tuple[dict[str, list[dict[str, Any]]], dict[str, list[dict[str, Any]]]]:
-    """Hold out ~10% of motor designations per class exclusively for val/test evaluation."""
+    """Hold out ~10% of physical motor families (min 2 when >= 6 families) per class for val/test.
+
+    Groups by (manufacturer, common_name) so near-twins like AeroTech J350W / J350W-OLD never split
+    across train and eval.
+    """
     rng = random.Random(seed)
     train_by_class: dict[str, list[dict[str, Any]]] = {}
     eval_by_class: dict[str, list[dict[str, Any]]] = {}
     for cls, motors in by_class.items():
-        items = list(motors)
-        rng.shuffle(items)
-        if len(items) >= 4 and holdout_frac > 0:
-            n_eval = max(1, int(round(len(items) * holdout_frac)))
-            n_eval = min(n_eval, len(items) - 2)
-            eval_by_class[cls] = items[:n_eval]
-            train_by_class[cls] = items[n_eval:]
+        families: dict[tuple[str, str], list[dict[str, Any]]] = collections.defaultdict(list)
+        for m in motors:
+            key = (
+                str(m.get("manufacturer", "")).strip().lower(),
+                str(m.get("common_name") or m.get("designation", "")).strip().upper(),
+            )
+            families[key].append(m)
+        fam_keys = sorted(families)
+        rng.shuffle(fam_keys)
+        if len(fam_keys) >= 4 and holdout_frac > 0:
+            min_eval = 2 if len(fam_keys) >= 6 else 1
+            n_eval = max(min_eval, int(round(len(fam_keys) * holdout_frac)))
+            n_eval = min(n_eval, len(fam_keys) - 2)
+            eval_keys = fam_keys[:n_eval]
+            train_keys = fam_keys[n_eval:]
+            eval_by_class[cls] = [m for k in eval_keys for m in families[k]]
+            train_by_class[cls] = [m for k in train_keys for m in families[k]]
         else:
-            train_by_class[cls] = items
-            eval_by_class[cls] = items
+            train_by_class[cls] = list(motors)
+            eval_by_class[cls] = list(motors)
     return train_by_class, eval_by_class
 
 
@@ -492,16 +507,20 @@ def _article(token: str) -> str:
 
 
 def _format_mass_phrase(rng: random.Random, mass_kg: float) -> tuple[float, str]:
-    """Return (rounded_mass_kg, human_string). Uses grams below 1.5 kg (~65% of the time)."""
-    if mass_kg < 1.5 and rng.random() < 0.65:
+    """Return (rounded_mass_kg, human_string).
+
+    Always uses grams below 0.3 kg (tight 10 g step), uses grams ~65% of the time in 0.3..1.5 kg,
+    and picks the kg format branch from the rounded value (never '1.00 kg' or '10.0 kg').
+    """
+    if mass_kg < 0.3 or (mass_kg < 1.5 and rng.random() < 0.65):
         grams = int(_round_up(mass_kg * 1000.0, 10.0 if mass_kg < 0.3 else 25.0))
         unit = rng.choice(["grams", "g"])
         return round(grams / 1000.0, 4), f"{grams:,} {unit}"
-    if mass_kg < 1.0:
-        kg = round(_round_up(mass_kg, 0.05), 2)
+    kg = round(_round_up(mass_kg, 0.05), 2)
+    if kg < 1.0:
         return kg, f"{kg:.2f} kg"
-    if mass_kg < 10.0:
-        kg = round(_round_up(mass_kg, 0.1), 1)
+    kg = round(_round_up(mass_kg, 0.1), 1)
+    if kg < 10.0:
         return kg, f"{kg:.1f} kg"
     kg = round(_round_up(mass_kg, 0.5), 1)
     return kg, f"{_fmt_num(kg)} kg"
@@ -516,6 +535,7 @@ def build_prompt_from_metrics(
     wind_ms: float,
     metrics: dict[str, Any],
     body_diam_m: float,
+    split: str = "train",
 ) -> tuple[str, dict[str, Any]]:
     """Build (prompt_text, requirements_dict) grounded in exact OpenRocket flight metrics."""
     apogee = float(metrics["apogee_m"])
@@ -539,11 +559,18 @@ def build_prompt_from_metrics(
             req["landing_ms"] = {"value": v_cap, "kind": "max", "tol": 0.0}
             landing_str = f"{v_cap:.1f} m/s"
 
+    # Train: 50% open / 25% class / 25% named motor; val/test: 50% named OOD motor / 25% class / 25% open
     u = rng.random()
-    if u < 0.25:
-        req["motor_class"] = cls
-    elif u < 0.50:
-        req["motors"] = [motor["designation"]]
+    if split == "train":
+        if u < 0.25:
+            req["motor_class"] = cls
+        elif u < 0.50:
+            req["motors"] = [motor["designation"]]
+    else:
+        if u < 0.50:
+            req["motors"] = [motor["designation"]]
+        elif u < 0.75:
+            req["motor_class"] = cls
 
     mass_str: str | None = None
     if "mass_kg" in metrics and rng.random() < 0.52:
@@ -700,7 +727,7 @@ def try_one(
     if float(res.metrics["apogee_m"]) < min_apogee:
         return None, "low_apogee", f"apogee {res.metrics['apogee_m']:.1f} m < floor {min_apogee:.0f} m"
 
-    text, req_dict = build_prompt_from_metrics(rng, rid, style, cls, motor, wind_ms, res.metrics, d_body)
+    text, req_dict = build_prompt_from_metrics(rng, rid, style, cls, motor, wind_ms, res.metrics, d_body, split=split)
     proof = scoring.score(answer, Requirements.from_dict(req_dict), truncated=False, simulator=pool)
     if proof.score is None or proof.score < 0.99 or proof.stage != "targets" or proof.defects:
         why = (proof.reasons[0] if proof.reasons else f"proof_score={proof.score}")

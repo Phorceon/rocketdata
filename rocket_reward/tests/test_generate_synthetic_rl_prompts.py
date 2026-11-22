@@ -46,18 +46,35 @@ def test_class_quotas_always_sums_to_total(total):
         assert all(v >= 1 for v in q.values())
 
 
-def test_split_motors_ood_has_zero_overlap_for_large_classes():
+def test_split_motors_ood_groups_near_twins_and_holds_out_at_least_two():
     by_class = {
-        "G": [{"designation": f"G{i}"} for i in range(20)],
-        "O": [{"designation": f"O{i}"} for i in range(10)],
+        "J": [
+            {"manufacturer": "AeroTech", "common_name": "J350W", "designation": "J350W"},
+            {"manufacturer": "AeroTech", "common_name": "J350W", "designation": "J350W-OLD"},
+        ] + [{"manufacturer": "CTI", "common_name": f"J{i}", "designation": f"J{i}"} for i in range(18)],
+        "O": [{"manufacturer": "CTI", "common_name": f"O{i}", "designation": f"O{i}"} for i in range(8)],
     }
     tr, ev = G.split_motors_ood(by_class, holdout_frac=0.10, seed=42)
-    for c in ("G", "O"):
-        tr_d = {m["designation"] for m in tr[c]}
-        ev_d = {m["designation"] for m in ev[c]}
-        assert tr_d and ev_d
-        assert tr_d.isdisjoint(ev_d)
-        assert len(tr_d) + len(ev_d) == len(by_class[c])
+    for c in ("J", "O"):
+        tr_fam = {(m["manufacturer"], m["common_name"]) for m in tr[c]}
+        ev_fam = {(m["manufacturer"], m["common_name"]) for m in ev[c]}
+        assert len(ev_fam) >= 2
+        assert tr_fam.isdisjoint(ev_fam)
+        assert len(tr[c]) + len(ev[c]) == len(by_class[c])
+
+
+def test_format_mass_phrase_boundaries_and_small_grams():
+    # Below 0.3 kg must ALWAYS use grams (never loose 0.05 kg rounding)
+    for seed in range(40):
+        val, text = G._format_mass_phrase(random.Random(seed), 0.051)
+        assert text.endswith((" g", " grams"))
+        assert val == pytest.approx(0.06, abs=1e-4)
+    # Boundary round-ups must never print '1.00 kg' or '10.0 kg'
+    for seed in range(40):
+        val1, text1 = G._format_mass_phrase(random.Random(seed), 0.98)
+        assert text1 != "1.00 kg"
+        val10, text10 = G._format_mass_phrase(random.Random(seed), 9.96)
+        assert text10 == "10 kg" and val10 == 10.0
 
 
 def test_article_matches_english_pronunciation():
