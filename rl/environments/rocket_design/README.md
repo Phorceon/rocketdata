@@ -10,14 +10,15 @@ A `verifiers` environment for RL on rocket design. It uses verifiers 0.4.1 (`<0.
 
 ## Setup
 
-Run these from the repo root. You need Python 3.10+, a JDK 17+, and `OpenRocket-24.12.jar` (see `rocket_reward/README.md`). Install with `-e` (editable) or set `ROCKETDATA_REPO` to the repo root so `rocket_reward` can be imported.
+Run these from `rl/`. You need Python 3.10+, a JDK 17+, and `OpenRocket-24.12.jar` (see `rocket_reward/README.md`). Install with `-e` (editable) or set `ROCKETDATA_REPO` to the `rl/` directory so `rocket_reward` can be imported.
 
 ```
+cd rl
 python -m rocket_reward fetch-jar
 python -m rocket_reward check
 uv pip install --python .venv/bin/python "verifiers>=0.4.1,<0.5"
 uv pip install --python .venv/bin/python -e environments/rocket_design
-.venv/bin/python scripts/check_rocket_env.py
+.venv/bin/python check_rocket_env.py
 ```
 
 `check_rocket_env.py` needs no GPU and no model. It verifies:

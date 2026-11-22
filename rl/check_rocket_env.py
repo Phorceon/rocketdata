@@ -1,8 +1,9 @@
 """Check the rocket-design verifiers environment without a GPU or a model.
 
-    python scripts/check_rocket_env.py
-    python scripts/check_rocket_env.py rocket_reward/tests/data/gold_val.jsonl.gz --limit 8
-    python scripts/check_rocket_env.py model_out/results_val.json --requirements rocket_reward/prompts/rl_prompts_v1.jsonl
+    cd rl
+    python check_rocket_env.py
+    python check_rocket_env.py rocket_reward/tests/data/gold_val.jsonl.gz --limit 8
+    python check_rocket_env.py model_out/results_val.json --requirements rocket_reward/prompts/synthetic/rl_prompts_v2.jsonl
 
 1. verifiers loads the installed 'rocket-design' taskset across train/val/test and resolves RocketHarness
 2. checks edge cases on real Task.score: single-flight caching, rescore invalidation, truncation via
@@ -20,7 +21,7 @@ import sys
 import time
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[1]
+REPO = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO))
 
 import verifiers.v1 as vf  # noqa: E402
