@@ -1,0 +1,783 @@
+{
+ "prompt": "Design a complete model rocket that reaches about 1000 m apogee, and touches down under 6.9 m/s, with total flight time under 159.1 s, launched in about 2 m/s wind. Provide the complete hardware design.",
+ "design": {
+  "openrocket": {
+   "attrs": {
+    "version": "1.10"
+   },
+   "children": [
+    {
+     "rocket": {
+      "children": [
+       {
+        "axialoffset": {
+         "attrs": {
+          "method": "absolute"
+         },
+         "value": 0.0
+        }
+       },
+       {
+        "position": {
+         "attrs": {
+          "type": "absolute"
+         },
+         "value": 0.0
+        }
+       },
+       {
+        "motorconfiguration": {
+         "attrs": {
+          "configid": "cfg0",
+          "default": true
+         },
+         "children": [
+          {
+           "stage": {
+            "attrs": {
+             "number": 0,
+             "active": true
+            }
+           }
+          }
+         ]
+        }
+       },
+       {
+        "referencetype": {
+         "value": "maximum"
+        }
+       },
+       {
+        "subcomponents": {
+         "children": [
+          {
+           "stage": {
+            "children": [
+             {
+              "subcomponents": {
+               "children": [
+                {
+                 "nosecone": {
+                  "children": [
+                   {
+                    "finish": {
+                     "value": "normal"
+                    }
+                   },
+                   {
+                    "material": {
+                     "attrs": {
+                      "type": "bulk",
+                      "density": 1050.0,
+                      "group": "Plastics"
+                     },
+                     "value": "Polystyrene"
+                    }
+                   },
+                   {
+                    "length": {
+                     "value": 0.050000000000000044
+                    }
+                   },
+                   {
+                    "thickness": {
+                     "value": 0.002
+                    }
+                   },
+                   {
+                    "shape": {
+                     "value": "ogive"
+                    }
+                   },
+                   {
+                    "shapeparameter": {
+                     "value": 1.0
+                    }
+                   },
+                   {
+                    "aftradius": {
+                     "value": 0.027000000000000003
+                    }
+                   },
+                   {
+                    "aftshoulderradius": {
+                     "value": 0.026000000000000002
+                    }
+                   },
+                   {
+                    "aftshoulderlength": {
+                     "value": 0.02
+                    }
+                   },
+                   {
+                    "aftshoulderthickness": {
+                     "value": 0.002
+                    }
+                   },
+                   {
+                    "aftshouldercapped": {
+                     "value": true
+                    }
+                   },
+                   {
+                    "isflipped": {
+                     "value": false
+                    }
+                   }
+                  ]
+                 }
+                },
+                {
+                 "bodytube": {
+                  "children": [
+                   {
+                    "finish": {
+                     "value": "normal"
+                    }
+                   },
+                   {
+                    "material": {
+                     "attrs": {
+                      "type": "bulk",
+                      "density": 1850.0,
+                      "group": "Composites"
+                     },
+                     "value": "Fiberglass"
+                    }
+                   },
+                   {
+                    "length": {
+                     "value": 0.8200000000000001
+                    }
+                   },
+                   {
+                    "thickness": {
+                     "value": 0.0010000000000000009
+                    }
+                   },
+                   {
+                    "radius": {
+                     "value": 0.027000000000000003
+                    }
+                   },
+                   {
+                    "motormount": {
+                     "children": [
+                      {
+                       "ignitionevent": {
+                        "value": "automatic"
+                       }
+                      },
+                      {
+                       "ignitiondelay": {
+                        "value": 0.0
+                       }
+                      },
+                      {
+                       "overhang": {
+                        "value": 0.0
+                       }
+                      },
+                      {
+                       "motor": {
+                        "attrs": {
+                         "configid": "cfg0"
+                        },
+                        "children": [
+                         {
+                          "type": {
+                           "value": "single"
+                          }
+                         },
+                         {
+                          "manufacturer": {
+                           "value": "AeroTech"
+                          }
+                         },
+                         {
+                          "motor_id": {
+                           "value": "AeroTech-H283ST"
+                          }
+                         },
+                         {
+                          "designation": {
+                           "value": "H283ST"
+                          }
+                         },
+                         {
+                          "diameter": {
+                           "value": 0.038
+                          }
+                         },
+                         {
+                          "length": {
+                           "value": 0.155
+                          }
+                         },
+                         {
+                          "delay": {
+                           "value": 7.0
+                          }
+                         }
+                        ]
+                       }
+                      },
+                      {
+                       "ignitionconfiguration": {
+                        "attrs": {
+                         "configid": "cfg0"
+                        },
+                        "children": [
+                         {
+                          "ignitionevent": {
+                           "value": "automatic"
+                          }
+                         },
+                         {
+                          "ignitiondelay": {
+                           "value": 0.0
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     ]
+                    }
+                   },
+                   {
+                    "subcomponents": {
+                     "children": [
+                      {
+                       "trapezoidfinset": {
+                        "children": [
+                         {
+                          "instancecount": {
+                           "value": 3
+                          }
+                         },
+                         {
+                          "fincount": {
+                           "value": 3
+                          }
+                         },
+                         {
+                          "radiusoffset": {
+                           "attrs": {
+                            "method": "surface"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "angleoffset": {
+                           "attrs": {
+                            "method": "relative"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "rotation": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "axialoffset": {
+                           "attrs": {
+                            "method": "bottom"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "position": {
+                           "attrs": {
+                            "type": "bottom"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "finish": {
+                           "value": "normal"
+                          }
+                         },
+                         {
+                          "material": {
+                           "attrs": {
+                            "type": "bulk",
+                            "density": 1850.0,
+                            "group": "Composites"
+                           },
+                           "value": "Fiberglass"
+                          }
+                         },
+                         {
+                          "thickness": {
+                           "value": 0.003
+                          }
+                         },
+                         {
+                          "crosssection": {
+                           "value": "airfoil"
+                          }
+                         },
+                         {
+                          "cant": {
+                           "value": 0.9999999999999984
+                          }
+                         },
+                         {
+                          "filletradius": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "filletmaterial": {
+                           "attrs": {
+                            "type": "bulk",
+                            "density": 170.0,
+                            "group": "Woods"
+                           },
+                           "value": "Balsa"
+                          }
+                         },
+                         {
+                          "rootchord": {
+                           "value": 0.07
+                          }
+                         },
+                         {
+                          "tipchord": {
+                           "value": 0.04000000000000001
+                          }
+                         },
+                         {
+                          "sweeplength": {
+                           "value": 0.09925245811148325
+                          }
+                         },
+                         {
+                          "height": {
+                           "value": 0.055
+                          }
+                         }
+                        ]
+                       }
+                      },
+                      {
+                       "masscomponent": {
+                        "children": [
+                         {
+                          "axialoffset": {
+                           "attrs": {
+                            "method": "middle"
+                           },
+                           "value": -0.177
+                          }
+                         },
+                         {
+                          "position": {
+                           "attrs": {
+                            "type": "middle"
+                           },
+                           "value": -0.177
+                          }
+                         },
+                         {
+                          "packedlength": {
+                           "value": 0.046227810650887574
+                          }
+                         },
+                         {
+                          "packedradius": {
+                           "value": "auto 0.026000000000000002"
+                          }
+                         },
+                         {
+                          "radialposition": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "radialdirection": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "mass": {
+                           "value": 0.111
+                          }
+                         },
+                         {
+                          "masscomponenttype": {
+                           "value": "altimeter"
+                          }
+                         }
+                        ]
+                       }
+                      },
+                      {
+                       "parachute": {
+                        "children": [
+                         {
+                          "axialoffset": {
+                           "attrs": {
+                            "method": "top"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "position": {
+                           "attrs": {
+                            "type": "top"
+                           },
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "packedlength": {
+                           "value": 0.025
+                          }
+                         },
+                         {
+                          "packedradius": {
+                           "value": 0.0125
+                          }
+                         },
+                         {
+                          "radialposition": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "radialdirection": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "cd": {
+                           "value": "auto"
+                          }
+                         },
+                         {
+                          "material": {
+                           "attrs": {
+                            "type": "surface",
+                            "density": 0.067,
+                            "group": "Fabrics"
+                           },
+                           "value": "Ripstop nylon"
+                          }
+                         },
+                         {
+                          "deployevent": {
+                           "value": "ejection"
+                          }
+                         },
+                         {
+                          "deployaltitude": {
+                           "value": 200.0
+                          }
+                         },
+                         {
+                          "deploydelay": {
+                           "value": 0.0
+                          }
+                         },
+                         {
+                          "diameter": {
+                           "value": 0.6
+                          }
+                         },
+                         {
+                          "linecount": {
+                           "value": 6
+                          }
+                         },
+                         {
+                          "linelength": {
+                           "value": 0.6
+                          }
+                         },
+                         {
+                          "linematerial": {
+                           "attrs": {
+                            "type": "line",
+                            "density": 0.0018,
+                            "group": "ThreadsLines"
+                           },
+                           "value": "Elastic cord (round 2 mm, 1/16 in)"
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     ]
+                    }
+                   }
+                  ]
+                 }
+                }
+               ]
+              }
+             }
+            ]
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    },
+    {
+     "simulations": {
+      "children": [
+       {
+        "simulation": {
+         "children": [
+          {
+           "simulator": {
+            "value": "RK4Simulator"
+           }
+          },
+          {
+           "calculator": {
+            "value": "BarrowmanCalculator"
+           }
+          },
+          {
+           "conditions": {
+            "children": [
+             {
+              "configid": {
+               "value": "cfg0"
+              }
+             },
+             {
+              "launchrodlength": {
+               "value": 1.0
+              }
+             },
+             {
+              "launchintowind": {
+               "value": true
+              }
+             },
+             {
+              "launchrodangle": {
+               "value": 0.0
+              }
+             },
+             {
+              "launchroddirection": {
+               "value": 90.0
+              }
+             },
+             {
+              "windaverage": {
+               "value": 2.0
+              }
+             },
+             {
+              "windturbulence": {
+               "value": 0.1
+              }
+             },
+             {
+              "winddirection": {
+               "value": 1.5707963267948966
+              }
+             },
+             {
+              "wind": {
+               "attrs": {
+                "model": "average"
+               },
+               "children": [
+                {
+                 "speed": {
+                  "value": 2.0
+                 }
+                },
+                {
+                 "direction": {
+                  "value": 1.5707963267948966
+                 }
+                },
+                {
+                 "standarddeviation": {
+                  "value": 0.2
+                 }
+                }
+               ]
+              }
+             },
+             {
+              "wind": {
+               "attrs": {
+                "model": "multilevel",
+                "altituderef": "msl"
+               },
+               "children": [
+                {
+                 "windlevel": {
+                  "attrs": {
+                   "altitude": 0.0,
+                   "speed": 2.0,
+                   "direction": 1.5707963267948966,
+                   "standarddeviation": 0.2
+                  }
+                 }
+                }
+               ]
+              }
+             },
+             {
+              "windmodeltype": {
+               "value": "Average"
+              }
+             },
+             {
+              "launchaltitude": {
+               "value": 0.0
+              }
+             },
+             {
+              "launchlatitude": {
+               "value": 28.61
+              }
+             },
+             {
+              "launchlongitude": {
+               "value": -80.6
+              }
+             },
+             {
+              "geodeticmethod": {
+               "value": "spherical"
+              }
+             },
+             {
+              "atmosphere": {
+               "attrs": {
+                "model": "isa"
+               }
+              }
+             },
+             {
+              "timestep": {
+               "value": 0.05
+              }
+             },
+             {
+              "maxtime": {
+               "value": 1200.0
+              }
+             }
+            ]
+           }
+          }
+         ]
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ },
+ "lookup": {
+  "AeroTech-H283ST": {
+   "average_thrust_n": 269.6761377298022,
+   "burn_time_s": 0.7381724491531966,
+   "designation": "H283ST",
+   "diameter_m": 0.038,
+   "digest": "499da86a436567c4e711ac87d3c37a74",
+   "in_dataset": true,
+   "length_m": 0.155,
+   "manufacturer": "AeroTech",
+   "total_impulse_ns": 199.082901
+  }
+ },
+ "geometry": [
+  {
+   "i": 0,
+   "parent": -1,
+   "type": "AxialStage",
+   "name": "Stage",
+   "x0": 0.0,
+   "len": 0.8700000000000001,
+   "n": 1
+  },
+  {
+   "i": 1,
+   "parent": 0,
+   "type": "NoseCone",
+   "name": "Nose Cone",
+   "x0": 0.0,
+   "len": 0.050000000000000044,
+   "n": 1,
+   "r_fore": 0.0,
+   "r_aft": 0.027000000000000003,
+   "wall": 0.002,
+   "r_fore_auto": false,
+   "r_aft_auto": false
+  },
+  {
+   "i": 2,
+   "parent": 0,
+   "type": "BodyTube",
+   "name": "Body Tube",
+   "x0": 0.050000000000000044,
+   "len": 0.8200000000000001,
+   "n": 1,
+   "r_fore": 0.027000000000000003,
+   "r_aft": 0.027000000000000003,
+   "wall": 0.0010000000000000009,
+   "r_fore_auto": false,
+   "r_aft_auto": false,
+   "motor_d": 0.038,
+   "motor_len": 0.155,
+   "overhang": 0.0
+  },
+  {
+   "i": 3,
+   "parent": 2,
+   "type": "TrapezoidFinSet",
+   "name": "Trapezoidal Fin Set",
+   "x0": 0.8000053306695264,
+   "len": 0.07,
+   "n": 3,
+   "fins": 3,
+   "rot": 0.0,
+   "span": 0.055,
+   "thick": 0.003
+  },
+  {
+   "i": 4,
+   "parent": 2,
+   "type": "MassComponent",
+   "name": "Mass Component",
+   "x0": 0.2598860946745563,
+   "len": 0.046227810650887574,
+   "n": 1,
+   "r_out": 0.026000000000000002,
+   "r_pos": 0.0
+  },
+  {
+   "i": 5,
+   "parent": 2,
+   "type": "Parachute",
+   "name": "Parachute",
+   "x0": 0.050000000000000044,
+   "len": 0.025,
+   "n": 1,
+   "r_out": 0.0125,
+   "r_pos": 0.0
+  }
+ ]
+}
