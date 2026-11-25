@@ -1,17 +1,12 @@
-"""The trainer adapters (adapters/trl.py, adapters/verifiers.py).
+"""The trainer adapter (adapters/trl.py).
 
-Neither trainer library is needed: TRL's call is imitated with plain lists,
-and verifiers' task and trace with small stand-ins shaped like the v0.4.1
-source (Task.score passes `task` and `trace` by name and awaits the result).
+No trainer library is needed: TRL's call is imitated with plain lists.
 Most tests swap scoring.score_many / scoring.score for fakes, to check the
 adapter alone; one test uses recorded simulator replies, and one (needs_java)
 the real simulator.
 """
 from __future__ import annotations
 
-import asyncio
-import functools
-import inspect
 import json
 import subprocess
 import sys
@@ -23,7 +18,6 @@ import pytest
 from rocket_reward import Requirements, Result, RewardSetupError, ladder
 from rocket_reward import scoring as S
 from rocket_reward.adapters import trl as T
-from rocket_reward.adapters import verifiers as V
 from replies import load_reply
 from test_scoring_sim import quiet  # noqa: F401  (fixture: a fresh tracker and quarantine folder)
 
@@ -72,7 +66,7 @@ def call(fn, completions, requirements=None, prompts=None, **extra):
 # ------------------------------------------------------------------ imports
 
 def test_importing_the_adapters_imports_no_trainer_library():
-    code = ("import sys, rocket_reward.adapters, rocket_reward.adapters.trl, rocket_reward.adapters.verifiers\n"
+    code = ("import sys, rocket_reward.adapters, rocket_reward.adapters.trl\n"
             "bad = [m for m in ('trl', 'verifiers', 'torch', 'transformers', 'datasets', 'unsloth') "
             "if m in sys.modules]\n"
             "assert not bad, bad\n"
@@ -85,7 +79,6 @@ def test_making_the_rewards_does_no_work(monkeypatch):
     monkeypatch.setattr(S, "default_simulator", lambda: (_ for _ in ()).throw(AssertionError("started")))
     reward = T.make_reward()
     T.make_diagnostics(reward)
-    V.make_rollout_reward()
     assert reward.__name__ == T.REWARD_NAME
 
 
@@ -277,149 +270,6 @@ def test_trl_style_reward_end_to_end_with_recorded_replies(quiet, gold_rows):
     assert got[:3] == want
     assert got[3] == 0.0
     assert all(0.0 <= g <= 1.0 for g in got)
-
-
-# ------------------------------------------------------------------ verifiers stand-ins
-
-class FakeMessage:
-    def __init__(self, content):
-        self.content = content
-
-
-class FakeCall:
-    def __init__(self, finish_reason="stop", error=None):
-        self.finish_reason = finish_reason
-        self.error = error
-
-
-class FakeTrace:
-    """The parts of verifiers.v1 Trace the adapter reads or writes."""
-
-    def __init__(self, reply="stage:limits:0.33", finish_reason="stop", calls=None):
-        self.assistant_messages = [FakeMessage("first try"), FakeMessage(reply)]
-        self.calls = calls if calls is not None else [FakeCall(finish_reason)]
-        self.metrics: dict = {}
-        self.info: dict = {}
-        self.dropped = None
-        self.errors: list = []
-
-    @property
-    def is_truncated(self):
-        last = next((c for c in reversed(self.calls) if c.error is None), None)
-        return bool(last and last.finish_reason == "length")
-
-    def record_metric(self, name, value):
-        self.metrics[name] = float(value)
-
-    def drop(self, reason):
-        if self.dropped is None:
-            self.dropped = reason
-
-
-class FakeTaskData:
-    """Like verifiers' WireTaskData: known fields as attributes, extra ones in model_extra."""
-
-    def __init__(self, requirements=None, extra=None, info=None, id="task-1"):
-        self.id = id
-        if requirements is not None:
-            self.requirements = requirements
-        self.model_extra = extra or {}
-        if info is not None:
-            self.info = info
-
-
-class FakeScore:
-    """Stands in for scoring.score in the verifiers tests."""
-
-    def __init__(self, monkeypatch):
-        self.calls: list[tuple] = []
-        monkeypatch.setattr(S, "score", self.score)
-
-    def score(self, answer_text, requirements, truncated=False, simulator=None, **kw):
-        self.calls.append((answer_text, requirements, truncated, simulator))
-        if truncated:
-            return Result(score=0.0, stage="format", stages_passed=0, credit=0.0)
-        return FakeScoring.result_for(answer_text)
-
-
-def run_like_verifiers(fn, task, trace):
-    """What verifiers 0.4.1's invoke_all does: pass the named arguments it asks for, await them."""
-    available = {"task": task, "trace": trace}
-    params = inspect.signature(fn).parameters
-
-    async def invoke_all():
-        return await asyncio.gather(fn(**{n: available[n] for n in params if n in available}))
-
-    return asyncio.run(invoke_all())[0]
-
-
-def test_verifiers_reward_has_the_shape_verifiers_calls():
-    fn = V.rocket_reward
-    assert inspect.iscoroutinefunction(fn)
-    assert set(inspect.signature(fn).parameters) == {"task", "trace"}
-
-    @functools.wraps(fn)            # how verifiers wraps a reward plugged by import path
-    def plugged(*args, **kwargs):
-        return fn(*args, **kwargs)
-
-    assert set(inspect.signature(plugged).parameters) == {"task", "trace"}
-
-
-@pytest.mark.parametrize("task", [
-    FakeTaskData(requirements=REQ),
-    FakeTaskData(requirements=json.dumps(REQ)),
-    FakeTaskData(extra={"requirements": REQ}),
-    FakeTaskData(info={"requirements": REQ}),
-    {"id": "task-1", "requirements": REQ},
-])
-def test_verifiers_reward_scores_the_final_assistant_message(monkeypatch, task):
-    fake = FakeScore(monkeypatch)
-    trace = FakeTrace("stage:limits:0.33")
-    got = run_like_verifiers(V.rocket_reward, task, trace)
-    assert got == 0.33
-    text, req, cut, _ = fake.calls[0]
-    assert (text, req.id, cut) == ("stage:limits:0.33", "t-1", False)
-    assert trace.metrics[V.STAGE_METRIC] == ladder.stage_index("limits")
-    assert trace.info["rocket_reward"]["stage"] == "limits"
-
-
-def test_verifiers_reward_sees_a_length_finish_as_cut_off(monkeypatch):
-    fake = FakeScore(monkeypatch)
-    trace = FakeTrace("stage:targets:0.9", calls=[FakeCall("length"), FakeCall("stop", error="boom")])
-    assert run_like_verifiers(V.rocket_reward, FakeTaskData(REQ), trace) == 0.0
-    assert fake.calls[0][2] is True
-
-
-def test_verifiers_reward_with_no_answer_scores_zero(monkeypatch):
-    FakeScore(monkeypatch)
-    trace = FakeTrace()
-    trace.assistant_messages = []
-    trace.last_reply = ""
-    assert run_like_verifiers(V.rocket_reward, FakeTaskData(REQ), trace) == 0.0
-
-
-def test_verifiers_quarantined_answer_drops_the_rollout(monkeypatch):
-    FakeScore(monkeypatch)
-    trace = FakeTrace("quarantine")
-    assert run_like_verifiers(V.rocket_reward, FakeTaskData(REQ), trace) is None
-    assert trace.dropped and "TypeError" in trace.dropped
-
-
-@pytest.mark.parametrize("task, trace_reply", [(FakeTaskData(), "a"), (FakeTaskData(REQ), "setup")])
-def test_verifiers_setup_errors_are_raised(monkeypatch, task, trace_reply):
-    FakeScore(monkeypatch)
-    with pytest.raises(RewardSetupError):
-        run_like_verifiers(V.rocket_reward, task, FakeTrace(trace_reply))
-
-
-def test_is_setup_error_reads_the_recorded_error():
-    class Err:
-        message = "task RocketTask scoring: RewardSetupError: Java is missing"
-
-    trace = FakeTrace()
-    assert not V.is_setup_error(trace)
-    trace.errors = [Err()]
-    assert V.is_setup_error(trace)
 
 
 # ------------------------------------------------------------------ real simulator

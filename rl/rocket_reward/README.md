@@ -144,7 +144,7 @@ python -m rocket_reward score rocket_reward/tests/data/model_val.jsonl.gz rocket
 
 ## Using it in training
 
-* The trainer adapters (TRL / Unsloth GRPO, and Prime Intellect verifiers) and
+* The trainer adapter (TRL / Unsloth GRPO) and
   the settings to use are in [adapters/README.md](adapters/README.md).
 * The prompts to train on, with their requirements, are
   `prompts/rl_prompts_v1.jsonl`; [prompts/README.md](prompts/README.md) says how
@@ -255,8 +255,6 @@ Every tool prints its arguments with `--help`.
 * Cost is not scored: a design that uses an expensive motor or many parts is not penalised for it.
 * Wind is one speed at every height (three flights at 0.5, 1 and 1.5 times the
   prompt's wind); wind that changes with height is not modelled.
-* The verifiers adapter follows the verifiers 0.4.1 source but has never been
-  run against the real library.
 * One answer with many parts and a long descent (huge parachutes) can take
   far longer than the usual fraction of a second. A run that takes longer
   than the helper's wall-clock limit (30 s plus 10 s per flight, `sim.py`) is

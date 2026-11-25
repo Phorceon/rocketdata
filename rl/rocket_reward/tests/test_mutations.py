@@ -384,7 +384,10 @@ def test_subset_keeps_its_stages_and_scores(mutation_subset_results):
     for key, w in want.items():
         got = outcomes[key]
         now = {"stage": got.stage, "score": None if got.score is None else round(got.score, 4)}
-        if now != w:
+        # The simulator can differ by ~1e-4 between platforms (macOS arm64 vs Linux x86_64).
+        same_score = (now["score"] is None) == (w["score"] is None) and (
+            now["score"] is None or abs(now["score"] - w["score"]) <= 1e-3)
+        if now["stage"] != w["stage"] or not same_score:
             moved.append(f"{key}: now {now}, was {w} ({got.reasons[:1]})")
     assert not moved, "\n".join(moved)
 
