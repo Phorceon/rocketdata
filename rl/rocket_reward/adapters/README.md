@@ -5,9 +5,6 @@ Thin wrappers so an RL trainer can call the one scoring core
 
 * `trl.py`: Hugging Face TRL `GRPOTrainer` (also Unsloth, which wraps it).
   Checked against the TRL 0.23.1 source.
-* `verifiers.py`: Prime Intellect verifiers 0.4.x. **It has not been run
-  against the real library.** It follows the v0.4.1 source and is tested
-  only with a fake task and trace.
 
 ## The one rule that matters
 
@@ -140,65 +137,6 @@ inside a band, as the ladder intends. `"none"` (the Dr. GRPO choice) also keeps
 the ladder's own scale, but it makes the step size depend on the spread of the
 scores. Leave `mask_truncated_completions=False` (the default) so the 0.0 for
 a cut-off answer still teaches the model to finish.
-
-## Prime Intellect verifiers 0.4.x
-
-Not yet run against the real library.
-
-```python
-# rocket_env.py: one task per line of the prompt file; the reward is plugged by import path
-import json
-import verifiers as vf
-
-class RocketData(vf.TaskData):
-    requirements: dict
-
-class RocketTask(vf.Task[RocketData]):
-    pass                                       # no decorated reward: the config plugs one
-
-class RocketTaskset(vf.Taskset[RocketTask]):
-    def load(self):
-        for line in open("rocket_reward/prompts/rl_prompts_v1.jsonl", encoding="utf-8"):
-            row = json.loads(line)
-            if row["split"] != "train":
-                continue
-            yield RocketTask(RocketData(prompt=row["prompt"], system_prompt=row["system"],
-                                        requirements=row["requirements"]), self.config.task)
-# run with:  --env.taskset.task.rewards \
-#   '{"rocket": {"fn": "rocket_reward.adapters.verifiers:rocket_reward", "weight": 1.0}}'
-```
-
-How it works, based on the v0.4.1 source
-(github.com/PrimeIntellect-ai/verifiers, tag v0.4.1, folder `verifiers/v1`):
-
-* **Declaring and calling.** `configs/task.py` lets a task plug rewards by
-  name: "Weighted rewards `(task, trace, runtime) -> float` plugged by name"
-  with `fn` an "Import path to the function: `pkg.module.function`,
-  `pkg.module:function`, or `path/to/file.py:function`". `Task.score` in
-  `task.py` builds `available = {"task": self.data, "trace": trace}` and
-  `utils/decorators.py` passes only the parameters a function names, then
-  awaits them all with `asyncio.gather`. So the reward must be `async`.
-  `rocket_reward(task, trace)` is async and runs the scoring on a worker
-  thread (`asyncio.to_thread`). Use `make_rollout_reward(simulator=pool)` to
-  give it your own pool.
-* **Inputs.** The requirements come from the task data's `requirements`
-  field (an attribute, an extra field, or `info["requirements"]`). The answer
-  is the text of the last of `trace.assistant_messages`. The answer counts as
-  cut off when the last model call without an error has
-  `finish_reason == "length"`, or `trace.is_truncated` is true.
-* **Leaving a rollout out.** `trace.py` has
-  `def drop(self, reason: str)`: "Leave the trace out of reward means and
-  training batches". A quarantined answer calls `trace.drop(...)` and returns
-  None. `Task.score` records no reward for None (`if value is not None:
-  trace.record_reward(...)`).
-* **Setup errors.** The adapter raises `RewardSetupError`. However, verifiers
-  wraps any error from a reward as a `TaskError` (`errors.py`: "A bad rollout
-  is data, not a crash"), and `Rollout.fail` records it on the trace. So the
-  run does not stop by itself. Check `rocket_reward.adapters.verifiers.is_setup_error(trace)`
-  on finished traces (or watch for `task_error` stops naming
-  `RewardSetupError`), and stop training when it is true.
-* It also records the metric `rocket_stages_passed` (0 to 7) and
-  `trace.info["rocket_reward"]` (the stage and the first reasons).
 
 ## Speed
 

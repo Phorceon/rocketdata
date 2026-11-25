@@ -28,8 +28,6 @@ Add `--load-in-4bit` for 4-bit QLoRA on a 24–40 GB GPU. Run `python train_grpo
 | `rocket_reward/java/` | OpenRocket helper source (compiled on first run) |
 | `rocket_reward/lib/` | OpenRocket-24.12.jar lands here (`fetch-jar`, git-ignored) |
 | `rocket_reward/tests/` | Tests + gold/model answer fixtures |
-| `environments/rocket_design/` | `verifiers` env for `prime-rl` (alternative trainer) |
-| `check_rocket_env.py` | No-GPU check of the `verifiers` env |
 | `outputs/` | Checkpoints (git-ignored) |
 
 ## Env vars

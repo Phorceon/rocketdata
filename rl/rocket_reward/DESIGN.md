@@ -582,7 +582,7 @@ rocket_reward/
                     (canary.ork with its expected numbers in canary.json)
   lib/              the OpenRocket jar, when fetch-jar put it there (not in git)
   adapters/         thin wrappers for RL trainers: trl.py (TRL / Unsloth),
-                    verifiers.py, README.md
+                    README.md
   prompts/          the RL prompt set (rl_prompts_v1.jsonl), the references
                     it leaves out, and its README.md
   tools/            calibrate.py (the whole ladder on many answers, with a
