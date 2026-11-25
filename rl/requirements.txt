@@ -1,0 +1,6 @@
+# GPU training box (Unsloth + TRL GRPO). Versions match what rocket_reward/adapters/trl.py was checked against.
+unsloth==2026.10.7
+trl==0.23.1
+datasets
+wandb
+pytest
